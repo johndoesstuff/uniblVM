@@ -1,0 +1,106 @@
+DESIGN PHILOSOPHY
+
+IO AND MEMORY REPRESENTED AS AN INFINITE ARRAY
+
+STANDARD INPUT CAN BE READ FROM ADDR 0x0000-0x03FF
+
+STANDARD OUTPUT CAN BE READ FROM ADDR 0x0400-0x07FF
+
+0x0800+ IS USED AS SYSTEM MEMORY
+
+EACH ADDRESS STORES 1 BYTE OF MEMORY
+
+ACCUMULATOR CAN STORE 1 BYTE OF MEMORY
+
+ACCUMULATOR IS SET TO 0 AT RUNTIME
+
+
+INSTRUCTION SET
+
+LD addr
+ACC = MEM[addr]
+
+ST addr
+MEM[addr] = ACC
+
+LDI addr
+ACC = MEM[MEM[addr]]
+
+STI addr
+MEM[MEM[addr]] = ACC
+
+CMP addr
+IF MEM[addr] == ACC : ACC = 1
+ELSE ACC = 0
+
+}
+IF MEM[addr] != 0 : JUMP TO LAST BALANCED {
+
+ADD addr
+ACC += MEM[addr]
+
+DEF <MACRO NAME> 0x? {0x??} {0x???} {0x????}
+DEFINES A MACRO USING MACRO NAME THAT TAKES ADDRESSES AS ARGUMENTS
+
+ENDEF
+END MACRO DEFINITION
+
+
+
+CODE = MEMORY INTERPRETATION
+
+PROGRAM STARTS
+
+i64 ACC_A
+i64 ACC_B
+i64 PC
+i8 MEM[2**64]
+
+NECESSARY COMMANDS
+
+GIVEN op = MEM[PC]
+GIVEN ACC[i] = (i*8)th bits of ACC
+GIVEN read_u8 => pc++;
+GIVEN read_u64 => pc += 8;
+
+LDA (op == 1)
+ACC_A[read_u8()] = MEM[read_u64()]
+PC++
+
+LDB (op == 2)
+ACC_B[read_u8()] = MEM[read_u64()]
+PC++
+
+STA (op == 3)
+MEM[read_u64()] = ACC_A[read_u8()]
+PC++
+
+STB (op == 4)
+MEM[read_u64()] = ACC_B[read_u8()]
+PC++
+
+JMPA (op == 5)
+PC = ACC_A
+
+JMPBZ (op == 6)
+IF ACC_B == 0 THEN PC = read_u64()
+
+ADDAB (op == 7)
+ACC_A += ACC_B
+PC++
+
+SUBAB (op == 8)
+ACC_A -= ACC_B
+PC++
+
+LDAB (op == 9)
+ACC_A = MEM[ACC_B]
+PC++
+
+STAB (op == 10)
+MEM[ACC_B] = ACC_A
+PC++
+
+CMPAB (op == 11)
+ACC_B = (ACC_A == ACC_B) ? 0 : 1
+PC++
