@@ -65,19 +65,15 @@ GIVEN read_u64 => pc += 8;
 
 LDA (op == 1)
 ACC_A[read_u8()] = MEM[read_u64()]
-PC++
 
 LDB (op == 2)
 ACC_B[read_u8()] = MEM[read_u64()]
-PC++
 
 STA (op == 3)
 MEM[read_u64()] = ACC_A[read_u8()]
-PC++
 
 STB (op == 4)
 MEM[read_u64()] = ACC_B[read_u8()]
-PC++
 
 JMPA (op == 5)
 PC = ACC_A
@@ -87,20 +83,18 @@ IF ACC_B == 0 THEN PC = read_u64()
 
 ADDAB (op == 7)
 ACC_A += ACC_B
-PC++
 
 SUBAB (op == 8)
 ACC_A -= ACC_B
-PC++
 
 LDAB (op == 9)
 ACC_A = MEM[ACC_B]
-PC++
 
 STAB (op == 10)
 MEM[ACC_B] = ACC_A
-PC++
 
 CMPAB (op == 11)
 ACC_B = (ACC_A == ACC_B) ? 0 : 1
-PC++
+
+VOID (op == 12)
+read_u64()

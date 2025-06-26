@@ -13,6 +13,9 @@
 #define LDAB 9
 #define STAB 10
 #define CMPAB 11
+#define VOID 12
+
+#define DEBUG 1
 
 #define ENTRY_POINT 0x0800
 
@@ -22,21 +25,54 @@ uint64_t ACC_B;
 uint64_t PC = ENTRY_POINT;
 
 uint8_t read_u8() {
-	return MEM[PC++];
+	uint8_t u = MEM[PC++];
+	if (DEBUG) printf("Loaded u8 %u\n", u);
+	return u;
 }
 
 uint64_t read_u64() {
-	uint64_t r = 0;
+	uint64_t u64 = 0;
 	for (int i = 0; i < 8; i++) {
-		r = (r << 8) | read_u8();
+		u64 = (u64 << 8) | read_u8();
 	}
-	return r;
+	if (DEBUG) printf("Loaded u64 %lu\n", u64);
+	return u64;
 }
 
 int main() {
 	MEM = malloc(0xFFFF*sizeof(uint8_t));
+
+	MEM[2048] = VOID; //data: "Hello World"
+	MEM[2049] = 72;
+	MEM[2050] = 101;
+	MEM[2051] = 108;
+	MEM[2052] = 108;
+	MEM[2053] = 111;
+	MEM[2054] = 32;
+	MEM[2055] = 87;
+	MEM[2056] = 111;
+	MEM[2057] = VOID;
+	MEM[2058] = 114;
+	MEM[2059] = 108;
+	MEM[2060] = 100;
+
+	MEM[2066] = LDA; //load into a
+	MEM[2067] = 0x0; //offset of 0
+
+	MEM[2074] = 0x08; //load 0x0801
+	MEM[2075] = 0x01;
+
+	MEM[2076] = STA; //store into output
+	MEM[2083] = 0x04;
+	MEM[2084] = 0x00;
+	MEM[2085] = 0x00;
+
 	while (1) {
 		uint8_t op = read_u8();
+		if (DEBUG) {
+			printf("Loaded op %u\n", op);
+		}
+
 		if (op == HALT) {
 			break;
 		} else if (op == LDA) {
@@ -64,8 +100,9 @@ int main() {
 		} else if (op == JMPA) {
 			PC = ACC_A;
 		} else if (op == JMPBZ) {
+			uint64_t addr = read_u64();
 			if (ACC_B == 0) {
-				PC = read_u64();
+				PC = addr;
 			}
 		} else if (op == ADDAB) {
 			ACC_A += ACC_B;
@@ -82,6 +119,8 @@ int main() {
 			MEM[ACC_B] = 0xff & (ACC_A >> offset);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
+		} else if (op == VOID) {
+			read_u64();
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%lu\n", op, PC - 1);
 			exit(1);
