@@ -18,6 +18,7 @@
 #define DEBUG 1
 
 #define ENTRY_POINT 0x0800
+#define MEM_SIZE 0xFFFF
 
 uint8_t* MEM;
 uint64_t ACC_A;
@@ -39,33 +40,33 @@ uint64_t read_u64() {
 	return u64;
 }
 
-int main() {
-	MEM = malloc(0xFFFF*sizeof(uint8_t));
+void load_binary(const char* filename) {
+	FILE* f = fopen(filename, "rb");
+	if (!f) {
+		fprintf(stderr, "Error opening file %s", filename);
+		exit(1);
+	}
+	
+	size_t bytes_read = fread(MEM + ENTRY_POINT, 1, MEM_SIZE - ENTRY_POINT, f);
+	if (ferror(f)) {
+		fprintf(stderr, "Error reading file %s", filename);
+		fclose(f);
+		exit(1);
+	}
 
-	MEM[2048] = VOID; //data: "Hello World"
-	MEM[2049] = 72;
-	MEM[2050] = 101;
-	MEM[2051] = 108;
-	MEM[2052] = 108;
-	MEM[2053] = 111;
-	MEM[2054] = 32;
-	MEM[2055] = 87;
-	MEM[2056] = 111;
-	MEM[2057] = VOID;
-	MEM[2058] = 114;
-	MEM[2059] = 108;
-	MEM[2060] = 100;
+	fclose(f);
+	if (DEBUG) printf("Loaded %zu bytes from %s\n", bytes_read, filename);
+}
 
-	MEM[2066] = LDA; //load into a
-	MEM[2067] = 0x0; //offset of 0
+int main(int argc, char** argv) {
+	if (argc < 2) {
+		printf("Usage: %s program.bin\n", argv[0]);
+		exit(0);
+	}
 
-	MEM[2074] = 0x08; //load 0x0801
-	MEM[2075] = 0x01;
+	MEM = calloc(MEM_SIZE, sizeof(uint8_t));
 
-	MEM[2076] = STA; //store into output
-	MEM[2083] = 0x04;
-	MEM[2084] = 0x00;
-	MEM[2085] = 0x00;
+	load_binary(argv[1]);
 
 	while (1) {
 		uint8_t op = read_u8();
