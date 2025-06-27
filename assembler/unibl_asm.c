@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "unibl.h"
+#include "../inc/unibl.h"
+
+#define _PC ENTRY_POINT + program_size
 
 uint8_t* program = NULL;
 size_t program_size = 0;
@@ -38,14 +40,10 @@ void write_program_to_file(const char* filename) {
 	printf("Wrote %zu bytes to %s\n", program_size, filename);
 }
 
+uint64_t _stdout = 0x400;
+
 void _lda(uint8_t offset, uint64_t addr) {
 	emit_byte(LDA);
-	emit_byte(offset);
-	emit_u64(addr);
-}
-
-void _ldb(uint8_t offset, uint64_t addr) {
-	emit_byte(LDB);
 	emit_byte(offset);
 	emit_u64(addr);
 }
@@ -56,10 +54,8 @@ void _sta(uint64_t addr, uint8_t offset) {
 	emit_byte(offset);
 }
 
-void _stb(uint64_t addr, uint8_t offset) {
-	emit_byte(STB);
-	emit_u64(addr);
-	emit_byte(offset);
+void _swp() {
+	emit_byte(SWP);
 }
 
 void _jmpa() {
@@ -107,10 +103,34 @@ uint64_t _u64_from_char(char* str) {
 	return u64;
 }
 
+void _ldb(uint8_t offset, uint64_t addr) {
+	_swp();
+	_lda(offset, addr);
+	_swp();
+}
+
 void _lda64(uint64_t addr) {
 	for (int i = 0; i < 8; i++) {
 		_lda(i, addr + i);
 	}
+}
+
+void _ldb64(uint64_t addr) {
+	_swp();
+	_lda64(addr);
+	_swp();
+}
+
+void _lda64r(uint64_t addr) {
+	for (int i = 7; i >= 0; i--) {
+		_lda(i, addr + 7 - i);
+	}
+}
+
+void _ldb64r(uint64_t addr) {
+	_swp();
+	_lda64r(addr);
+	_swp();
 }
 
 void _sta64(uint64_t addr) {
@@ -119,13 +139,54 @@ void _sta64(uint64_t addr) {
 	}
 }
 
-int main() {
-	_void(_u64_from_char("Hello Wo"));
-	_void(_u64_from_char("rld\n"));
-	_lda64(0x801);
-	_sta64(0x400);
-	_lda64(0x80A);
-	_sta64(0x408);
+void _stb64(uint64_t addr) {
+	_swp();
+	_sta64(addr);
+	_swp();
+}
+
+void _inca() {
+	uint64_t ap = _PC;
+	_void(0);
+	uint64_t bp = _PC;
+	_void(0);
+	_sta64(ap + 1);
+	_stb64(bp + 1);
+	uint64_t ldaop = _PC;
+	_lda(0, ap); // load void op into a
+	_ldb(0, ldaop); // load lda op into b
+	_cmpab(); // false so b = 1
+	_lda64(ap + 1); // load a
+	_addab(); // a += 1
+	_ldb64(bp + 1); // load b
+}
+
+void _incb() {
+	_swp();
+	_inca();
+	_swp();
+}
+
+int main(int argc, char** argv) {
+	if (argc < 2) {
+		printf("Usage: %s program.uasm\n", argv[0]);
+		exit(0);
+	}
+
+	FILE *f = fopen(argv[1], "r");
+	if (!f) {
+		fprintf(stderr, "Failed to open file %s", argv[1]);
+		exit(1);
+	}
+
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	while ((read = getline(&line, &len, file)) != -1) {
+		if (line[read - 1] == '\n') line[--read] = '\0';
+		if (line[0] == '\0' || line[0] == ';') continue;
+	}
 
 	write_program_to_file("program.bin");
 

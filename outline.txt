@@ -31,14 +31,13 @@ GIVEN read_u64 => pc += 8;
 LDA (op == 1)
 ACC_A[read_u8()] = MEM[read_u64()]
 
-LDB (op == 2)
-ACC_B[read_u8()] = MEM[read_u64()]
-
-STA (op == 3)
+STA (op == 2)
 MEM[read_u64()] = ACC_A[read_u8()]
 
-STB (op == 4)
-MEM[read_u64()] = ACC_B[read_u8()]
+SWP (op == 3)
+tmp = ACC_A
+ACC_A = ACC_B
+ACC_B = tmp
 
 JMPA (op == 5)
 PC = ACC_A

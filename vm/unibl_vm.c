@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
-#include "unibl.h"
+#include "../inc/unibl.h"
 #define DEBUG 1
 
 uint8_t* MEM;
@@ -66,47 +66,50 @@ int main(int argc, char** argv) {
 			ACC_A &= ~((uint64_t)0xff << offset);
 			ACC_A |= (uint64_t)MEM[addr] << offset;
 			if (DEBUG) printf("LDA %u %" PRIu64 "\n", offset, addr);
-		} else if (op == LDB) {
-			uint8_t offset = 8*read_u8();
-			uint64_t addr = read_u64();
-			if (offset >= 64) continue;
-			ACC_B &= ~((uint64_t)0xff << offset);
-			ACC_B |= (uint64_t)MEM[addr] << offset;
 		} else if (op == STA) {
 			uint64_t addr = read_u64();
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			MEM[addr] = 0xff & (ACC_A >> offset);
 			if (DEBUG) printf("STA %" PRIu64 " %u\n", addr, offset);
-		} else if (op == STB) {
-			uint64_t addr = read_u64();
-			uint8_t offset = 8*read_u8();
-			if (offset >= 64) continue;
-			MEM[addr] = 0xff & (ACC_B >> offset);
+		} else if (op == SWP) {
+			uint64_t tmp = ACC_A;
+			ACC_A = ACC_B;
+			ACC_B = tmp;
+			if (DEBUG) printf("SWP\n");
 		} else if (op == JMPA) {
 			PC = ACC_A;
+			if (DEBUG) printf("JMPA\n");
+			if (DEBUG) printf("ACC_A=%" PRIu64 "\n", ACC_A);
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
 			if (ACC_B == 0) {
 				PC = addr;
 			}
+			if (DEBUG) printf("JMPBZ %" PRIu64 "\n", addr);
 		} else if (op == ADDAB) {
+			if (DEBUG) printf("ADDAB\n");
 			ACC_A += ACC_B;
 		} else if (op == SUBAB) {
 			ACC_A -= ACC_B;
+			if (DEBUG) printf("SUBAB\n");
 		} else if (op == LDAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			ACC_A &= ~(0xff << offset);
 			ACC_A |= MEM[ACC_B] << offset;
+			if (DEBUG) printf("LDAB %u\n", offset);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			MEM[ACC_B] = 0xff & (ACC_A >> offset);
+			if (DEBUG) printf("STAB %u\n", offset);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
+			if (CMPAB) printf("CMPAB\n");
 		} else if (op == VOID) {
-			read_u64();
+			uint64_t u64 = read_u64();
+			if (DEBUG) printf("VOID %" PRIu64 "\n", u64);
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIu64 "\n", op, PC - 1);
 			exit(1);
