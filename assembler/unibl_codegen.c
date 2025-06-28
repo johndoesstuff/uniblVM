@@ -2,24 +2,29 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "unibl.h"
+#include "../inc/unibl.h"
 
 #define _PC ENTRY_POINT + program_size
 
 uint8_t* program = NULL;
 size_t program_size = 0;
 size_t program_capacity = 0;
+extern int current_pass;
 
 void emit_byte(uint8_t byte) {
-	if (program_size >= program_capacity) {
-		program_capacity = program_capacity ? program_capacity * 2 : 64;
-		program = realloc(program, program_capacity);
-		if (!program) {
-			perror("Failed to realloc program buffer");
-			exit(1);
+	if (current_pass == 2) {
+		if (program_size >= program_capacity) {
+			program_capacity = program_capacity ? program_capacity * 2 : 64;
+			program = realloc(program, program_capacity);
+			if (!program) {
+				perror("Failed to realloc program buffer");
+				exit(1);
+			}
 		}
+		program[program_size++] = byte;
+	} else {
+		program_size++;
 	}
-	program[program_size++] = byte;
 }
 
 void emit_u64(uint64_t val) {
@@ -165,31 +170,4 @@ void _incb() {
 	_swp();
 	_inca();
 	_swp();
-}
-
-int main(int argc, char** argv) {
-	if (argc < 2) {
-		printf("Usage: %s program.uasm\n", argv[0]);
-		exit(0);
-	}
-
-	FILE *f = fopen(argv[1], "r");
-	if (!f) {
-		fprintf(stderr, "Failed to open file %s", argv[1]);
-		exit(1);
-	}
-
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	while ((read = getline(&line, &len, file)) != -1) {
-		if (line[read - 1] == '\n') line[--read] = '\0';
-		if (line[0] == '\0' || line[0] == ';') continue;
-	}
-
-	write_program_to_file("program.bin");
-
-	free(program);
-	return 0;
 }

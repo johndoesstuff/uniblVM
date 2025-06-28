@@ -1,8 +1,89 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "unibl_asm.h"
+#include "unibl_codegen.h"
+#include "../inc/unibl.h"
+#include <inttypes.h>
+
+#define DEBUG 1
 
 extern FILE *yyin;
 int yyparse(void);
+
+int current_pass = 1;
+Label *label_table = NULL;
+
+OperandList *make_operand_list(uint64_t val) {
+	OperandList *list = malloc(sizeof(OperandList));
+	list->count = 1;
+	list->values[0] = val;
+	return list;
+}
+
+OperandList *append_operand(OperandList *list, uint64_t value) {
+	if (list->count < MAX_OPERANDS) list->values[list->count++] = value;
+	else {
+		printf("Too many operands (max 8)");
+		exit(1);
+	}
+	return list;
+}
+
+void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
+	if (strcmp(instr, "LDA") == 0) {
+		_lda(ops->values[0], ops->values[1]);
+	} else if (strcmp(instr, "STA") == 0) {
+		_sta(ops->values[0], ops->values[1]);
+	} else if (strcmp(instr, "JMPBZ") == 0) {
+		_jmpbz(ops->values[0]);
+	} else if (strcmp(instr, "LDAB") == 0) {
+		_ldab(ops->values[0]);
+	} else if (strcmp(instr, "STAB") == 0) {
+		_stab(ops->values[0]);
+	} else if (strcmp(instr, "VOID") == 0) {
+		_void(ops->values[0]);
+	}
+	*pc = ENTRY_POINT + program_size;
+}
+
+void add_si(const char *instr, uint64_t *pc) {
+	if (strcmp(instr, "JMPA") == 0) {
+		_jmpa();
+	} else if (strcmp(instr, "SWP") == 0) {
+		_swp();
+	} else if (strcmp(instr, "ADDAB") == 0) {
+		_addab();
+	} else if (strcmp(instr, "SUBAB") == 0) {
+		_subab();
+	} else if (strcmp(instr, "CMPAB") == 0) {
+		_cmpab();
+	}
+	*pc = ENTRY_POINT + program_size;
+}
+
+void add_label(const char *label, uint64_t *pc) {
+	if (current_pass == 1) {
+		Label *new_label = malloc(sizeof(Label));
+		new_label->next = label_table;
+		new_label->name = strdup(label);
+		new_label->address = *pc;
+		label_table = new_label;
+		if (DEBUG) printf("Added label %s at %" PRIu64 "\n", label, *pc);
+	}
+}
+
+uint64_t get_label(const char *label) {
+	if (current_pass == 2) {
+		Label *current = label_table;
+		while (current) {
+			if (strcmp(current->name, label) == 0) return current->address;
+			current = current->next;
+		}
+		printf("Could not find label %s\n", label);
+	}
+	return 0;
+}
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
@@ -17,11 +98,26 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (yyparse() == 0) {
-		printf("Parsing completed successfully.\n");
+		printf("First pass completed successfully.\n");
+	} else {
+		printf("Parsing failed.\n");
+	}
+
+	current_pass = 2;
+	rewind(yyin);
+	free(program);
+	program_capacity = 0;
+	uint8_t* program = NULL;
+	program_size = 0;
+
+	if (yyparse() == 0) {
+		printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
 
 	fclose(yyin);
+
+	write_program_to_file("program.bin");
 	return 0;
 }

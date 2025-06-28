@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 1 "assembler/parser.y"
+
+#include "../unibl_asm.h"
+
+#line 53 "assembler/build/parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -69,12 +75,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "assembler/parser.y"
+#line 19 "assembler/parser.y"
 
 	uint64_t u64;
 	char *str;
+	OperandList *oplist;
 
-#line 78 "assembler/build/parser.tab.h"
+#line 85 "assembler/build/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

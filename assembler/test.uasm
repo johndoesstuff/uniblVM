@@ -1,6 +1,28 @@
-hello_world:
+hello_world_a:
 VOID "Hello Wo"
+hello_world_b:
 VOID "rld\n"
-LDA 0, hello_world + 1
+LDA 7, hello_world_a + 1
+LDA 6, hello_world_a + 2
+LDA 5, hello_world_a + 3
+LDA 4, hello_world_a + 4
+LDA 3, hello_world_a + 5
+LDA 2, hello_world_a + 6
+LDA 1, hello_world_a + 7
+LDA 0, hello_world_a + 8
 STA 0x400, 0
-SWP
+STA 0x401, 1
+STA 0x402, 2
+STA 0x403, 3
+STA 0x404, 4
+STA 0x405, 5
+STA 0x406, 6
+STA 0x407, 7
+LDA 7, hello_world_b + 5
+LDA 6, hello_world_b + 6
+LDA 5, hello_world_b + 7
+LDA 4, hello_world_b + 8
+STA 0x408, 4
+STA 0x409, 5
+STA 0x40a, 6
+STA 0x40b, 7

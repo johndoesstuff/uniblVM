@@ -472,13 +472,34 @@ char *yytext;
 #line 16 "assembler/lexer.l"
 uint64_t encode_le(const char *str) {
 	uint64_t result = 0;
-	for (int i = 7; i >= 0; i--) {
-		result = (result << 8) | (uint8_t)str[i];
+	int len = strlen(str);
+	int out_i = 0;
+
+	for (int in_i = 1; str[in_i] != '"' && str[in_i] != '\0' && out_i < 8; in_i++) {
+		char c = str[in_i];
+
+		if (c == '\\') {
+			char next = str[++in_i];
+			switch (next) {
+				case 'n': c = '\n'; break;
+				case 't': c = '\t'; break;
+				case 'r': c = '\r'; break;
+				case '\\': c = '\\'; break;
+				case '\'': c = '\''; break;
+				case '\"': c = '\"'; break;
+				case '0': c = '\0'; break;
+				default: c = next; break;
+			}
+		}
+
+		result |= ((uint64_t)c << (8 * out_i));
+		out_i++;
 	}
+
 	return result;
 }
-#line 481 "assembler/build/lex.yy.c"
-#line 482 "assembler/build/lex.yy.c"
+#line 502 "assembler/build/lex.yy.c"
+#line 503 "assembler/build/lex.yy.c"
 
 #define INITIAL 0
 
@@ -695,9 +716,9 @@ YY_DECL
 		}
 
 	{
-#line 25 "assembler/lexer.l"
+#line 46 "assembler/lexer.l"
 
-#line 701 "assembler/build/lex.yy.c"
+#line 722 "assembler/build/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -756,78 +777,78 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 26 "assembler/lexer.l"
+#line 47 "assembler/lexer.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "assembler/lexer.l"
+#line 48 "assembler/lexer.l"
 ;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 28 "assembler/lexer.l"
+#line 49 "assembler/lexer.l"
 { yylval.u64 = strtoull(yytext, NULL, 0); return NUM; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 29 "assembler/lexer.l"
+#line 50 "assembler/lexer.l"
 { yylval.u64 = strtoull(yytext, NULL, 10); return NUM; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 30 "assembler/lexer.l"
+#line 51 "assembler/lexer.l"
 { yylval.u64 = yytext[1]; return NUM; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 31 "assembler/lexer.l"
+#line 52 "assembler/lexer.l"
 { yylval.str = strdup(yytext); return IDENT; }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 32 "assembler/lexer.l"
+#line 53 "assembler/lexer.l"
 { yylval.u64 = encode_le(yytext); return NUM; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 34 "assembler/lexer.l"
+#line 55 "assembler/lexer.l"
 return COLON;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 35 "assembler/lexer.l"
+#line 56 "assembler/lexer.l"
 return COMMA;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 36 "assembler/lexer.l"
+#line 57 "assembler/lexer.l"
 return PLUS;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 37 "assembler/lexer.l"
+#line 58 "assembler/lexer.l"
 return MINUS;
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 38 "assembler/lexer.l"
+#line 59 "assembler/lexer.l"
 return NEWLINE;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "assembler/lexer.l"
+#line 61 "assembler/lexer.l"
 { return *yytext; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "assembler/lexer.l"
+#line 62 "assembler/lexer.l"
 ECHO;
 	YY_BREAK
-#line 831 "assembler/build/lex.yy.c"
+#line 852 "assembler/build/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1832,7 +1853,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 41 "assembler/lexer.l"
+#line 62 "assembler/lexer.l"
 
 
 
