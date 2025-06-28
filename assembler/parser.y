@@ -1,59 +1,55 @@
 %{
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 extern int yylex();
-void yyerror(const char *s) { fprintf(stderr, "Error: %s\n", s); }
-
-typedef struct {
-    char* name;
-    uint64_t address;
-} Symbol;
-
+extern FILE *yyin;
+void yyerror(const char *s) {
+	fprintf(stderr, "Parser error: %s\n", s);
+}
 %}
 
 %union {
-    uint64_t u64;
-    char* str;
+	uint64_t u64;
+	char *str;
 }
 
-%token <u64> NUM
 %token <str> IDENT
-%token COLON COMMA NEWLINE
+%token <u64> NUM
+%token COLON COMMA NEWLINE PLUS MINUS
 
 %%
 
 program:
-    lines
+	lines
 ;
 
 lines:
-    line
-    | lines line
+	line
+	| lines line
 ;
 
 line:
-    IDENT COLON instruction NEWLINE
-    | instruction NEWLINE
-    | NEWLINE
-;
-
-instruction:
-    IDENT
-    | IDENT operands
+	IDENT COLON
+	| IDENT operands NEWLINE
+	| NEWLINE
 ;
 
 operands:
-    NUM
-    | IDENT
-    | NUM COMMA NUM
-    | IDENT COMMA NUM
-;
+	term
+	| operands COMMA term
+
+term:
+	NUM
+	| IDENT
+	| expression
+
+expression:
+	IDENT PLUS NUM
+	| IDENT MINUS NUM
+	| NUM PLUS NUM
 
 %%
 
-int main() {
-    return yyparse();
-}

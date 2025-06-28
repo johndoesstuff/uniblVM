@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "../inc/unibl.h"
+#include "unibl.h"
 
 #define _PC ENTRY_POINT + program_size
 

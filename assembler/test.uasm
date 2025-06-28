@@ -1,0 +1,6 @@
+hello_world:
+VOID "Hello Wo"
+VOID "rld\n"
+LDA 0, hello_world + 1
+STA 0x400, 0
+SWP
