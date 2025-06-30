@@ -39,26 +39,26 @@ tmp = ACC_A
 ACC_A = ACC_B
 ACC_B = tmp
 
-JMPA (op == 5)
+JMPA (op == 4)
 PC = ACC_A
 
-JMPBZ (op == 6)
+JMPBZ (op == 5)
 IF ACC_B == 0 THEN PC = read_u64()
 
-ADDAB (op == 7)
+ADDAB (op == 6)
 ACC_A += ACC_B
 
-SUBAB (op == 8)
+SUBAB (op == 7)
 ACC_A -= ACC_B
 
-LDAB (op == 9)
+LDAB (op == 8)
 ACC_A = MEM[ACC_B]
 
-STAB (op == 10)
+STAB (op == 9)
 MEM[ACC_B] = ACC_A
 
-CMPAB (op == 11)
+CMPAB (op == 10)
 ACC_B = (ACC_A == ACC_B) ? 0 : 1
 
-VOID (op == 12)
+VOID (op == 11)
 read_u64()

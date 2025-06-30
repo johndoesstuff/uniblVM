@@ -3,19 +3,21 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include "../inc/unibl.h"
-#define DEBUG 1
+#define DEBUG 0
 
 uint8_t* MEM;
 uint64_t ACC_A;
 uint64_t ACC_B;
 uint64_t PC = ENTRY_POINT;
 
+// LOAD BYTE FROM PROGRAM
 uint8_t read_u8() {
 	uint8_t u = MEM[PC++];
 	//if (DEBUG) printf("Loaded u8 %u\n", u);
 	return u;
 }
 
+// LOAD 8 BYTES FROM PROGRAM (64 BIT NUMBER)
 uint64_t read_u64() {
 	uint64_t u64 = 0;
 	for (int i = 0; i < 8; i++) {
@@ -25,6 +27,7 @@ uint64_t read_u64() {
 	return u64;
 }
 
+// OPEN FILE AND LOAD AS BINARY
 void load_binary(const char* filename) {
 	FILE* f = fopen(filename, "rb");
 	if (!f) {
@@ -44,6 +47,7 @@ void load_binary(const char* filename) {
 }
 
 int main(int argc, char** argv) {
+	// VM MUST BE USED WITH A PROGRAM BINARY
 	if (argc < 2) {
 		printf("Usage: %s program.bin\n", argv[0]);
 		exit(0);
@@ -51,6 +55,7 @@ int main(int argc, char** argv) {
 
 	MEM = calloc(MEM_SIZE, sizeof(uint8_t));
 
+	// LOAD PROGRAM BINARY
 	load_binary(argv[1]);
 
 	while (1) {
@@ -115,10 +120,16 @@ int main(int argc, char** argv) {
 			exit(1);
 		}
 	}
-	printf("Program execution ended at PC=%" PRIu64 "\n", PC - 1);
-	printf("ACC_A=%" PRIu64 "\n", ACC_A);
-	printf("ACC_B=%" PRIu64 "\n", ACC_B);
-	printf("Dumping Standard Output...\n");
+
+	// DEBUG INFORMATION
+	if (DEBUG) {
+		printf("Program execution ended at PC=%" PRIu64 "\n", PC - 1);
+		printf("ACC_A=%" PRIu64 "\n", ACC_A);
+		printf("ACC_B=%" PRIu64 "\n", ACC_B);
+		printf("Dumping Standard Output...\n");
+	}
+
+	// OUTPUT STANDARD OUTPUT (0x0400-0x07FF)
 	for (uint64_t addr = 0x0400; addr < 0x07FF; addr++) {
 		printf("%c", MEM[addr]);
 	}

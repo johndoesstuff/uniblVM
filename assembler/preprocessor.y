@@ -47,24 +47,24 @@ item:
 ;
 
 macro:
-	MACRO IDENT params NEWLINE macro_body MACROEND
+	MACRO IDENT { start_macro($2); } params NEWLINE macro_body { exit_macro(); } MACROEND	{ define_macro($2, $4, $6); free($2); free($4); free($6); }
 ;
 
 params:
-	IDENT
-	| params COMMA IDENT
+	IDENT				{ $$ = make_macro_params($1); free($1);  }
+	| params COMMA IDENT		{ $$ = append_macro_params($1, $3); free($3); }
 ;
 
 macro_body:
-	macro_line
-	| macro_body macro_line
+	macro_line			{ $$ = make_macro_body($1); free($1); }
+	| macro_body macro_line		{ $$ = append_macro_body($1, $2); free($2); }
 ;
 
 macro_line:
 	IDENT COLON			{ add_label_to_macro($1); char* st; asprintf(&st, "%%%s", $1); $$ = st; free($1); }
-	| IDENT macro_operands NEWLINE
-	| IDENT NEWLINE
-	| NEWLINE
+	| IDENT macro_operands NEWLINE	{ char* st; asprintf(&st, "%s %s", $1, $2); $$ = st; free($1); free($2); }
+	| IDENT NEWLINE			{ char* st; asprintf(&st, "%s", $1); $$ = st; free($1); }
+	| NEWLINE			{ $$ = strdup(""); }
 
 macro_operands:
 	macro_term				{ $$ = $1; }

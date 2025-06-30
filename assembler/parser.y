@@ -57,9 +57,8 @@ term:
 	| expression		{ $$ = $1; }
 
 expression:
-	IDENT PLUS NUM		{ $$ = get_label($1) + $3; }
-	| IDENT MINUS NUM	{ $$ = get_label($1) - $3; }
-	| NUM PLUS NUM		{ $$ = $1 + $3; }
+	term PLUS NUM		{ $$ = $1 + $3; }
+	| term MINUS NUM	{ $$ = $1 - $3; }
 
 %%
 
