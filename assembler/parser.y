@@ -24,7 +24,7 @@ uint64_t PC = ENTRY_POINT;
 
 %token <str> IDENT
 %token <u64> NUM
-%token COLON COMMA NEWLINE PLUS MINUS
+%token COLON COMMA NEWLINE PLUS MINUS MACRO ENDMACRO
 
 %type <u64> term expression
 %type <oplist> operands

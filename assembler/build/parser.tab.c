@@ -120,13 +120,15 @@ enum yysymbol_kind_t
   YYSYMBOL_NEWLINE = 7,                    /* NEWLINE  */
   YYSYMBOL_PLUS = 8,                       /* PLUS  */
   YYSYMBOL_MINUS = 9,                      /* MINUS  */
-  YYSYMBOL_YYACCEPT = 10,                  /* $accept  */
-  YYSYMBOL_program = 11,                   /* program  */
-  YYSYMBOL_lines = 12,                     /* lines  */
-  YYSYMBOL_line = 13,                      /* line  */
-  YYSYMBOL_operands = 14,                  /* operands  */
-  YYSYMBOL_term = 15,                      /* term  */
-  YYSYMBOL_expression = 16                 /* expression  */
+  YYSYMBOL_MACRO = 10,                     /* MACRO  */
+  YYSYMBOL_ENDMACRO = 11,                  /* ENDMACRO  */
+  YYSYMBOL_YYACCEPT = 12,                  /* $accept  */
+  YYSYMBOL_program = 13,                   /* program  */
+  YYSYMBOL_lines = 14,                     /* lines  */
+  YYSYMBOL_line = 15,                      /* line  */
+  YYSYMBOL_operands = 16,                  /* operands  */
+  YYSYMBOL_term = 17,                      /* term  */
+  YYSYMBOL_expression = 18                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -457,7 +459,7 @@ union yyalloc
 #define YYLAST   20
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  10
+#define YYNTOKENS  12
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  7
 /* YYNRULES -- Number of rules.  */
@@ -466,7 +468,7 @@ union yyalloc
 #define YYNSTATES  24
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   264
+#define YYMAXUTOK   266
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -506,7 +508,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9
+       5,     6,     7,     8,     9,    10,    11
 };
 
 #if YYDEBUG
@@ -531,8 +533,8 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "IDENT", "NUM",
-  "COLON", "COMMA", "NEWLINE", "PLUS", "MINUS", "$accept", "program",
-  "lines", "line", "operands", "term", "expression", YY_NULLPTR
+  "COLON", "COMMA", "NEWLINE", "PLUS", "MINUS", "MACRO", "ENDMACRO",
+  "$accept", "program", "lines", "line", "operands", "term", "expression", YY_NULLPTR
 };
 
 static const char *
@@ -604,16 +606,16 @@ static const yytype_int8 yycheck[] =
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     7,    11,    12,    13,     3,     4,     5,     7,
-      14,    15,    16,     0,    13,     8,     9,     8,     6,     7,
-       4,     4,     4,    15
+       0,     3,     7,    13,    14,    15,     3,     4,     5,     7,
+      16,    17,    18,     0,    15,     8,     9,     8,     6,     7,
+       4,     4,     4,    17
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    10,    11,    12,    12,    13,    13,    13,    13,    14,
-      14,    15,    15,    15,    16,    16,    16
+       0,    12,    13,    14,    14,    15,    15,    15,    15,    16,
+      16,    17,    17,    17,    18,    18,    18
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1086,71 +1088,71 @@ yyreduce:
   case 5: /* line: IDENT COLON  */
 #line 44 "assembler/parser.y"
                                         { add_label((yyvsp[-1].str), &PC); }
-#line 1090 "assembler/build/parser.tab.c"
+#line 1092 "assembler/build/parser.tab.c"
     break;
 
   case 6: /* line: IDENT operands NEWLINE  */
 #line 45 "assembler/parser.y"
                                         { add_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
-#line 1096 "assembler/build/parser.tab.c"
+#line 1098 "assembler/build/parser.tab.c"
     break;
 
   case 7: /* line: IDENT NEWLINE  */
 #line 46 "assembler/parser.y"
                                         { add_si((yyvsp[-1].str), &PC); }
-#line 1102 "assembler/build/parser.tab.c"
+#line 1104 "assembler/build/parser.tab.c"
     break;
 
   case 9: /* operands: term  */
 #line 51 "assembler/parser.y"
                                 { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
-#line 1108 "assembler/build/parser.tab.c"
+#line 1110 "assembler/build/parser.tab.c"
     break;
 
   case 10: /* operands: operands COMMA term  */
 #line 52 "assembler/parser.y"
                                 { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
-#line 1114 "assembler/build/parser.tab.c"
+#line 1116 "assembler/build/parser.tab.c"
     break;
 
   case 11: /* term: NUM  */
 #line 55 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
-#line 1120 "assembler/build/parser.tab.c"
+#line 1122 "assembler/build/parser.tab.c"
     break;
 
   case 12: /* term: IDENT  */
 #line 56 "assembler/parser.y"
                                 { (yyval.u64) = get_label((yyvsp[0].str)); }
-#line 1126 "assembler/build/parser.tab.c"
+#line 1128 "assembler/build/parser.tab.c"
     break;
 
   case 13: /* term: expression  */
 #line 57 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
-#line 1132 "assembler/build/parser.tab.c"
+#line 1134 "assembler/build/parser.tab.c"
     break;
 
   case 14: /* expression: IDENT PLUS NUM  */
 #line 60 "assembler/parser.y"
                                 { (yyval.u64) = get_label((yyvsp[-2].str)) + (yyvsp[0].u64); }
-#line 1138 "assembler/build/parser.tab.c"
+#line 1140 "assembler/build/parser.tab.c"
     break;
 
   case 15: /* expression: IDENT MINUS NUM  */
 #line 61 "assembler/parser.y"
                                 { (yyval.u64) = get_label((yyvsp[-2].str)) - (yyvsp[0].u64); }
-#line 1144 "assembler/build/parser.tab.c"
+#line 1146 "assembler/build/parser.tab.c"
     break;
 
   case 16: /* expression: NUM PLUS NUM  */
 #line 62 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
-#line 1150 "assembler/build/parser.tab.c"
+#line 1152 "assembler/build/parser.tab.c"
     break;
 
 
-#line 1154 "assembler/build/parser.tab.c"
+#line 1156 "assembler/build/parser.tab.c"
 
       default: break;
     }

@@ -50,12 +50,15 @@ uint64_t encode_le(const char *str) {
 {DIGIT}+	{ yylval.u64 = strtoull(yytext, NULL, 10); return NUM; }
 {CHAR}		{ yylval.u64 = yytext[1]; return NUM; }
 {ID}		{ yylval.str = strdup(yytext); return IDENT; }
+"%"{ID}		{ yylval.str = strdup(yytext); return PARAM; }
 {STRING}	{ yylval.u64 = encode_le(yytext); return NUM; }
 
 ":"		return COLON;
 ","		return COMMA;
 "+"		return PLUS;
 "-"		return MINUS;
+".MACRO"	return MACRO;
+".ENMAC"	return ENDMACRO;
 "\n"		return NEWLINE;
 
 .		{ return *yytext; }

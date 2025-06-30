@@ -1,0 +1,24 @@
+.MACRO LDB x, y
+SWP
+LDA %x, %y
+SWP
+.ENMAC
+
+.MACRO SETA x
+v:
+VOID %x
+LDA 0, v + 1
+LDA 1, v + 2
+LDA 2, v + 3
+LDA 3, v + 4
+LDA 4, v + 5
+LDA 5, v + 6
+LDA 6, v + 7
+LDA 7, v + 8
+.ENMAC
+
+START:
+LDA 0, START
+ST3:
+LDB 0, ST3
+SETA 0x400

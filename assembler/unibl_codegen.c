@@ -11,6 +11,7 @@ size_t program_size = 0;
 size_t program_capacity = 0;
 extern int current_pass;
 
+// WRITES A BYTE TO PROGRAM
 void emit_byte(uint8_t byte) {
 	if (current_pass == 2) {
 		if (program_size >= program_capacity) {
@@ -27,12 +28,14 @@ void emit_byte(uint8_t byte) {
 	}
 }
 
+// WRITES 8 BYTES TO PROGRAM (64 BIT VALUE)
 void emit_u64(uint64_t val) {
 	for (int i = 7; i >= 0; i--) {
 		emit_byte((val >> (8 * i)) & 0xFF);
 	}
 }
 
+// WRITES PROGRAM TO FILE
 void write_program_to_file(const char* filename) {
 	FILE* f = fopen(filename, "wb");
 	if (!f) {
@@ -45,129 +48,65 @@ void write_program_to_file(const char* filename) {
 	printf("Wrote %zu bytes to %s\n", program_size, filename);
 }
 
-uint64_t _stdout = 0x400;
-
+// LOAD INTO REGISTER A
 void _lda(uint8_t offset, uint64_t addr) {
 	emit_byte(LDA);
 	emit_byte(offset);
 	emit_u64(addr);
 }
 
+// STORE REGISTER A INTO MEMORY
 void _sta(uint64_t addr, uint8_t offset) {
 	emit_byte(STA);
 	emit_u64(addr);
 	emit_byte(offset);
 }
 
+// SWAP REGISTER A AND B
 void _swp() {
 	emit_byte(SWP);
 }
 
+// JUMP TO VALUE AT REGISTER A
 void _jmpa() {
 	emit_byte(JMPA);
 }
 
+// JUMP TO ADDRESS IF REGISTER B IS ZERO
 void _jmpbz(uint64_t addr) {
 	emit_byte(JMPBZ);
 	emit_u64(addr);
 }
 
+// ADD REGISTER A AND REGISTER B AND STORE IN REGISTER A
 void _addab() {
 	emit_byte(ADDAB);
 }
 
+// SUBTRACT REGISTER A AND REGISTER B AND STORE IN REGISTER A
 void _subab() {
 	emit_byte(SUBAB);
 }
 
+// LOAD THE ADDRESS AT REGISTRY B INTO REGISTRY A
 void _ldab(uint8_t offset) {
 	emit_byte(LDAB);
 	emit_byte(offset);
 }
 
+// STORE THE VALUE AT REGISTRY A INTO THE ADDRESS IN REGISTRY B
 void _stab(uint8_t offset) {
 	emit_byte(STAB);
 	emit_byte(offset);
 }
 
+// SET TO 0 IF REGISTRY A AND B ARE EQUAL AND 1 IF NOT
 void _cmpab() {
 	emit_byte(CMPAB);
 }
 
+// DO NOTHING
 void _void(uint64_t _data) {
 	emit_byte(VOID);
 	emit_u64(_data);
-}
-
-uint64_t _u64_from_char(char* str) {
-	int str_l = strlen(str);
-	uint64_t u64 = 0;
-	for (int i = 0; i < 8; i++) {
-		u64 = (u64 << 8) | ((i < str_l) ? str[i] : 0);
-	}
-	return u64;
-}
-
-void _ldb(uint8_t offset, uint64_t addr) {
-	_swp();
-	_lda(offset, addr);
-	_swp();
-}
-
-void _lda64(uint64_t addr) {
-	for (int i = 0; i < 8; i++) {
-		_lda(i, addr + i);
-	}
-}
-
-void _ldb64(uint64_t addr) {
-	_swp();
-	_lda64(addr);
-	_swp();
-}
-
-void _lda64r(uint64_t addr) {
-	for (int i = 7; i >= 0; i--) {
-		_lda(i, addr + 7 - i);
-	}
-}
-
-void _ldb64r(uint64_t addr) {
-	_swp();
-	_lda64r(addr);
-	_swp();
-}
-
-void _sta64(uint64_t addr) {
-	for (int i = 0; i < 8; i++) {
-		_sta(addr + i, i);
-	}
-}
-
-void _stb64(uint64_t addr) {
-	_swp();
-	_sta64(addr);
-	_swp();
-}
-
-void _inca() {
-	uint64_t ap = _PC;
-	_void(0);
-	uint64_t bp = _PC;
-	_void(0);
-	_sta64(ap + 1);
-	_stb64(bp + 1);
-	uint64_t ldaop = _PC;
-	_lda(0, ap); // load void op into a
-	_ldb(0, ldaop); // load lda op into b
-	_cmpab(); // false so b = 1
-	_lda64(ap + 1); // load a
-	_addab(); // a += 1
-	_ldb64(bp + 1); // load b
-}
-
-void _incb() {
-	_swp();
-	_inca();
-	_swp();
 }

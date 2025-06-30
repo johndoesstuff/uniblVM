@@ -6,14 +6,16 @@
 #include "../inc/unibl.h"
 #include <inttypes.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 extern FILE *yyin;
 int yyparse(void);
 
+// ASSEMBLER NEEDS 2 PASSES TO GENERATE LABEL ADDRESSES
 int current_pass = 1;
 Label *label_table = NULL;
 
+// OPERANDS ARE STORED AS AN OPERAND LIST
 OperandList *make_operand_list(uint64_t val) {
 	OperandList *list = malloc(sizeof(OperandList));
 	list->count = 1;
@@ -21,6 +23,7 @@ OperandList *make_operand_list(uint64_t val) {
 	return list;
 }
 
+// ADD VALUE TO OPERAND LIST
 OperandList *append_operand(OperandList *list, uint64_t value) {
 	if (list->count < MAX_OPERANDS) list->values[list->count++] = value;
 	else {
@@ -30,6 +33,7 @@ OperandList *append_operand(OperandList *list, uint64_t value) {
 	return list;
 }
 
+// ADDS AN INSTRUCTION WITH ARGUMENTS
 void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 	if (strcmp(instr, "LDA") == 0) {
 		_lda(ops->values[0], ops->values[1]);
@@ -47,6 +51,7 @@ void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 	*pc = ENTRY_POINT + program_size;
 }
 
+// ADDS A SINGLE INSTRUCTION (NO ARGUMENTS)
 void add_si(const char *instr, uint64_t *pc) {
 	if (strcmp(instr, "JMPA") == 0) {
 		_jmpa();
@@ -62,6 +67,8 @@ void add_si(const char *instr, uint64_t *pc) {
 	*pc = ENTRY_POINT + program_size;
 }
 
+// ADDS A LABEL TO LABEL TABLE
+// LABELS ARE JUST THE CURRENT VALUE OF THE PROGRAM COUNTER
 void add_label(const char *label, uint64_t *pc) {
 	if (current_pass == 1) {
 		Label *new_label = malloc(sizeof(Label));
@@ -73,6 +80,7 @@ void add_label(const char *label, uint64_t *pc) {
 	}
 }
 
+// RETURNS A LABEL FROM THE LABEL TABLE
 uint64_t get_label(const char *label) {
 	if (current_pass == 2) {
 		Label *current = label_table;
@@ -86,6 +94,7 @@ uint64_t get_label(const char *label) {
 }
 
 int main(int argc, char *argv[]) {
+	// MUST HAVE FILE PASSED IN
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s <input.uasm>\n", argv[0]);
 		return 1;
@@ -97,12 +106,14 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	// INITIAL PASS TO GENERATE LABEL ADDRESSES
 	if (yyparse() == 0) {
 		printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
 
+	// RESET FOR SECOND CODEGEN PASS
 	current_pass = 2;
 	rewind(yyin);
 	free(program);
@@ -110,6 +121,7 @@ int main(int argc, char *argv[]) {
 	uint8_t* program = NULL;
 	program_size = 0;
 
+	// SECOND PASS
 	if (yyparse() == 0) {
 		printf("Second pass completed successfully.\n");
 	} else {
@@ -118,6 +130,7 @@ int main(int argc, char *argv[]) {
 
 	fclose(yyin);
 
+	// EXPORT AS program.bin
 	write_program_to_file("program.bin");
 	return 0;
 }

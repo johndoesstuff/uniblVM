@@ -66,7 +66,9 @@ extern int yydebug;
     COMMA = 261,                   /* COMMA  */
     NEWLINE = 262,                 /* NEWLINE  */
     PLUS = 263,                    /* PLUS  */
-    MINUS = 264                    /* MINUS  */
+    MINUS = 264,                   /* MINUS  */
+    MACRO = 265,                   /* MACRO  */
+    ENDMACRO = 266                 /* ENDMACRO  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -81,7 +83,7 @@ union YYSTYPE
 	char *str;
 	OperandList *oplist;
 
-#line 85 "assembler/build/parser.tab.h"
+#line 87 "assembler/build/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
