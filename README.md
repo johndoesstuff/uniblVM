@@ -38,51 +38,75 @@ Since program memory starts at `0x0800` this means your program counter will sta
 A full definition of UNIBL opcode numbers can be found in `inc/unibl.h`. Currently there exist 11 opcodes not including `HALT`.
 
 **0 = HALT**
+
 End program execution
+
 *If you are encountering a halt it is likely because you are at the end of a program anyway, since all memory addresses default to 0. Implementing this is useful and highly recommended but not necessary.*
 
 **1 = LDA [u8: offset] [u64: address]**
+
 Load address into A
+
 *Having a function that is able to load an address from memory into an accumulator is absolutely necessary. For information on what* `offset` *means see* **What are offsets?**
 
 **2 = STA [u64: address] [u8: offset]**
+
 Store A into address
+
 *Having a function that is able to store into memory is also absolutely necessary.*
 
 **3 = SWP**
+
 Swap values of A and B
+
 *This is what gives power to the B accumulator, SWP allows any function that works on A to share the same behaviour on B. For example:* `LDB` *could be defined as* `SWP -> LDA -> SWP`
 
 **4 = JMPA**
+
 Jump to address of A
+
 *Being able to jump to any position in program during execution is extremely useful and necessary for turing completeness.*
 
 **5 = JMPBZ [u64: address]**
+
 Jump to address if B is zero
+
 *Jumping is useful but having a conditional jump is also required for turing completeness. You may have noticed that* `JMPBZ` *could potentially eliminate the need for* `JMPA` *by using STA to override the value at the address of the argument then setting B to zero, however this is more tedious and memory inefficient than simply implementing this function into the virtual machine. Especially because JMPA allows for the value of B to transfer without having to store it in memory.*
 
 **6 = ADDAB**
+
 Add the values of A and B and store the result in B
+
 *Some form of addition is absolutely necessary for computation.*
 
 **7 = SUBAB**
+
 Subtract B from A and store the result in A
+
 *Could subtraction be implemented using the already defined instructions? Yes, but very VERY laboriously; to the point where the compute time would make it not worth it.*
 
 **8 = LDAB [u8: offset]**
+
 Same as `LDA` but using B as the address
+
 *Could theoretically be implemented as a reference to* `LDA` *that uses* `SWP` *and* `STA` *to store B in the parameter address of* `LDA` *however this is extremely memory inefficient for such a fundemental dereference operation.*
 
 **9 = STAB [u8: offset]**
+
 Same as `STA` but using B as the address
+
 *The same argument could be made here as* `LDAB` *for its redundancy but everything is a tradeoff and if we were to boil everything down only to completely fundemental operators we would end up with a bytecode that is so memory inefficient and computationally intensive it is virtually useless.*
 
 **10 = CMPAB**
+
 Set B to 0 if A and B are equal, otherwise set B to 1
+
 *Comparison is required for conditional jumps, absolutely necessary.*
 
 **11 = VOID [u64: data]**
+
 Do nothing
+
 *Why is it necessary to have an instruction that takes an argument and literally does nothing? Unexpectedly the* `VOID` *command is one of the most useful commands. Voiding a* `u64` *means that argument will be stored in memory so it is pure data that can be referenced later. For example, if a program needs a constant that constant can be passed into* `VOID` *and will appear in program memory at the address of* `VOID + 1`*, this constant can then be referenced and stored as desired using other instructions. Trying to store memory in program space can only be done as an argument to an instruction and trying to use any instruction that does something with its arguments will cause unexpected behaviour.*
 
 ### What are offsets?
