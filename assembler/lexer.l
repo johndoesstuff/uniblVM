@@ -5,6 +5,7 @@
 %}
 
 %option noyywrap
+%option prefix="asm_"
 
 DIGIT		[0-9]
 HEX		0[xX][0-9a-fA-F]+
@@ -46,21 +47,18 @@ uint64_t encode_le(const char *str) {
 %%
 [ \t\r]+	;
 ";".*		;
-{HEX}		{ yylval.u64 = strtoull(yytext, NULL, 0); return NUM; }
-{DIGIT}+	{ yylval.u64 = strtoull(yytext, NULL, 10); return NUM; }
-{CHAR}		{ yylval.u64 = yytext[1]; return NUM; }
-{ID}		{ yylval.str = strdup(yytext); return IDENT; }
-"%"{ID}		{ yylval.str = strdup(yytext); return PARAM; }
-{STRING}	{ yylval.u64 = encode_le(yytext); return NUM; }
+{HEX}		{ asm_lval.u64 = strtoull(asm_text, NULL, 0); return NUM; }
+{DIGIT}+	{ asm_lval.u64 = strtoull(asm_text, NULL, 10); return NUM; }
+{CHAR}		{ asm_lval.u64 = asm_text[1]; return NUM; }
+{ID}		{ asm_lval.str = strdup(asm_text); return IDENT; }
+{STRING}	{ asm_lval.u64 = encode_le(asm_text); return NUM; }
 
 ":"		return COLON;
 ","		return COMMA;
 "+"		return PLUS;
 "-"		return MINUS;
-".MACRO"	return MACRO;
-".ENMAC"	return ENDMACRO;
 "\n"		return NEWLINE;
 
-.		{ return *yytext; }
+.		{ return *asm_text; }
 %%
 

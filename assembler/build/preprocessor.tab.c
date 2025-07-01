@@ -65,21 +65,22 @@
 
 
 /* Substitute the variable and function names.  */
-#define yyparse         asm_parse
-#define yylex           asm_lex
-#define yyerror         asm_error
-#define yydebug         asm_debug
-#define yynerrs         asm_nerrs
-#define yylval          asm_lval
-#define yychar          asm_char
+#define yyparse         pp_parse
+#define yylex           pp_lex
+#define yyerror         pp_error
+#define yydebug         pp_debug
+#define yynerrs         pp_nerrs
+#define yylval          pp_lval
+#define yychar          pp_char
 
 /* First part of user prologue.  */
-#line 4 "assembler/parser.y"
+#line 4 "assembler/preprocessor.y"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <string.h>
 #include "../../inc/unibl.h"
 extern int yylex();
 extern FILE *yyin;
@@ -87,9 +88,7 @@ void yyerror(const char *s) {
 	fprintf(stderr, "Parser error: %s\n", s);
 }
 
-uint64_t PC = ENTRY_POINT;
-
-#line 93 "assembler/build/parser.tab.c"
+#line 92 "assembler/build/preprocessor.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -112,7 +111,7 @@ uint64_t PC = ENTRY_POINT;
 #  endif
 # endif
 
-#include "parser.tab.h"
+#include "preprocessor.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -121,19 +120,31 @@ enum yysymbol_kind_t
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_IDENT = 3,                      /* IDENT  */
-  YYSYMBOL_NUM = 4,                        /* NUM  */
-  YYSYMBOL_COLON = 5,                      /* COLON  */
-  YYSYMBOL_COMMA = 6,                      /* COMMA  */
-  YYSYMBOL_NEWLINE = 7,                    /* NEWLINE  */
-  YYSYMBOL_PLUS = 8,                       /* PLUS  */
-  YYSYMBOL_MINUS = 9,                      /* MINUS  */
-  YYSYMBOL_YYACCEPT = 10,                  /* $accept  */
-  YYSYMBOL_program = 11,                   /* program  */
-  YYSYMBOL_lines = 12,                     /* lines  */
-  YYSYMBOL_line = 13,                      /* line  */
-  YYSYMBOL_operands = 14,                  /* operands  */
-  YYSYMBOL_term = 15,                      /* term  */
-  YYSYMBOL_expression = 16                 /* expression  */
+  YYSYMBOL_PARAM = 4,                      /* PARAM  */
+  YYSYMBOL_NUM = 5,                        /* NUM  */
+  YYSYMBOL_COLON = 6,                      /* COLON  */
+  YYSYMBOL_COMMA = 7,                      /* COMMA  */
+  YYSYMBOL_NEWLINE = 8,                    /* NEWLINE  */
+  YYSYMBOL_PLUS = 9,                       /* PLUS  */
+  YYSYMBOL_MINUS = 10,                     /* MINUS  */
+  YYSYMBOL_MACRO = 11,                     /* MACRO  */
+  YYSYMBOL_ENDMACRO = 12,                  /* ENDMACRO  */
+  YYSYMBOL_YYACCEPT = 13,                  /* $accept  */
+  YYSYMBOL_program = 14,                   /* program  */
+  YYSYMBOL_items = 15,                     /* items  */
+  YYSYMBOL_item = 16,                      /* item  */
+  YYSYMBOL_macro = 17,                     /* macro  */
+  YYSYMBOL_18_1 = 18,                      /* $@1  */
+  YYSYMBOL_params = 19,                    /* params  */
+  YYSYMBOL_macro_body = 20,                /* macro_body  */
+  YYSYMBOL_macro_line = 21,                /* macro_line  */
+  YYSYMBOL_macro_operands = 22,            /* macro_operands  */
+  YYSYMBOL_macro_term = 23,                /* macro_term  */
+  YYSYMBOL_macro_expression = 24,          /* macro_expression  */
+  YYSYMBOL_line = 25,                      /* line  */
+  YYSYMBOL_operands = 26,                  /* operands  */
+  YYSYMBOL_term = 27,                      /* term  */
+  YYSYMBOL_expression = 28                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -459,21 +470,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  13
+#define YYFINAL  17
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   17
+#define YYLAST   47
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  10
+#define YYNTOKENS  13
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  7
+#define YYNNTS  16
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  15
+#define YYNRULES  37
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  22
+#define YYNSTATES  55
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   264
+#define YYMAXUTOK   267
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -513,15 +524,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9
+       5,     6,     7,     8,     9,    10,    11,    12
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    39,    40,    44,    45,    46,    47,    51,
-      52,    55,    56,    57,    60,    61
+       0,    36,    36,    40,    41,    45,    46,    50,    50,    54,
+      55,    59,    60,    64,    65,    66,    67,    70,    71,    74,
+      75,    76,    84,    88,    89,    90,    91,    95,    96,    97,
+      98,   102,   103,   106,   107,   108,   111,   112
 };
 #endif
 
@@ -537,9 +550,11 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "IDENT", "NUM",
-  "COLON", "COMMA", "NEWLINE", "PLUS", "MINUS", "$accept", "program",
-  "lines", "line", "operands", "term", "expression", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "IDENT", "PARAM",
+  "NUM", "COLON", "COMMA", "NEWLINE", "PLUS", "MINUS", "MACRO", "ENDMACRO",
+  "$accept", "program", "items", "item", "macro", "$@1", "params",
+  "macro_body", "macro_line", "macro_operands", "macro_term",
+  "macro_expression", "line", "operands", "term", "expression", YY_NULLPTR
 };
 
 static const char *
@@ -549,7 +564,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-13)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -563,9 +578,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,    -3,    -4,    13,     0,    -4,    -4,    -4,    -4,    -4,
-      -1,     1,    -4,    -4,    -4,     8,    -4,     4,    10,     1,
-      -4,    -4
+      -1,    -2,   -13,     5,    34,    -1,   -13,   -13,   -13,   -13,
+     -13,   -13,   -13,    17,    19,   -13,   -13,   -13,   -13,    18,
+     -13,    35,    36,    39,    19,   -13,   -13,   -13,    23,    40,
+      12,   -13,     8,   -13,    -3,   -13,   -13,   -13,   -13,   -13,
+     -13,    25,    26,   -13,   -13,   -13,    14,   -13,    22,    33,
+      26,   -13,   -13,   -13,   -13
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -573,21 +591,26 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     8,     0,     2,     3,    12,    11,     5,     7,
-       0,     9,    13,     1,     4,     0,     6,     0,     0,    10,
-      14,    15
+       0,     0,    30,     0,     0,     2,     3,     5,     6,    34,
+      33,    27,    29,     0,    31,    35,     7,     1,     4,     0,
+      28,     0,     0,     0,    32,    36,    37,     9,     0,     0,
+       0,    10,     0,    16,     0,    11,    21,    19,    20,    13,
+      15,     0,    17,    22,     8,    12,     0,    14,     0,     0,
+      18,    24,    23,    26,    25
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,    -4,    11,    -4,     2,    -4
+     -13,   -13,   -13,    41,   -13,   -13,   -13,   -13,   -12,   -13,
+      -7,   -13,   -13,   -13,    28,   -13
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     3,     4,     5,    10,    11,    12
+       0,     4,     5,     6,     7,    23,    28,    34,    35,    41,
+      42,    43,     8,    13,    14,    15
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -595,37 +618,50 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       6,     7,     8,     1,     9,    15,    16,     2,    20,    17,
-      18,     6,     7,    13,    21,    14,     0,    19
+      32,     9,     1,    10,    11,    33,    12,     2,    16,    44,
+       3,    36,    37,    38,    39,    32,    40,    36,    37,    38,
+      33,     9,    45,    10,    19,    20,    51,    52,    21,    22,
+      29,    30,    46,    47,    17,    48,    49,    53,    54,    50,
+      25,    26,    27,    31,     0,     0,    18,    24
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     3,     7,     6,     7,     7,     4,     8,
-       9,     3,     4,     0,     4,     4,    -1,    15
+       3,     3,     3,     5,     6,     8,     8,     8,     3,    12,
+      11,     3,     4,     5,     6,     3,     8,     3,     4,     5,
+       8,     3,    34,     5,     7,     8,     4,     5,     9,    10,
+       7,     8,     7,     8,     0,     9,    10,     4,     5,    46,
+       5,     5,     3,     3,    -1,    -1,     5,    19
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     7,    11,    12,    13,     3,     4,     5,     7,
-      14,    15,    16,     0,    13,     6,     7,     8,     9,    15,
-       4,     4
+       0,     3,     8,    11,    14,    15,    16,    17,    25,     3,
+       5,     6,     8,    26,    27,    28,     3,     0,    16,     7,
+       8,     9,    10,    18,    27,     5,     5,     3,    19,     7,
+       8,     3,     3,     8,    20,    21,     3,     4,     5,     6,
+       8,    22,    23,    24,    12,    21,     7,     8,     9,    10,
+      23,     4,     5,     4,     5
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    10,    11,    12,    12,    13,    13,    13,    13,    14,
-      14,    15,    15,    15,    16,    16
+       0,    13,    14,    15,    15,    16,    16,    18,    17,    19,
+      19,    20,    20,    21,    21,    21,    21,    22,    22,    23,
+      23,    23,    23,    24,    24,    24,    24,    25,    25,    25,
+      25,    26,    26,    27,    27,    27,    28,    28
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     2,     3,     2,     1,     1,
-       3,     1,     1,     1,     3,     3
+       0,     2,     1,     1,     2,     1,     1,     0,     7,     1,
+       3,     1,     2,     2,     3,     2,     1,     1,     3,     1,
+       1,     1,     1,     3,     3,     3,     3,     2,     3,     2,
+       1,     1,     3,     1,     1,     1,     3,     3
 };
 
 
@@ -1088,68 +1124,135 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 5: /* line: IDENT COLON  */
-#line 44 "assembler/parser.y"
-                                        { add_label((yyvsp[-1].str), &PC); }
-#line 1095 "assembler/build/parser.tab.c"
+  case 7: /* $@1: %empty  */
+#line 50 "assembler/preprocessor.y"
+                    { start_macro((yyvsp[0].str)); }
+#line 1131 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 6: /* line: IDENT operands NEWLINE  */
-#line 45 "assembler/parser.y"
-                                        { add_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
-#line 1101 "assembler/build/parser.tab.c"
+  case 8: /* macro: MACRO IDENT $@1 params NEWLINE macro_body ENDMACRO  */
+#line 50 "assembler/preprocessor.y"
+                                                                                { define_macro((yyvsp[-5].str), (yyvsp[-3].par), (yyvsp[-1].mac)); exit_macro(); free((yyvsp[-5].str)); }
+#line 1137 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 7: /* line: IDENT NEWLINE  */
-#line 46 "assembler/parser.y"
-                                        { add_si((yyvsp[-1].str), &PC); }
-#line 1107 "assembler/build/parser.tab.c"
+  case 9: /* params: IDENT  */
+#line 54 "assembler/preprocessor.y"
+                                        { (yyval.par) = make_macro_params((yyvsp[0].str)); free((yyvsp[0].str));  }
+#line 1143 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 9: /* operands: term  */
-#line 51 "assembler/parser.y"
-                                { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
-#line 1113 "assembler/build/parser.tab.c"
+  case 10: /* params: params COMMA IDENT  */
+#line 55 "assembler/preprocessor.y"
+                                        { (yyval.par) = append_macro_params((yyvsp[-2].par), (yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1149 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 10: /* operands: operands COMMA term  */
-#line 52 "assembler/parser.y"
-                                { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
-#line 1119 "assembler/build/parser.tab.c"
+  case 11: /* macro_body: macro_line  */
+#line 59 "assembler/preprocessor.y"
+                                        { (yyval.mac) = make_macro_body((yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1155 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 11: /* term: NUM  */
-#line 55 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[0].u64); }
-#line 1125 "assembler/build/parser.tab.c"
+  case 12: /* macro_body: macro_body macro_line  */
+#line 60 "assembler/preprocessor.y"
+                                        { (yyval.mac) = append_macro_body((yyvsp[-1].mac), (yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1161 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 12: /* term: IDENT  */
-#line 56 "assembler/parser.y"
-                                { (yyval.u64) = get_label((yyvsp[0].str)); }
-#line 1131 "assembler/build/parser.tab.c"
+  case 13: /* macro_line: IDENT COLON  */
+#line 64 "assembler/preprocessor.y"
+                                        { add_label_to_macro((yyvsp[-1].str)); char* st; asprintf(&st, "%%%s", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
+#line 1167 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 13: /* term: expression  */
-#line 57 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[0].u64); }
-#line 1137 "assembler/build/parser.tab.c"
+  case 14: /* macro_line: IDENT macro_operands NEWLINE  */
+#line 65 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s %s", (yyvsp[-2].str), (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[-1].str)); }
+#line 1173 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 14: /* expression: term PLUS NUM  */
-#line 60 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
-#line 1143 "assembler/build/parser.tab.c"
+  case 15: /* macro_line: IDENT NEWLINE  */
+#line 66 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
+#line 1179 "assembler/build/preprocessor.tab.c"
     break;
 
-  case 15: /* expression: term MINUS NUM  */
-#line 61 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[-2].u64) - (yyvsp[0].u64); }
-#line 1149 "assembler/build/parser.tab.c"
+  case 16: /* macro_line: NEWLINE  */
+#line 67 "assembler/preprocessor.y"
+                                        { (yyval.str) = strdup(""); }
+#line 1185 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 17: /* macro_operands: macro_term  */
+#line 70 "assembler/preprocessor.y"
+                                                { (yyval.str) = (yyvsp[0].str); }
+#line 1191 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 18: /* macro_operands: macro_operands COMMA macro_term  */
+#line 71 "assembler/preprocessor.y"
+                                                { char* st; asprintf(&st, "%s, %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1197 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 19: /* macro_term: PARAM  */
+#line 74 "assembler/preprocessor.y"
+                                { (yyval.str) = (yyvsp[0].str); }
+#line 1203 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 20: /* macro_term: NUM  */
+#line 75 "assembler/preprocessor.y"
+                                { char* st; asprintf(&st, "%" PRIu64, (yyvsp[0].u64)); (yyval.str) = st; }
+#line 1209 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 21: /* macro_term: IDENT  */
+#line 76 "assembler/preprocessor.y"
+                                {
+					if (check_label_in_macro((yyvsp[0].str))) {
+						char* st;
+						asprintf(&st, "%%%s", (yyvsp[0].str));
+						(yyval.str) = st;
+						free((yyvsp[0].str));
+					} else { (yyval.str) = (yyvsp[0].str); }
+				}
+#line 1222 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 22: /* macro_term: macro_expression  */
+#line 84 "assembler/preprocessor.y"
+                                { (yyval.str) = (yyvsp[0].str); }
+#line 1228 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 23: /* macro_expression: macro_term PLUS NUM  */
+#line 88 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s + %" PRIu64, (yyvsp[-2].str), (yyvsp[0].u64)); (yyval.str) = st; free((yyvsp[-2].str)); }
+#line 1234 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 24: /* macro_expression: macro_term PLUS PARAM  */
+#line 89 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s + %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1240 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 25: /* macro_expression: macro_term MINUS NUM  */
+#line 90 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s - %" PRIu64, (yyvsp[-2].str), (yyvsp[0].u64)); (yyval.str) = st; free((yyvsp[-2].str)); }
+#line 1246 "assembler/build/preprocessor.tab.c"
+    break;
+
+  case 26: /* macro_expression: macro_term MINUS PARAM  */
+#line 91 "assembler/preprocessor.y"
+                                        { char* st; asprintf(&st, "%s - %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1252 "assembler/build/preprocessor.tab.c"
     break;
 
 
-#line 1153 "assembler/build/parser.tab.c"
+#line 1256 "assembler/build/preprocessor.tab.c"
 
       default: break;
     }
@@ -1342,6 +1445,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 63 "assembler/parser.y"
+#line 114 "assembler/preprocessor.y"
 
 

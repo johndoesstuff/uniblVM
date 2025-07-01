@@ -35,21 +35,21 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_ASM_ASSEMBLER_BUILD_PARSER_TAB_H_INCLUDED
-# define YY_ASM_ASSEMBLER_BUILD_PARSER_TAB_H_INCLUDED
+#ifndef YY_PP_ASSEMBLER_BUILD_PREPROCESSOR_TAB_H_INCLUDED
+# define YY_PP_ASSEMBLER_BUILD_PREPROCESSOR_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
 #endif
 #if YYDEBUG
-extern int asm_debug;
+extern int pp_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "assembler/parser.y"
+#line 1 "assembler/preprocessor.y"
 
-#include "../unibl_asm.h"
+#include "../unibl_preprocessor.h"
 
-#line 53 "assembler/build/parser.tab.h"
+#line 53 "assembler/build/preprocessor.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -61,12 +61,15 @@ extern int asm_debug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     IDENT = 258,                   /* IDENT  */
-    NUM = 259,                     /* NUM  */
-    COLON = 260,                   /* COLON  */
-    COMMA = 261,                   /* COMMA  */
-    NEWLINE = 262,                 /* NEWLINE  */
-    PLUS = 263,                    /* PLUS  */
-    MINUS = 264                    /* MINUS  */
+    PARAM = 259,                   /* PARAM  */
+    NUM = 260,                     /* NUM  */
+    COLON = 261,                   /* COLON  */
+    COMMA = 262,                   /* COMMA  */
+    NEWLINE = 263,                 /* NEWLINE  */
+    PLUS = 264,                    /* PLUS  */
+    MINUS = 265,                   /* MINUS  */
+    MACRO = 266,                   /* MACRO  */
+    ENDMACRO = 267                 /* ENDMACRO  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -75,13 +78,14 @@ extern int asm_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "assembler/parser.y"
+#line 18 "assembler/preprocessor.y"
 
 	uint64_t u64;
 	char *str;
-	OperandList *oplist;
+	MacroBody *mac;
+	MacroParams *par;
 
-#line 85 "assembler/build/parser.tab.h"
+#line 89 "assembler/build/preprocessor.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -90,10 +94,10 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 
-extern YYSTYPE asm_lval;
+extern YYSTYPE pp_lval;
 
 
-int asm_parse (void);
+int pp_parse (void);
 
 
-#endif /* !YY_ASM_ASSEMBLER_BUILD_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_PP_ASSEMBLER_BUILD_PREPROCESSOR_TAB_H_INCLUDED  */

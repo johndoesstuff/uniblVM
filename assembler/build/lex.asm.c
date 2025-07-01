@@ -1,6 +1,6 @@
-#line 2 "assembler/build/lex.yy.c"
+#line 2 "assembler/build/lex.asm.c"
 
-#line 4 "assembler/build/lex.yy.c"
+#line 4 "assembler/build/lex.asm.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -727,7 +727,7 @@ char *yytext;
 #include "parser.tab.h"
 #include <string.h>
 #include <stdlib.h>
-#line 731 "assembler/build/lex.yy.c"
+#line 731 "assembler/build/lex.asm.c"
 #line 17 "assembler/lexer.l"
 uint64_t encode_le(const char *str) {
 	uint64_t result = 0;
@@ -757,8 +757,8 @@ uint64_t encode_le(const char *str) {
 
 	return result;
 }
-#line 761 "assembler/build/lex.yy.c"
-#line 762 "assembler/build/lex.yy.c"
+#line 761 "assembler/build/lex.asm.c"
+#line 762 "assembler/build/lex.asm.c"
 
 #define INITIAL 0
 
@@ -977,7 +977,7 @@ YY_DECL
 	{
 #line 47 "assembler/lexer.l"
 
-#line 981 "assembler/build/lex.yy.c"
+#line 981 "assembler/build/lex.asm.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1107,7 +1107,7 @@ YY_RULE_SETUP
 #line 63 "assembler/lexer.l"
 ECHO;
 	YY_BREAK
-#line 1111 "assembler/build/lex.yy.c"
+#line 1111 "assembler/build/lex.asm.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

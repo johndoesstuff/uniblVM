@@ -8,8 +8,10 @@
 
 #define DEBUG 0
 
-extern FILE *yyin;
-int yyparse(void);
+extern FILE *pp_in;
+extern FILE *asm_in;
+int pp_parse(void);
+int asm_parse(void);
 
 // ASSEMBLER NEEDS 2 PASSES TO GENERATE LABEL ADDRESSES
 int current_pass = 1;
@@ -100,14 +102,14 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	yyin = fopen(argv[1], "r");
-	if (!yyin) {
+	asm_in = fopen(argv[1], "r");
+	if (!asm_in) {
 		perror("Failed to open input file");
 		return 1;
 	}
 
 	// INITIAL PASS TO GENERATE LABEL ADDRESSES
-	if (yyparse() == 0) {
+	if (asm_parse() == 0) {
 		printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
@@ -115,20 +117,20 @@ int main(int argc, char *argv[]) {
 
 	// RESET FOR SECOND CODEGEN PASS
 	current_pass = 2;
-	rewind(yyin);
+	rewind(asm_in);
 	free(program);
 	program_capacity = 0;
 	uint8_t* program = NULL;
 	program_size = 0;
 
 	// SECOND PASS
-	if (yyparse() == 0) {
+	if (asm_parse() == 0) {
 		printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
 
-	fclose(yyin);
+	fclose(asm_in);
 
 	// EXPORT AS program.bin
 	write_program_to_file("program.bin");

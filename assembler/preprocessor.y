@@ -1,5 +1,5 @@
 %code requires{
-#include "../unibl_asm.h"
+#include "../unibl_preprocessor.h"
 }
 %{
 #include <stdio.h>
@@ -13,23 +13,22 @@ extern FILE *yyin;
 void yyerror(const char *s) {
 	fprintf(stderr, "Parser error: %s\n", s);
 }
-
-uint64_t PC = ENTRY_POINT;
 %}
 
 %union {
 	uint64_t u64;
 	char *str;
-	OperandList *oplist;
+	MacroBody *mac;
+	MacroParams *par;
 }
 
 %token <str> IDENT PARAM
 %token <u64> NUM
-%token COLON COMMA NEWLINE PLUS MINUS MACRO MACROEND 
+%token COLON COMMA NEWLINE PLUS MINUS MACRO ENDMACRO 
 
-%type <u64> term expression
-%type <oplist> operands
 %type <str> macro_expression macro_term macro_operands macro_line
+%type <par> params
+%type <mac> macro_body
 
 %%
 
@@ -48,7 +47,7 @@ item:
 ;
 
 macro:
-	MACRO IDENT { start_macro($2); } params NEWLINE macro_body { exit_macro(); } MACROEND	{ define_macro($2, $4, $6); free($2); free($4); free($6); }
+	MACRO IDENT { start_macro($2); } params NEWLINE macro_body  ENDMACRO	{ define_macro($2, $4, $6); exit_macro(); free($2); }
 ;
 
 params:
