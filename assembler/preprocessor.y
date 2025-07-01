@@ -23,12 +23,13 @@ uint64_t PC = ENTRY_POINT;
 	OperandList *oplist;
 }
 
-%token <str> IDENT
+%token <str> IDENT PARAM
 %token <u64> NUM
-%token COLON COMMA NEWLINE PLUS MINUS MACRO MACROEND
+%token COLON COMMA NEWLINE PLUS MINUS MACRO MACROEND 
 
 %type <u64> term expression
 %type <oplist> operands
+%type <str> macro_expression macro_term macro_operands macro_line
 
 %%
 

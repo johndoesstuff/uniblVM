@@ -1,3 +1,4 @@
+
 # UNIBL
 (Universal Bootstrappable Language)
 
@@ -8,11 +9,11 @@ Writing programs in certain languages comes with portability issues, to run a C 
 UNIBL operates on a Von Neumann architecture, the virtual machine has a 64bit memory address space comprised of 8bit cells and 2 64bit registers, `ACC_A` and `ACC_B` for accumulator A and accumulator B. There also exists a 64bit program counter `PC` which stores the address of the current instruction being executed.
 
 In sum the environment required to run UNIBL bytecode is such:
-```
-uint8_t MEM[1<<64];	// 64bit address space
-uint64_t ACC_A;				// 64bit accumulator A
-uint64_t ACC_B;				// 64bit accumulator B
-uint64_t PC;					// 64bit program counter
+```c
+uint8_t MEM[1<<64];    // 64bit address space
+uint64_t ACC_A;        // 64bit accumulator A
+uint64_t ACC_B;        // 64bit accumulator B
+uint64_t PC;           // 64bit program counter
 ```
 
 ### Address Partitioning
@@ -127,10 +128,10 @@ LDA TARGETS: 0xFF00000000000000;
 ```
 Specifically in my VM implementation `LDA` is explicitly defined as
 ```C
-uint8_t offset = 8 * read_u8(); // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
+uint8_t offset = 8 * read_u8();         // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
 uint64_t addr = read_u64();
-if (offset >= 64) continue; // BIT OFFSET CANNOT BE MORE THAN 63 ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
-ACC_A &= ~((uint64_t)0xFF << offset); // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
+if (offset >= 64) continue;             // BIT OFFSET CANNOT BE MORE THAN 63 ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
+ACC_A &= ~((uint64_t)0xFF << offset);   // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
 ACC_A |= (uint64_t)MEM[addr] << offset; // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
 ```
 For more precise definitions of instruction sets see `vm/unibl_vm.c`
@@ -139,8 +140,82 @@ For more precise definitions of instruction sets see `vm/unibl_vm.c`
 
 Writing anything in bytecode is incredibly tedious. To save time and frustration, and to make this setup reasonable to work with I have written an assembler that transforms `.uasm` files into program binaries which can be executed on the UNIBL VM.
 
-This is currently a work in progress as I am still currently writing the UNIBL Assembler
-
 ### Instruction Syntax
 
+USAM Instructions are structured as follows:
+`INST operands NEWLINE` where `operands` are separated by commas. For example:
+```nasm
+; PROGRAM TO LOAD 0x33 INTO B
+
+; STORE 0x33 AT PROGRAM START (0x0800)
+VOID 0x33
+
+; LOAD ADDRESS AT 0x0808 INTO A
+; VOID emits a u64 in big endian so
+; VOID 0x33 is shorthand for
+; VOID 0x0000000000000033
+; Since the VOID opcode is 1 byte
+; and our desired constant is at
+; an offset of 7 we get 0x0800 + 1 + 7
+; = 0x0808
+LDA 0, 0x0808
+
+; SWAP A AND B TO STORE 0x33 INTO B
+SWP
+
+; You could add a HALT instruction
+; however the program ending implicitly
+; means the next instruction will be
+; 0 by default so it would be equivalent
+```
+This way of programming is still very tedious though, there are many important features of the assembler that could could make this program more readable.
+
+### Labels
+
+Labels allow for more dynamic programming, instead of hard-coding addresses in memory labels and simple math allow you to reference memory relative to where the program exists. Here is the previous program rewritten with labels:
+```nasm
+start:
+VOID 0x33
+LDA 0, start + 8
+SWP
+```
+Label definitions are shorthand for "this identifier now means the address that this line exists at in program space." Alternatively defining a label sets that label to mean the value of the program counter at that point. In the example above `start` is defined at the beginning of the program so in the entire program `start` will hold a value of `0x0800` since that is the entry point of code. However since it uses labels instead of hard coded constants this program can be put anywhere in memory and will still work. Labels can also be useful in jumping to different points in execution.
+```nasm
+; LOAD 1 INTO A
+init:
+VOID 0x01
+LDA 0, init + 8
+
+; WE DONT WANT TO SWAP
+; B IS 0 BY DEFAULT
+JMPBZ skip_swap
+SWP
+skip_swap:
+
+; A IS STILL 1 AT EXECUTION END
+```
+
+### Arithmetic
+
+In these examples you may have noticed we are using arithmetic to calculate relative addresses. This is very powerful but there are limits, since all arithmetic is done at assembly time the only operators allowed are `+` and `-`. Similarly to pointer math the only sensible operations are relative shifts to numbers or labels. For example, `label1 + label2` is not valid syntax because nothing meaningful comes from adding 2 labels. In the future `label1 - label2` will likely be implemented as finding the program size between labels could be useful in determining memory allocation but currently is not implemented.
+
 ### Macros and Preprocessing
+
+The real power of the assembler is in the preprocessor. Since doing very simple tasks is incredibly tedious, even using UASM, the assembler comes with a built in preprocessor that allows for macro definitions. Instead of writing
+```nasm
+SWP
+LDA 0, addr
+SWP
+```
+every time you wanted to load a value to B, you could write
+```nasm
+.MACRO LDB x, y
+SWP
+LDA %x, %y
+SWP
+.ENMAC
+```
+then call `LDB 0, addr` like a regular instruction in your code. The preprocessor will expand every LDB call into the text between the macro definition line `.MACRO ...` and `.ENMAC`. Parameters are treated as constants since after preprocessing they become constant values before being sent into the codegen stage. Macro definition is as follows: 
+```
+MACRO IDENT params NEWLINE macro_body MACROEND
+```

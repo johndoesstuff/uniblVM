@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include "../inc/unibl.h"
-#define DEBUG 0
+#define DEBUG 1
 
 uint8_t* MEM;
 uint64_t ACC_A;
