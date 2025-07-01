@@ -5,6 +5,7 @@
 #include "unibl_codegen.h"
 #include "../inc/unibl.h"
 #include <inttypes.h>
+#include "unibl_preprocessor.h"
 
 #define DEBUG 0
 
@@ -16,6 +17,12 @@ int asm_parse(void);
 // ASSEMBLER NEEDS 2 PASSES TO GENERATE LABEL ADDRESSES
 int current_pass = 1;
 Label *label_table = NULL;
+
+// PREPROCESSOR NEEDS 3 PASSES
+// PASS 1: DETERMINE MACROS AND LABELS IN EACH MACRO
+// PASS 2: SCOPE LABELS BASED ON MACRO POSITION
+// PASS 3: REPLACE MACRO CALLS WITH MACRO CONTENT
+int preprocessor_pass = 1;
 
 // OPERANDS ARE STORED AS AN OPERAND LIST
 OperandList *make_operand_list(uint64_t val) {
@@ -102,7 +109,31 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	asm_in = fopen(argv[1], "r");
+	// PREPROCESSING STAGE
+	initialize_macros();
+	pp_in = fopen(argv[1], "r");
+	if (!pp_in) {
+		perror("Failed to open input file");
+		return 1;
+	}
+
+	if (pp_parse() == 0) {
+		printf("First pass completed successfully.\n");
+	} else {
+		printf("Parsing failed.\n");
+	}
+
+	// RESET FOR SECOND PREPROCESSOR PASS
+	preprocessor_pass = 2;
+	rewind(pp_in);
+
+	if (pp_parse() == 0) {
+		printf("Second pass completed successfully.\n");
+	} else {
+		printf("Parsing failed.\n");
+	}
+
+	/*asm_in = fopen(argv[1], "r");
 	if (!asm_in) {
 		perror("Failed to open input file");
 		return 1;
@@ -130,7 +161,7 @@ int main(int argc, char *argv[]) {
 		printf("Parsing failed.\n");
 	}
 
-	fclose(asm_in);
+	fclose(asm_in);*/
 
 	// EXPORT AS program.bin
 	write_program_to_file("program.bin");

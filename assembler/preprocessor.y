@@ -61,7 +61,7 @@ macro_body:
 ;
 
 macro_line:
-	IDENT COLON			{ add_label_to_macro($1); char* st; asprintf(&st, "%%%s", $1); $$ = st; free($1); }
+	IDENT COLON			{ add_label_to_macro($1); char* st; asprintf(&st, "%%%s:", $1); $$ = st; free($1); }
 	| IDENT macro_operands NEWLINE	{ char* st; asprintf(&st, "%s %s", $1, $2); $$ = st; free($1); free($2); }
 	| IDENT NEWLINE			{ char* st; asprintf(&st, "%s", $1); $$ = st; free($1); }
 	| NEWLINE			{ $$ = strdup(""); }

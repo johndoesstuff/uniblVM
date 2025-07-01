@@ -1162,7 +1162,7 @@ yyreduce:
 
   case 13: /* macro_line: IDENT COLON  */
 #line 64 "assembler/preprocessor.y"
-                                        { add_label_to_macro((yyvsp[-1].str)); char* st; asprintf(&st, "%%%s", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
+                                        { add_label_to_macro((yyvsp[-1].str)); char* st; asprintf(&st, "%%%s:", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
 #line 1167 "assembler/build/preprocessor.tab.c"
     break;
 

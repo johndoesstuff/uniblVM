@@ -31,6 +31,12 @@ typedef struct {
 	size_t capacity;
 } MacroList;
 
+typedef struct {
+	char** args;
+	size_t count;
+	size_t capacity;
+} ArgumentList;
+
 MacroBody* make_macro_body(char* line);
 MacroBody* append_macro_body(MacroBody* body, char* line);
 
@@ -44,3 +50,5 @@ void define_macro(char* macro_name, MacroParams* macro_params, MacroBody* macro_
 
 void add_label_to_macro(char* label);
 int check_label_in_macro(char* label);
+
+void initialize_macros();
