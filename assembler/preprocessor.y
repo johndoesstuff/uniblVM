@@ -20,20 +20,22 @@ void yyerror(const char *s) {
 	char *str;
 	MacroBody *mac;
 	MacroParams *par;
+	ArgumentList* arg;
 }
 
-%token <str> IDENT PARAM
-%token <u64> NUM
+%token <str> IDENT PARAM NUM
 %token COLON COMMA NEWLINE PLUS MINUS MACRO ENDMACRO 
 
 %type <str> macro_expression macro_term macro_operands macro_line
+%type <str> term line expression
+%type <arg> operands
 %type <par> params
 %type <mac> macro_body
 
 %%
 
 program:
-	items
+	{ init_program(program_str); } items
 ;
 
 items:
@@ -43,7 +45,7 @@ items:
 
 item:
 	macro
-	| line
+	| line		{ append_line(program_str, $1); }
 ;
 
 macro:
@@ -72,7 +74,7 @@ macro_operands:
 
 macro_term:
 	PARAM			{ $$ = $1; }
-	| NUM			{ char* st; asprintf(&st, "%" PRIu64, $1); $$ = st; }
+	| NUM			{ $$ = $1; }
 	| IDENT			{
 					if (check_label_in_macro($1)) {
 						char* st;
@@ -85,31 +87,31 @@ macro_term:
 ;
 
 macro_expression:
-	macro_term PLUS NUM		{ char* st; asprintf(&st, "%s + %" PRIu64, $1, $3); $$ = st; free($1); }
+	macro_term PLUS NUM		{ char* st; asprintf(&st, "%s + %s", $1, $3); $$ = st; free($1); free($3); }
 	| macro_term PLUS PARAM		{ char* st; asprintf(&st, "%s + %s", $1, $3); $$ = st; free($1); free($3); }
-	| macro_term MINUS NUM		{ char* st; asprintf(&st, "%s - %" PRIu64, $1, $3); $$ = st; free($1); }
+	| macro_term MINUS NUM		{ char* st; asprintf(&st, "%s - %s", $1, $3); $$ = st; free($1); free($3); }
 	| macro_term MINUS PARAM	{ char* st; asprintf(&st, "%s - %s", $1, $3); $$ = st; free($1); free($3); }
 ;
 
 line:
-	IDENT COLON
-	| IDENT operands NEWLINE
-	| IDENT NEWLINE
-	| NEWLINE
+	IDENT COLON			{ char* st; asprintf(&st, "%s:", $1); $$ = st; free($1); }
+	| IDENT operands NEWLINE	{ $$ = check_macro_expansion($1, $2); }
+	| IDENT NEWLINE			{ $$ = check_macro_expansion($1, NULL); }
+	| NEWLINE			{ $$ = strdup(""); }
 ;
 
 operands:
-	term
-	| operands COMMA term
+	term			{ $$ = make_argument_list($1); }
+	| operands COMMA term	{ $$ = append_argument_list($1, $3); }
 
 term:
-	NUM
-	| IDENT
-	| expression
+	NUM		{ $$ = $1; }
+	| IDENT		{ $$ = $1; }
+	| expression	{ $$ = $1; }
 
 expression:
-	term PLUS NUM
-	| term MINUS NUM
+	term PLUS NUM		{ char* st; asprintf(&st, "%s + %s", $1, $3); $$ = st; free($1); free($3); }
+	| term MINUS NUM	{ char* st; asprintf(&st, "%s - %s", $1, $3); $$ = st; free($1); free($3); }
 
 %%
 

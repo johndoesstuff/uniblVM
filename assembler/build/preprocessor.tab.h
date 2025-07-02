@@ -84,8 +84,9 @@ union YYSTYPE
 	char *str;
 	MacroBody *mac;
 	MacroParams *par;
+	ArgumentList* arg;
 
-#line 89 "assembler/build/preprocessor.tab.h"
+#line 90 "assembler/build/preprocessor.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

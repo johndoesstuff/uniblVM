@@ -20,12 +20,12 @@ uint64_t encode_le(const char *str);
 %%
 [ \t\r]+	;
 ";".*		;
-{HEX}		{ pp_lval.u64 = strtoull(pp_text, NULL, 0); return NUM; }
-{DIGIT}+	{ pp_lval.u64 = strtoull(pp_text, NULL, 10); return NUM; }
-{CHAR}		{ pp_lval.u64 = pp_text[1]; return NUM; }
+{HEX}		{ pp_lval.str = strdup(pp_text); return NUM; }
+{DIGIT}+	{ pp_lval.str = strdup(pp_text); return NUM; }
+{CHAR}		{ pp_lval.str = strdup(pp_text); return NUM; }
 {ID}		{ pp_lval.str = strdup(pp_text); return IDENT; }
 "%"{ID}		{ pp_lval.str = strdup(pp_text); return PARAM; }
-{STRING}	{ pp_lval.u64 = encode_le(pp_text); return NUM; }
+{STRING}	{ pp_lval.str = strdup(pp_text); return NUM; }
 
 ":"		return COLON;
 ","		return COMMA;

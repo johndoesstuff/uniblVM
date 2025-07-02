@@ -14,6 +14,9 @@ extern FILE *asm_in;
 int pp_parse(void);
 int asm_parse(void);
 
+Program program_instance;
+Program* program_str = &program_instance;
+
 // ASSEMBLER NEEDS 2 PASSES TO GENERATE LABEL ADDRESSES
 int current_pass = 1;
 Label *label_table = NULL;
@@ -131,6 +134,20 @@ int main(int argc, char *argv[]) {
 		printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
+	}
+
+	// RESET FOR THIRD PREPROCESSOR PASS
+	preprocessor_pass = 3;
+	rewind(pp_in);
+
+	if (pp_parse() == 0) {
+		printf("Third pass completed successfully.\n");
+	} else {
+		printf("Parsing failed.\n");
+	}
+	
+	for (int i = 0; i < program_str->count; i++) {
+		printf("%s\n", program_str->lines[i]);
 	}
 
 	/*asm_in = fopen(argv[1], "r");

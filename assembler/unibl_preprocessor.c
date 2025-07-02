@@ -9,8 +9,10 @@
 Macro* current_macro;
 MacroList* macros;
 extern int preprocessor_pass;
+int macro_call_id;
 
 void initialize_macros() {
+	macro_call_id = 0;
 	if (DEBUG) printf("Initializing Macros\n");
 	macros = malloc(sizeof(MacroList));
 	macros->count = 0;
@@ -71,6 +73,17 @@ MacroBody* append_macro_body(MacroBody* mb, char* line) {
 	return NULL;
 }
 
+Macro* find_macro(char* name) {
+	if (DEBUG) printf("Finding macro %s\n", name);
+	for (size_t i = 0; i < macros->count; i++) {
+		if (strcmp(macros->macros[i]->name, name) == 0) {
+			if (DEBUG) printf("Found macro %s\n", name);
+			return macros->macros[i];
+		};
+	}
+	return NULL;
+}
+
 void start_macro(char* name) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Starting macro %s\n", name);
@@ -87,14 +100,7 @@ void start_macro(char* name) {
 		current_macro->labels->capacity = INITIAL_CAPACITY;
 		current_macro->labels->labels = malloc(sizeof(char*) * current_macro->labels->capacity);
 	} else if (preprocessor_pass == 2) {
-		if (DEBUG) printf("Finding macro %s\n", name);
-		for (size_t i = 0; i < macros->count; i++) {
-			if (strcmp(macros->macros[i]->name, name) == 0) {
-				current_macro = macros->macros[i];
-				if (DEBUG) printf("Found macro %s\n", name);
-			};
-		}
-
+		current_macro = find_macro(name);
 	}
 }
 
@@ -138,10 +144,13 @@ void define_macro(char* name, MacroParams* params, MacroBody* body) {
 		macros->macros[macros->count++] = current_macro;
 	} else if (preprocessor_pass == 2) {
 		if (DEBUG) printf("Updated Macro %s\n", name);
+		current_macro->body = body;
 	}
 }
 
 char* inst_to_str(char* inst, ArgumentList* arguments) {
+	if (!arguments) return inst;
+
 	if (arguments->count > 0) {
 		char* st;
 		asprintf(&st, "%s %s", inst, arguments->args[0]);
@@ -152,10 +161,44 @@ char* inst_to_str(char* inst, ArgumentList* arguments) {
 			st = tmp;
 		}
 		return st;
-	} else {
-		return inst;
 	}
+	return inst;
 }
+
+char* replace_substr(const char* haystack, const char* needle, const char* replacement) {
+	if (!haystack || !needle || !replacement) return NULL;
+
+	size_t needle_len = strlen(needle);
+	size_t replacement_len = strlen(replacement);
+
+	size_t count = 0;
+	const char* tmp = haystack;
+	while ((tmp = strstr(tmp, needle))) {
+		count++;
+		tmp += needle_len;
+	}
+
+	size_t new_len = strlen(haystack) + (replacement_len - needle_len) * count + 1;
+	char* result = malloc(new_len);
+	if (!result) return NULL;
+
+	char* dest = result;
+	const char* current = haystack;
+	while ((tmp = strstr(current, needle))) {
+		size_t len = tmp - current;
+		memcpy(dest, current, len);
+		dest += len;
+
+		memcpy(dest, replacement, replacement_len);
+		dest += replacement_len;
+
+		current = tmp + needle_len;
+	}
+
+	strcpy(dest, current);
+	return result;
+}
+
 
 char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	if (preprocessor_pass != 3) {
@@ -165,26 +208,77 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	for (int i = 0; i < 12; i++) {
 		if (strcmp(inst, ops[i]) == 0) return inst_to_str(inst, arguments);
 	}
-	printf("Found macro to expand: %s", inst);
+	if (DEBUG) printf("Found macro to expand: %s\n", inst);
+	Macro* macro = find_macro(inst);
+	if (macro == NULL) {
+		fprintf(stderr, "Unexpected instruction %s", inst);
+	}
+	MacroBody* body = macro->body;
+	MacroParams* params = macro->params;
+	MacroLabels* labels = macro->labels;
+	if (!arguments && params->count != 0) {
+		fprintf(stderr, "Mismatch of macro arguments for %s; expected %ld but recieved 0\n", inst, params->count);
+		exit(1);
+	}
+	if (arguments) {
+		if (params->count != arguments->count) {
+			fprintf(stderr, "Mismatch of macro arguments for %s; expected %ld but recieved %ld\n", inst, params->count, arguments->count);
+			exit(1);
+		}
+	}
+	char* st = strdup("");
+	for (int i = 0; i < body->count; i++) {
+		char* line = strdup(body->lines[i]);
+
+		for (int j = 0; j < params->count; j++) {
+			char* param = params->params[j];
+			char* arg = arguments->args[j];
+			char* key;
+			asprintf(&key, "%%%s", param);
+			char* replaced = replace_substr(line, key, arg);
+			free(line);
+			free(key);
+			line = replaced;
+		}
+
+		for (int j = 0; j < labels->count; j++) {
+			char* label = labels->labels[j];
+			char* key;
+			asprintf(&key, "%%%s", label);
+			char* val;
+			asprintf(&val, "%s_%d", label, macro_call_id);
+			char* replaced = replace_substr(line, key, val);
+			free(line);
+			free(key);
+			free(val);
+			line = replaced;
+		}
+
+		char* new_st;
+		asprintf(&new_st, "%s\n%s", st, line);
+		free(st);
+		free(line);
+		st = new_st;
+	}
+	return st;
 }
 
 ArgumentList* make_argument_list(char* arg) {
-	if (preprocessor_pass == 1) {
-		if (DEBUG) printf("Making Macro Param %s\n", arg);
+	if (preprocessor_pass == 3) {
+		if (DEBUG) printf("Making Arg %s\n", arg);
 		ArgumentList* al = malloc(sizeof(ArgumentList));
 		al->count = 1;
 		al->capacity = INITIAL_CAPACITY;
 		al->args = malloc(sizeof(char*) * al->capacity);
 		al->args[0] = strdup(arg);
 		return al;
-	} else {
-		return NULL;
 	}
+	return NULL;
 }
 
 ArgumentList* append_argument_list(ArgumentList* al, char* arg) {
-	if (preprocessor_pass == 1) {
-		if (DEBUG) printf("Making Macro Param %s\n", arg);
+	if (preprocessor_pass == 3) {
+		if (DEBUG) printf("Making Arg %s\n", arg);
 		if (al->count >= al->capacity) {
 			al->capacity *= 2;
 			al->args = realloc(al->args, sizeof(char*) * al->capacity);
@@ -193,4 +287,27 @@ ArgumentList* append_argument_list(ArgumentList* al, char* arg) {
 		return al;
 	}
 	return NULL;
+}
+
+void init_program(Program *program) {
+	program = malloc(sizeof(Program));
+	program->count = 0;
+	program->capacity = INITIAL_CAPACITY;
+	program->lines = malloc(sizeof(char*) * program->capacity);
+}
+
+void append_line(Program *program, char *line) {
+	if (preprocessor_pass != 3) return;
+	if (program->count >= program->capacity) {
+		size_t new_capacity = (program->capacity == 0) ? 8 : program->capacity * 2;
+		char **new_lines = realloc(program->lines, new_capacity * sizeof(char *));
+		if (!new_lines) {
+			fprintf(stderr, "Failed to realloc program lines");
+			exit(1);
+		}
+		program->lines = new_lines;
+		program->capacity = new_capacity;
+	}
+
+	program->lines[program->count++] = strdup(line);
 }

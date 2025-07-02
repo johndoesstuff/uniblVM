@@ -37,6 +37,15 @@ typedef struct {
 	size_t capacity;
 } ArgumentList;
 
+typedef struct {
+	char **lines;
+	size_t count;
+	size_t capacity;
+} Program;
+
+extern Program* program_str;
+extern Program program_instance;
+
 MacroBody* make_macro_body(char* line);
 MacroBody* append_macro_body(MacroBody* body, char* line);
 
@@ -52,3 +61,11 @@ void add_label_to_macro(char* label);
 int check_label_in_macro(char* label);
 
 void initialize_macros();
+
+char* check_macro_expansion(char* inst, ArgumentList* args);
+
+ArgumentList* make_argument_list(char* arg);
+ArgumentList* append_argument_list(ArgumentList* al, char* arg);
+
+void init_program(Program* program);
+void append_line(Program* program, char* line);

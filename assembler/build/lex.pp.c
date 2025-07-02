@@ -1033,18 +1033,18 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 23 "assembler/preprocessor.l"
-{ pp_lval.u64 = strtoull(pp_text, NULL, 0); return NUM; }
+{ pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 24 "assembler/preprocessor.l"
-{ pp_lval.u64 = strtoull(pp_text, NULL, 10); return NUM; }
+{ pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
 #line 25 "assembler/preprocessor.l"
-{ pp_lval.u64 = pp_text[1]; return NUM; }
+{ pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -1060,7 +1060,7 @@ case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
 #line 28 "assembler/preprocessor.l"
-{ pp_lval.u64 = encode_le(pp_text); return NUM; }
+{ pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP

@@ -4,7 +4,7 @@ TARGET:
 	flex -o assembler/build/lex.pp.c assembler/preprocessor.l
 	bison -H assembler/parser.y -o assembler/build/parser.tab.c -p asm_
 	bison -H assembler/preprocessor.y -o assembler/build/preprocessor.tab.c -p pp_
-	gcc -o unibl_asm \
+	gcc -g -o unibl_asm \
 		assembler/unibl_codegen.c \
 		assembler/main.c \
 		assembler/unibl_preprocessor.c \
