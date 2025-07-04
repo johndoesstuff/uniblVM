@@ -1133,7 +1133,7 @@ yyreduce:
 
   case 7: /* item: line  */
 #line 48 "assembler/preprocessor.y"
-                        { append_line(program_str, (yyvsp[0].str)); }
+                        { if ((yyvsp[0].str)[0] != '\0') append_line(program_str, (yyvsp[0].str)); }
 #line 1138 "assembler/build/preprocessor.tab.c"
     break;
 

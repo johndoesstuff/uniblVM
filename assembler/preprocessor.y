@@ -45,7 +45,7 @@ items:
 
 item:
 	macro
-	| line		{ append_line(program_str, $1); }
+	| line		{ if ($1[0] != '\0') append_line(program_str, $1); }
 ;
 
 macro:

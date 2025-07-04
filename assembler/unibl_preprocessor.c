@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define INITIAL_CAPACITY 2
 
 Macro* current_macro;
@@ -212,6 +212,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	Macro* macro = find_macro(inst);
 	if (macro == NULL) {
 		fprintf(stderr, "Unexpected instruction %s", inst);
+		exit(1);
 	}
 	MacroBody* body = macro->body;
 	MacroParams* params = macro->params;
@@ -255,7 +256,16 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 		}
 
 		char* new_st;
-		asprintf(&new_st, "%s\n%s", st, line);
+		// NO NEWLINE IF NO MACRO TO EXPAND
+		if (line[0] != '\0') {
+			if (st[0] != '\0') {
+				asprintf(&new_st, "%s\n%s", st, line);
+			} else {
+				asprintf(&new_st, "%s", line);
+			}
+		} else {
+			asprintf(&new_st, "%s", st);
+		}
 		free(st);
 		free(line);
 		st = new_st;

@@ -8,6 +8,7 @@
 #include "unibl_preprocessor.h"
 
 #define DEBUG 0
+#define MAX_MACRO_RECURSION 3
 
 extern FILE *pp_in;
 extern FILE *asm_in;
@@ -121,7 +122,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (pp_parse() == 0) {
-		printf("First pass completed successfully.\n");
+		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) {
 	rewind(pp_in);
 
 	if (pp_parse() == 0) {
-		printf("Second pass completed successfully.\n");
+		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
@@ -139,26 +140,68 @@ int main(int argc, char *argv[]) {
 	// RESET FOR THIRD PREPROCESSOR PASS
 	preprocessor_pass = 3;
 	rewind(pp_in);
+	size_t last_length = 0;
 
-	if (pp_parse() == 0) {
-		printf("Third pass completed successfully.\n");
-	} else {
-		printf("Parsing failed.\n");
-	}
-	
-	for (int i = 0; i < program_str->count; i++) {
-		printf("%s\n", program_str->lines[i]);
+	for (int i = 0; i < MAX_MACRO_RECURSION; i++) {
+		// CLEAR program_str BEFORE EACH PASS
+		for (int j = 0; j < program_str->count; j++) {
+			free(program_str->lines[j]);
+		}
+		program_str->count = 0;
+
+		if (pp_parse() == 0) {
+			if (DEBUG) printf("Third pass completed successfully. (%d/%d)\n", i, MAX_MACRO_RECURSION);
+		} else {
+			printf("Parsing failed.\n");
+		}
+
+		size_t total_length = 0;
+		for (int i = 0; i < program_str->count; i++) {
+			total_length += strlen(program_str->lines[i]) + 1;
+			if (DEBUG) printf("%s\n", program_str->lines[i]);
+		}
+
+		char* combined = malloc(total_length + 1);
+		combined[0] = '\0';
+
+		for (int j = 0; j < program_str->count; j++) {
+			strcat(combined, program_str->lines[j]);
+			strcat(combined, "\n");
+		}
+
+		FILE* new_input = fmemopen(combined, total_length, "r");
+		if (!new_input) {
+			fprintf(stderr, "fmemopen failed");
+			exit(1);
+		}
+
+		// THIRD PREPROCESSOR PASS REPEATS UNTIL ALL MACROS ARE RECURSIVELY EXPANDED
+		// THIS IS CONFIRMED WHEN THE PROGRAM DOESNT CHANGE SIZES BETWEEN PASSES
+		if (last_length == total_length) {
+			if (DEBUG) printf("Recursive Expansion Complete\n");
+			break;
+		}
+
+		fclose(pp_in);
+		pp_in = new_input;
+		last_length = total_length;
+
+		if (i == MAX_MACRO_RECURSION - 1) {
+			fprintf(stderr, "MAX_MACRO_RECURSION reached; (%d)", MAX_MACRO_RECURSION);
+		}
 	}
 
-	/*asm_in = fopen(argv[1], "r");
+	// PREPROCESSING OVER, SEND OUTPUT TO ASSEMBLER
+	asm_in = pp_in;
+	rewind(asm_in);
 	if (!asm_in) {
-		perror("Failed to open input file");
+		fprintf(stderr, "Failed to open input file");
 		return 1;
 	}
 
 	// INITIAL PASS TO GENERATE LABEL ADDRESSES
 	if (asm_parse() == 0) {
-		printf("First pass completed successfully.\n");
+		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
@@ -173,12 +216,12 @@ int main(int argc, char *argv[]) {
 
 	// SECOND PASS
 	if (asm_parse() == 0) {
-		printf("Second pass completed successfully.\n");
+		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
 	}
 
-	fclose(asm_in);*/
+	fclose(asm_in);
 
 	// EXPORT AS program.bin
 	write_program_to_file("program.bin");
