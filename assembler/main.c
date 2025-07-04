@@ -155,6 +155,7 @@ int main(int argc, char *argv[]) {
 			printf("Parsing failed.\n");
 		}
 
+		// COMBINE PROGRAM INTO STINGLE STRING
 		size_t total_length = 0;
 		for (int i = 0; i < program_str->count; i++) {
 			total_length += strlen(program_str->lines[i]) + 1;
@@ -169,6 +170,7 @@ int main(int argc, char *argv[]) {
 			strcat(combined, "\n");
 		}
 
+		// RECYCLE STRING INTO NEW FILE FOR REPARSING
 		FILE* new_input = fmemopen(combined, total_length, "r");
 		if (!new_input) {
 			fprintf(stderr, "fmemopen failed");
@@ -182,6 +184,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
+		// CLEANUP AND RESET
 		fclose(pp_in);
 		pp_in = new_input;
 		last_length = total_length;

@@ -1,7 +1,7 @@
 .MACRO SETA x
 v:
 VOID %x
-LDA 0, v + 1
+LDA 0, v + 8
 .ENMAC
 
 .MACRO SETB x
@@ -10,4 +10,4 @@ SETA %x
 SWP
 .ENMAC
 
-SETB 0x400
+SETB 0x10

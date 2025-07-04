@@ -9,11 +9,11 @@ Writing programs in certain languages comes with portability issues, to run a C 
 UNIBL operates on a Von Neumann architecture, the virtual machine has a 64bit memory address space comprised of 8bit cells and 2 64bit registers, `ACC_A` and `ACC_B` for accumulator A and accumulator B. There also exists a 64bit program counter `PC` which stores the address of the current instruction being executed.
 
 In sum the environment required to run UNIBL bytecode is such:
-```c
-uint8_t MEM[1<<64];    // 64bit address space
-uint64_t ACC_A;        // 64bit accumulator A
-uint64_t ACC_B;        // 64bit accumulator B
-uint64_t PC;           // 64bit program counter
+```
+uint8_t MEM[1<<64];	// 64bit address space
+uint64_t ACC_A;				// 64bit accumulator A
+uint64_t ACC_B;				// 64bit accumulator B
+uint64_t PC;					// 64bit program counter
 ```
 
 ### Address Partitioning
@@ -128,10 +128,10 @@ LDA TARGETS: 0xFF00000000000000;
 ```
 Specifically in my VM implementation `LDA` is explicitly defined as
 ```C
-uint8_t offset = 8 * read_u8();         // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
+uint8_t offset = 8 * read_u8(); // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
 uint64_t addr = read_u64();
-if (offset >= 64) continue;             // BIT OFFSET CANNOT BE MORE THAN 63 ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
-ACC_A &= ~((uint64_t)0xFF << offset);   // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
+if (offset >= 64) continue; // BIT OFFSET CANNOT BE MORE THAN 63 ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
+ACC_A &= ~((uint64_t)0xFF << offset); // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
 ACC_A |= (uint64_t)MEM[addr] << offset; // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
 ```
 For more precise definitions of instruction sets see `vm/unibl_vm.c`
@@ -143,7 +143,9 @@ Writing anything in bytecode is incredibly tedious. To save time and frustration
 ### Instruction Syntax
 
 USAM Instructions are structured as follows:
+
 `INST operands NEWLINE` where `operands` are separated by commas. For example:
+
 ```nasm
 ; PROGRAM TO LOAD 0x33 INTO B
 
@@ -168,6 +170,7 @@ SWP
 ; means the next instruction will be
 ; 0 by default so it would be equivalent
 ```
+
 This way of programming is still very tedious though, there are many important features of the assembler that could could make this program more readable.
 
 ### Labels
@@ -216,6 +219,48 @@ SWP
 .ENMAC
 ```
 then call `LDB 0, addr` like a regular instruction in your code. The preprocessor will expand every LDB call into the text between the macro definition line `.MACRO ...` and `.ENMAC`. Parameters are treated as constants since after preprocessing they become constant values before being sent into the codegen stage. Macro definition is as follows: 
+```nasm
+.MACRO <MACRO NAME> <params>
+<macro_body>
+.ENMAC
 ```
-MACRO IDENT params NEWLINE macro_body MACROEND
+Macros can be nested in other macros however since macros are based on text expansion rather than a call stack like functions they cannot be self referential or recursive. Macro expansion is done in passes where all macros are stored then the code is analyzed for macro calls. If a macro call is detected it is expanded based on the values the macro is called with then the entire code is reparsed until there are no more macros to call or the `MAX_MACRO_RECURSION` limit is hit. For example:
+```nasm
+.MACRO SETA x
+v:
+VOID %x
+LDA 0, v + 8
+.ENMAC
+
+.MACRO SETB x
+SWP
+SETA %x
+SWP
+.ENMAC
+
+SETB 0x10
 ```
+will be expanded to
+```nasm
+SWP
+SETA 0x10
+SWP
+```
+then to
+```nasm
+SWP
+v_0:
+VOID 0x10
+LDA 0, v_0 + 8
+SWP
+```
+and finally assembled to
+```
+03 0B 00 00  00 00 00 00
+00 10 01 00  00 00 00 00
+00 00 08 09  03
+```
+
+## The UNIBL Standard Library
+(Work in progress)
+

@@ -11,6 +11,7 @@ MacroList* macros;
 extern int preprocessor_pass;
 int macro_call_id;
 
+// MACROS ARE STORED IN MACRO OBJECTS
 void initialize_macros() {
 	macro_call_id = 0;
 	if (DEBUG) printf("Initializing Macros\n");
@@ -20,6 +21,7 @@ void initialize_macros() {
 	macros->macros = malloc(sizeof(Macro) * macros->capacity);
 }
 
+// CREATE MACRO PARAMETER OBJECT
 MacroParams* make_macro_params(char* param) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Making Macro Param %s\n", param);
@@ -34,6 +36,7 @@ MacroParams* make_macro_params(char* param) {
 	}
 }
 
+// APPEND TO MACRO PARAMETER OBJECT
 MacroParams* append_macro_params(MacroParams* mp, char* param) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Making Macro Param %s\n", param);
@@ -47,6 +50,7 @@ MacroParams* append_macro_params(MacroParams* mp, char* param) {
 	return NULL;
 }
 
+// CREATE MACRO BODY OBJECT
 MacroBody* make_macro_body(char* line) {
 	if (preprocessor_pass != 3) {
 		if (DEBUG) printf("Making Macro Body %s\n", line);
@@ -60,6 +64,7 @@ MacroBody* make_macro_body(char* line) {
 	return NULL;
 }
 
+// APPEND TO MACRO BODY OBJECT
 MacroBody* append_macro_body(MacroBody* mb, char* line) {
 	if (preprocessor_pass != 3) {
 		if (DEBUG) printf("Making Macro Body %s\n", line);
@@ -73,6 +78,7 @@ MacroBody* append_macro_body(MacroBody* mb, char* line) {
 	return NULL;
 }
 
+// SEARCH MACRO TABLE FOR MACRO OF NAME
 Macro* find_macro(char* name) {
 	if (DEBUG) printf("Finding macro %s\n", name);
 	for (size_t i = 0; i < macros->count; i++) {
@@ -84,6 +90,7 @@ Macro* find_macro(char* name) {
 	return NULL;
 }
 
+// DEPENDING ON PASS INITIALIZE MACRO OR FIND MACRO
 void start_macro(char* name) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Starting macro %s\n", name);
@@ -104,10 +111,12 @@ void start_macro(char* name) {
 	}
 }
 
+// ENSURE CURRENT MACRO IS OVER IN PARSER
 void exit_macro() {
 	current_macro = NULL;
 }
 
+// ADD A LABEL TO THE MACRO
 void add_label_to_macro(char* label) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Adding Macro Label %s\n", label);
@@ -120,6 +129,8 @@ void add_label_to_macro(char* label) {
 	}
 }
 
+// CHECK IF A MACRO CONTAINS A LABEL
+// IF A LABEL IS IN A MACRO IT MUST BE HANDLED RELATIVELY, IF NOT IT IS GLOBAL
 int check_label_in_macro(char* label) {
 	if (preprocessor_pass == 2) {
 		if (DEBUG) printf("Searching Macro Label %s\n", label);
@@ -132,6 +143,7 @@ int check_label_in_macro(char* label) {
 	return 0;
 }
 
+// DEFINE OR UPDATE MACRO DEPENDING ON THE PASS
 void define_macro(char* name, MacroParams* params, MacroBody* body) {
 	if (preprocessor_pass == 1) {
 		if (DEBUG) printf("Defined Macro %s\n", name);
@@ -148,6 +160,7 @@ void define_macro(char* name, MacroParams* params, MacroBody* body) {
 	}
 }
 
+// CONVERT AN INSTRUCTION TO A STRING
 char* inst_to_str(char* inst, ArgumentList* arguments) {
 	if (!arguments) return inst;
 
@@ -165,6 +178,7 @@ char* inst_to_str(char* inst, ArgumentList* arguments) {
 	return inst;
 }
 
+// REPLACE SUBSTRINGS -> USED FOR MACRO SUBSTITUTION (%x -> val)
 char* replace_substr(const char* haystack, const char* needle, const char* replacement) {
 	if (!haystack || !needle || !replacement) return NULL;
 
@@ -199,7 +213,7 @@ char* replace_substr(const char* haystack, const char* needle, const char* repla
 	return result;
 }
 
-
+// IF A MACRO IS EXPANDABLE EXPAND IT, IF NOT RETURN THE INSTRUCTION STRING
 char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	if (preprocessor_pass != 3) {
 		return inst_to_str(inst, arguments);
@@ -273,6 +287,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	return st;
 }
 
+// CREATE ARGUMENT LIST OBJECT
 ArgumentList* make_argument_list(char* arg) {
 	if (preprocessor_pass == 3) {
 		if (DEBUG) printf("Making Arg %s\n", arg);
@@ -286,6 +301,7 @@ ArgumentList* make_argument_list(char* arg) {
 	return NULL;
 }
 
+// APPEND TO ARGUMENT LIST OBJECT
 ArgumentList* append_argument_list(ArgumentList* al, char* arg) {
 	if (preprocessor_pass == 3) {
 		if (DEBUG) printf("Making Arg %s\n", arg);
@@ -299,6 +315,7 @@ ArgumentList* append_argument_list(ArgumentList* al, char* arg) {
 	return NULL;
 }
 
+// INITIALIZE PROGRAM OBJECT
 void init_program(Program *program) {
 	program = malloc(sizeof(Program));
 	program->count = 0;
@@ -306,6 +323,7 @@ void init_program(Program *program) {
 	program->lines = malloc(sizeof(char*) * program->capacity);
 }
 
+// APPEND A LINE TO PROGRAM OBJECT
 void append_line(Program *program, char *line) {
 	if (preprocessor_pass != 3) return;
 	if (program->count >= program->capacity) {
