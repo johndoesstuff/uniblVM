@@ -6,6 +6,7 @@
 
 %option noyywrap
 %option prefix="pp_"
+%option yylineno
 
 DIGIT		[0-9]
 HEX		0[xX][0-9a-fA-F]+

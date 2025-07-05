@@ -11,7 +11,8 @@
 extern int yylex();
 extern FILE *yyin;
 void yyerror(const char *s) {
-	fprintf(stderr, "Parser error: %s\n", s);
+	extern int pp_lineno;
+	fprintf(stderr, "Parser error at line %d: %s\n", pp_lineno, s);
 }
 %}
 
@@ -55,6 +56,7 @@ macro:
 params:
 	IDENT				{ $$ = make_macro_params($1); free($1);  }
 	| params COMMA IDENT		{ $$ = append_macro_params($1, $3); free($3); }
+	|				{ $$ = make_macro_params(" "); }
 ;
 
 macro_body:

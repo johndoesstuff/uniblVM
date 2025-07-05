@@ -79,7 +79,7 @@ extern int pp_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "assembler/preprocessor.y"
+#line 19 "assembler/preprocessor.y"
 
 	uint64_t u64;
 	char *str;

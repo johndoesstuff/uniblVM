@@ -10,7 +10,8 @@
 extern int yylex();
 extern FILE *yyin;
 void yyerror(const char *s) {
-	fprintf(stderr, "Parser error %s\n", s);
+	extern int yylineno;
+	fprintf(stderr, "Parser error at line %d: %s\n", yylineno, s);
 }
 
 uint64_t PC = ENTRY_POINT;

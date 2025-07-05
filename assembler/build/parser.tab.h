@@ -76,7 +76,7 @@ extern int asm_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "assembler/parser.y"
+#line 20 "assembler/parser.y"
 
 	uint64_t u64;
 	char *str;

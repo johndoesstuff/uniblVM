@@ -15,6 +15,8 @@ extern FILE *asm_in;
 int pp_parse(void);
 int asm_parse(void);
 
+int yylineno = 1;
+
 Program program_instance;
 Program* program_str = &program_instance;
 
@@ -161,6 +163,7 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
+		exit(1);
 	}
 
 	// RESET FOR SECOND PREPROCESSOR PASS
@@ -171,6 +174,7 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
+		exit(1);
 	}
 
 	// RESET FOR THIRD PREPROCESSOR PASS
@@ -189,6 +193,7 @@ int main(int argc, char *argv[]) {
 			if (DEBUG) printf("Third pass completed successfully. (%d/%d)\n", i, MAX_MACRO_RECURSION);
 		} else {
 			printf("Parsing failed.\n");
+			exit(1);
 		}
 
 		// COMBINE PROGRAM INTO STINGLE STRING
@@ -243,6 +248,7 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
+		exit(1);
 	}
 
 	// RESET FOR SECOND CODEGEN PASS
@@ -258,6 +264,7 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
 		printf("Parsing failed.\n");
+		exit(1);
 	}
 
 	fclose(asm_in);

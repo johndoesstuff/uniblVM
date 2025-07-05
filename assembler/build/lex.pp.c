@@ -422,8 +422,27 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
-    #define YY_LESS_LINENO(n)
-    #define YY_LINENO_REWIND_TO(ptr)
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex.
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -723,6 +742,11 @@ static const flex_int16_t yy_chk[109] =
        44,   44,   44,   44,   44,   44,   44,   44
     } ;
 
+/* Table of booleans, true if rule could match eol. */
+static const flex_int32_t yy_rule_can_match_eol[19] =
+    {   0,
+0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,     };
+
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
@@ -742,11 +766,11 @@ char *yytext;
 #include "preprocessor.tab.h"
 #include <string.h>
 #include <stdlib.h>
-#line 746 "assembler/build/lex.pp.c"
-#line 17 "assembler/preprocessor.l"
+#line 770 "assembler/build/lex.pp.c"
+#line 18 "assembler/preprocessor.l"
 uint64_t encode_le(const char *str);
-#line 749 "assembler/build/lex.pp.c"
-#line 750 "assembler/build/lex.pp.c"
+#line 773 "assembler/build/lex.pp.c"
+#line 774 "assembler/build/lex.pp.c"
 
 #define INITIAL 0
 
@@ -963,9 +987,9 @@ YY_DECL
 		}
 
 	{
-#line 20 "assembler/preprocessor.l"
+#line 21 "assembler/preprocessor.l"
 
-#line 969 "assembler/build/lex.pp.c"
+#line 993 "assembler/build/lex.pp.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1011,6 +1035,16 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -1024,98 +1058,98 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 21 "assembler/preprocessor.l"
+#line 22 "assembler/preprocessor.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 22 "assembler/preprocessor.l"
+#line 23 "assembler/preprocessor.l"
 ;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 23 "assembler/preprocessor.l"
+#line 24 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 24 "assembler/preprocessor.l"
+#line 25 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 25 "assembler/preprocessor.l"
+#line 26 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 26 "assembler/preprocessor.l"
+#line 27 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return IDENT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 27 "assembler/preprocessor.l"
+#line 28 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return PARAM; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 28 "assembler/preprocessor.l"
+#line 29 "assembler/preprocessor.l"
 { pp_lval.str = strdup(pp_text); return NUM; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 30 "assembler/preprocessor.l"
+#line 31 "assembler/preprocessor.l"
 return COLON;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "assembler/preprocessor.l"
+#line 32 "assembler/preprocessor.l"
 return COMMA;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 32 "assembler/preprocessor.l"
+#line 33 "assembler/preprocessor.l"
 return PLUS;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 33 "assembler/preprocessor.l"
+#line 34 "assembler/preprocessor.l"
 return MINUS;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 34 "assembler/preprocessor.l"
+#line 35 "assembler/preprocessor.l"
 return MACRO;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 35 "assembler/preprocessor.l"
+#line 36 "assembler/preprocessor.l"
 return ENDMACRO;
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 36 "assembler/preprocessor.l"
+#line 37 "assembler/preprocessor.l"
 return NEWLINE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 37 "assembler/preprocessor.l"
+#line 38 "assembler/preprocessor.l"
 return DIRECTIVE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 39 "assembler/preprocessor.l"
+#line 40 "assembler/preprocessor.l"
 { return *pp_text; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 40 "assembler/preprocessor.l"
+#line 41 "assembler/preprocessor.l"
 ECHO;
 	YY_BREAK
-#line 1119 "assembler/build/lex.pp.c"
+#line 1153 "assembler/build/lex.pp.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1483,6 +1517,10 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
@@ -1559,6 +1597,11 @@ static int yy_get_next_buffer (void)
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
+
+	if ( c == '\n' )
+		
+    yylineno++;
+;
 
 	return c;
 }
@@ -2026,6 +2069,9 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
+    
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -2120,7 +2166,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 40 "assembler/preprocessor.l"
+#line 41 "assembler/preprocessor.l"
 
 
 
