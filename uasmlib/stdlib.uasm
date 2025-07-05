@@ -1,0 +1,18 @@
+.MACRO LDA64 x
+LDA 7, %x
+LDA 6, %x + 1
+LDA 5, %x + 2
+LDA 4, %x + 3
+LDA 3, %x + 4
+LDA 2, %x + 5
+LDA 1, %x + 6
+LDA 0, %x + 7
+.ENMAC
+
+; Jump ahead 0x100 addresses to clear memory for call stack
+ENTRY_POINT:
+VOID ENTRY_POINT + 0x100
+LDA 1, ENTRY_POINT + 7
+JMPA
+
+$PC ENTRY_POINT + 0x100

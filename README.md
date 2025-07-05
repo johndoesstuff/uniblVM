@@ -10,10 +10,10 @@ UNIBL operates on a Von Neumann architecture, the virtual machine has a 64bit me
 
 In sum the environment required to run UNIBL bytecode is such:
 ```
-uint8_t MEM[1<<64];	// 64bit address space
-uint64_t ACC_A;				// 64bit accumulator A
-uint64_t ACC_B;				// 64bit accumulator B
-uint64_t PC;					// 64bit program counter
+uint8_t MEM[1<<64];   // 64bit address space
+uint64_t ACC_A;       // 64bit accumulator A
+uint64_t ACC_B;       // 64bit accumulator B
+uint64_t PC;          // 64bit program counter
 ```
 
 ### Address Partitioning
@@ -128,11 +128,12 @@ LDA TARGETS: 0xFF00000000000000;
 ```
 Specifically in my VM implementation `LDA` is explicitly defined as
 ```C
-uint8_t offset = 8 * read_u8(); // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
+uint8_t offset = 8 * read_u8();           // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
 uint64_t addr = read_u64();
-if (offset >= 64) continue; // BIT OFFSET CANNOT BE MORE THAN 63 ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
-ACC_A &= ~((uint64_t)0xFF << offset); // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
-ACC_A |= (uint64_t)MEM[addr] << offset; // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
+if (offset >= 64) continue;               // BIT OFFSET CANNOT BE MORE THAN 63
+                                          // ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
+ACC_A &= ~((uint64_t)0xFF << offset);     // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
+ACC_A |= (uint64_t)MEM[addr] << offset;   // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
 ```
 For more precise definitions of instruction sets see `vm/unibl_vm.c`
 
@@ -143,9 +144,7 @@ Writing anything in bytecode is incredibly tedious. To save time and frustration
 ### Instruction Syntax
 
 USAM Instructions are structured as follows:
-
 `INST operands NEWLINE` where `operands` are separated by commas. For example:
-
 ```nasm
 ; PROGRAM TO LOAD 0x33 INTO B
 
@@ -170,7 +169,6 @@ SWP
 ; means the next instruction will be
 ; 0 by default so it would be equivalent
 ```
-
 This way of programming is still very tedious though, there are many important features of the assembler that could could make this program more readable.
 
 ### Labels
@@ -259,6 +257,20 @@ and finally assembled to
 03 0B 00 00  00 00 00 00
 00 10 01 00  00 00 00 00
 00 00 08 09  03
+```
+### Assembler Directives
+
+Assembler directives are instructions that don't have opcodes and aren't executed on the virtual machine but tell the assembler itself how to generate code. These directives start with the `$` prefix. For example the only current assembler directive implemented is PC which tells the assembler what the value of the program counter should be at the point of byte emission. For example in the UNIBL standard library the first 256 bytes are reserved for the call stack meaning the program counter needs to know to start at `0x900` instead of `0x0800` during both execution and codegen time. To resolve this `$PC` is implemented with an immediate jump to address `0x900`
+```nasm
+; Jump ahead 0x100 addresses to clear memory for call stack
+ENTRY_POINT:
+VOID ENTRY_POINT + 0x100
+LDA 1, ENTRY_POINT + 7
+JMPA
+
+$PC ENTRY_POINT + 0x100
+; Assembler is now synced with execution-time PC
+...
 ```
 
 ## The UNIBL Standard Library

@@ -60,6 +60,9 @@ void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 		_stab(ops->values[0]);
 	} else if (strcmp(instr, "VOID") == 0) {
 		_void(ops->values[0]);
+	} else {
+		fprintf(stderr, "Unrecognized instruction: %s\n", instr);
+		exit(1);
 	}
 	*pc = ENTRY_POINT + program_size;
 }
@@ -76,6 +79,11 @@ void add_si(const char *instr, uint64_t *pc) {
 		_subab();
 	} else if (strcmp(instr, "CMPAB") == 0) {
 		_cmpab();
+	} else if (strcmp(instr, "HALT") == 0) {
+		_halt();
+	} else {
+		fprintf(stderr, "Unrecognized instruction: %s\n", instr);
+		exit(1);
 	}
 	*pc = ENTRY_POINT + program_size;
 }

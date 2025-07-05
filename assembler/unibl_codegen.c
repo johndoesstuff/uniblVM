@@ -48,6 +48,11 @@ void write_program_to_file(const char* filename) {
 	printf("Wrote %zu bytes to %s\n", program_size, filename);
 }
 
+// HALT PROGRAM
+void _halt() {
+	emit_byte(HALT);
+}
+
 // LOAD INTO REGISTER A
 void _lda(uint8_t offset, uint64_t addr) {
 	emit_byte(LDA);
