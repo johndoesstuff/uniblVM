@@ -227,7 +227,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	}
 	
 	// DONT EXPAND KNOWN OPCODES
-	static const char* ops[] = {"HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID"};
+	static const char* ops[] = {"HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA"};
 	for (int i = 0; i < 12; i++) {
 		if (strcmp(inst, ops[i]) == 0) return inst_to_str(inst, arguments);
 	}

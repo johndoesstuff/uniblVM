@@ -1097,7 +1097,7 @@ case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 #line 60 "assembler/lexer.l"
-return NEWLINE;
+{ yylineno++; return NEWLINE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP

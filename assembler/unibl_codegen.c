@@ -115,3 +115,8 @@ void _void(uint64_t _data) {
 	emit_byte(VOID);
 	emit_u64(_data);
 }
+
+// LOAD PC INTO REGISTRY A
+void _ldpca() {
+	emit_byte(LDPCA);
+}

@@ -57,7 +57,7 @@ uint64_t encode_le(const char *str) {
 ","		return COMMA;
 "+"		return PLUS;
 "-"		return MINUS;
-"\n"		return NEWLINE;
+"\n"		{ yylineno++; return NEWLINE; }
 "$"		return DIRECTIVE;
 
 .		{ return *asm_text; }

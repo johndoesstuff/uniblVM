@@ -115,6 +115,9 @@ int main(int argc, char** argv) {
 		} else if (op == VOID) {
 			uint64_t u64 = read_u64();
 			if (DEBUG) printf("VOID %" PRIu64 "\n", u64);
+		} else if (op == LDPCA) {
+			ACC_A = PC;
+			if (DEBUG) printf("LDPCA\n");
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIu64 "\n", op, PC - 1);
 			exit(1);

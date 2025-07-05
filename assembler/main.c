@@ -100,6 +100,8 @@ void add_si(const char *instr, uint64_t *pc) {
 		_cmpab();
 	} else if (strcmp(instr, "HALT") == 0) {
 		_halt();
+	} else if (strcmp(instr, "LDPCA") == 0) {
+		_ldpca();
 	} else {
 		fprintf(stderr, "Unrecognized instruction: %s\n", instr);
 		exit(1);
