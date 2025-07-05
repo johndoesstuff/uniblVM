@@ -1,4 +1,5 @@
 
+
 # UNIBL
 (Universal Bootstrappable Language)
 
@@ -272,6 +273,12 @@ $PC ENTRY_POINT + 0x100
 ; Assembler is now synced with execution-time PC
 ...
 ```
+Note that the PC directive is able to use expressions and labels to determine the program counter at codegen. This may appear to allow for impossible labeling behaviour but the way that directive labels and standard labels work is slightly different. Directive labels are not able to forward reference future labels, only previous labels. This stops impossible situations from arising such as
+```nasm
+$PC LABEL + 0x100
+:LABEL
+```
+which would recursively tell the assembler that the program counter should be 256 addresses forward of wherever it is after it makes this jump.
 
 ## The UNIBL Standard Library
 (Work in progress)

@@ -69,7 +69,8 @@ extern int pp_debug;
     PLUS = 264,                    /* PLUS  */
     MINUS = 265,                   /* MINUS  */
     MACRO = 266,                   /* MACRO  */
-    ENDMACRO = 267                 /* ENDMACRO  */
+    ENDMACRO = 267,                /* ENDMACRO  */
+    DIRECTIVE = 268                /* DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -86,7 +87,7 @@ union YYSTYPE
 	MacroParams *par;
 	ArgumentList* arg;
 
-#line 90 "assembler/build/preprocessor.tab.h"
+#line 91 "assembler/build/preprocessor.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

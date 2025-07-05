@@ -34,6 +34,7 @@ uint64_t encode_le(const char *str);
 ".MACRO"	return MACRO;
 ".ENMAC"	return ENDMACRO;
 "\n"		return NEWLINE;
+"$"		return DIRECTIVE;
 
 .		{ return *pp_text; }
 %%

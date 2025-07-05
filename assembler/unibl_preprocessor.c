@@ -215,13 +215,23 @@ char* replace_substr(const char* haystack, const char* needle, const char* repla
 
 // IF A MACRO IS EXPANDABLE EXPAND IT, IF NOT RETURN THE INSTRUCTION STRING
 char* check_macro_expansion(char* inst, ArgumentList* arguments) {
+
+	// DONT EXPAND BEFORE EXPANSION STAGE
 	if (preprocessor_pass != 3) {
 		return inst_to_str(inst, arguments);
 	}
+	
+	// SKIP DIRECTIVES
+	if (inst[0] == '$') {
+		return inst_to_str(inst, arguments);
+	}
+	
+	// DONT EXPAND KNOWN OPCODES
 	static const char* ops[] = {"HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID"};
 	for (int i = 0; i < 12; i++) {
 		if (strcmp(inst, ops[i]) == 0) return inst_to_str(inst, arguments);
 	}
+
 	if (DEBUG) printf("Found macro to expand: %s\n", inst);
 	Macro* macro = find_macro(inst);
 	if (macro == NULL) {

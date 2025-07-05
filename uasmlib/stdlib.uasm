@@ -11,8 +11,10 @@ LDA 0, %x + 7
 
 ; Jump ahead 0x100 addresses to clear memory for call stack
 ENTRY_POINT:
+CALLSTACK:
 VOID ENTRY_POINT + 0x100
 LDA 1, ENTRY_POINT + 7
 JMPA
 
 $PC ENTRY_POINT + 0x100
+SWP

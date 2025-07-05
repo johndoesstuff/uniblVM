@@ -67,6 +67,25 @@ void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 	*pc = ENTRY_POINT + program_size;
 }
 
+// SETS DIRECTIVES WITH ARGUMENTS
+void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
+	if (current_pass != 2) return;
+	if (strcmp(instr, "PC") == 0) {
+		uint64_t new_pc = ops->values[0];
+		if (new_pc < *pc) {
+			fprintf(stderr, "Cannot set PC to previous position in execution, %lu %lu", new_pc, *pc);
+			exit(1);
+		}
+		uint64_t diff = new_pc - *pc;
+		for (int i = 0; i < diff; i++) {
+			_halt();
+		}
+	} else {
+		fprintf(stderr, "Unrecognized directive: %s\n", instr);
+		exit(1);
+	}
+}
+
 // ADDS A SINGLE INSTRUCTION (NO ARGUMENTS)
 void add_si(const char *instr, uint64_t *pc) {
 	if (strcmp(instr, "JMPA") == 0) {
@@ -88,6 +107,12 @@ void add_si(const char *instr, uint64_t *pc) {
 	*pc = ENTRY_POINT + program_size;
 }
 
+// SETS DIRECTIVES WITHOUT ARGUMENTS
+void directive_si(const char *instr, uint64_t *pc) {
+	fprintf(stderr, "Unrecognized directive: %s\n", instr);
+	exit(1);
+}
+
 // ADDS A LABEL TO LABEL TABLE
 // LABELS ARE JUST THE CURRENT VALUE OF THE PROGRAM COUNTER
 void add_label(const char *label, uint64_t *pc) {
@@ -102,8 +127,9 @@ void add_label(const char *label, uint64_t *pc) {
 }
 
 // RETURNS A LABEL FROM THE LABEL TABLE
-uint64_t get_label(const char *label) {
-	if (current_pass == 2) {
+uint64_t get_label(const char *label, int directive_override) {
+	if (current_pass == 2 || directive_override) {
+		if (DEBUG) printf("Searching for label %s\n", label);
 		Label *current = label_table;
 		while (current) {
 			if (strcmp(current->name, label) == 0) return current->address;

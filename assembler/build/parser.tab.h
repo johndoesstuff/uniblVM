@@ -66,7 +66,8 @@ extern int asm_debug;
     COMMA = 261,                   /* COMMA  */
     NEWLINE = 262,                 /* NEWLINE  */
     PLUS = 263,                    /* PLUS  */
-    MINUS = 264                    /* MINUS  */
+    MINUS = 264,                   /* MINUS  */
+    DIRECTIVE = 265                /* DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -81,7 +82,7 @@ union YYSTYPE
 	char *str;
 	OperandList *oplist;
 
-#line 85 "assembler/build/parser.tab.h"
+#line 86 "assembler/build/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
