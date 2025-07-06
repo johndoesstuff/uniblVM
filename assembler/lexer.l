@@ -58,6 +58,7 @@ uint64_t encode_le(const char *str) {
 "+"		return PLUS;
 "-"		return MINUS;
 "\n"		{ yylineno++; return NEWLINE; }
+"$DEF"		return DEF_DIRECTIVE;
 "$"		return DIRECTIVE;
 
 .		{ return *asm_text; }

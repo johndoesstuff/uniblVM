@@ -45,7 +45,7 @@
 extern int pp_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "assembler/preprocessor.y"
+#line 4 "assembler/preprocessor.y"
 
 #include "../unibl_preprocessor.h"
 
@@ -70,7 +70,8 @@ extern int pp_debug;
     MINUS = 265,                   /* MINUS  */
     MACRO = 266,                   /* MACRO  */
     ENDMACRO = 267,                /* ENDMACRO  */
-    DIRECTIVE = 268                /* DIRECTIVE  */
+    DIRECTIVE = 268,               /* DIRECTIVE  */
+    DEF_DIRECTIVE = 269            /* DEF_DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -79,7 +80,7 @@ extern int pp_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "assembler/preprocessor.y"
+#line 22 "assembler/preprocessor.y"
 
 	uint64_t u64;
 	char *str;
@@ -87,7 +88,7 @@ union YYSTYPE
 	MacroParams *par;
 	ArgumentList* arg;
 
-#line 91 "assembler/build/preprocessor.tab.h"
+#line 92 "assembler/build/preprocessor.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -95,9 +96,23 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE pp_lval;
-
+extern YYLTYPE pp_lloc;
 
 int pp_parse (void);
 

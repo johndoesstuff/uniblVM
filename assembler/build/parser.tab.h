@@ -45,7 +45,7 @@
 extern int asm_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "assembler/parser.y"
+#line 4 "assembler/parser.y"
 
 #include "../unibl_asm.h"
 
@@ -67,7 +67,8 @@ extern int asm_debug;
     NEWLINE = 262,                 /* NEWLINE  */
     PLUS = 263,                    /* PLUS  */
     MINUS = 264,                   /* MINUS  */
-    DIRECTIVE = 265                /* DIRECTIVE  */
+    DIRECTIVE = 265,               /* DIRECTIVE  */
+    DEF_DIRECTIVE = 266            /* DEF_DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -76,13 +77,13 @@ extern int asm_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "assembler/parser.y"
+#line 24 "assembler/parser.y"
 
 	uint64_t u64;
 	char *str;
 	OperandList *oplist;
 
-#line 86 "assembler/build/parser.tab.h"
+#line 87 "assembler/build/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -90,9 +91,23 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE asm_lval;
-
+extern YYLTYPE asm_lloc;
 
 int asm_parse (void);
 

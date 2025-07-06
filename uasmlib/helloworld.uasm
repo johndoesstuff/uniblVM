@@ -1,0 +1,32 @@
+.MACRO LDA64 x
+LDA 0, %x + 0
+LDA 1, %x + 1
+LDA 2, %x + 2
+LDA 3, %x + 3
+LDA 4, %x + 4
+LDA 5, %x + 5
+LDA 6, %x + 6
+LDA 7, %x + 7
+.ENMAC
+
+.MACRO STA64R x
+STA %x + 0, 7
+STA %x + 1, 6
+STA %x + 2, 5
+STA %x + 3, 4
+STA %x + 4, 3
+STA %x + 5, 2
+STA %x + 6, 1
+STA %x + 7, 0
+.ENMAC
+
+$DEF STDOUT 0x400
+
+text_0:
+VOID "Hello Wo"
+text_1:
+VOID "rld\n"
+LDA64 text_0 + 1
+STA64R STDOUT
+LDA64 text_1 + 1
+STA64R STDOUT + 8

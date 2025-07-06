@@ -199,7 +199,75 @@ skip_swap:
 
 ### Arithmetic
 
-In these examples you may have noticed we are using arithmetic to calculate relative addresses. This is very powerful but there are limits, since all arithmetic is done at assembly time the only operators allowed are `+` and `-`. Similarly to pointer math the only sensible operations are relative shifts to numbers or labels. For example, `label1 + label2` is not valid syntax because nothing meaningful comes from adding 2 labels. In the future `label1 - label2` will likely be implemented as finding the program size between labels could be useful in determining memory allocation but currently is not implemented.
+In these examples you may have noticed we are using arithmetic to calculate relative addresses. This is very powerful but there are limits, since all arithmetic is done at assembly time the only operators allowed are `+` and `-`. Since the introduction of the `DEF` directive labels can hold meaningful values outside of pointers so arithmetic is allowed in any order between labels and constants and will be computed at codegen time. Since `+` and `-` are the only allowed operations all math is evaluated term by term left to right.
+
+### Constants
+
+Constants are just data that can be immediately evaluated as a number in the assembler. These include static numbers but also characters and strings. The following are valid constants:
+```nasm
+117
+0x75
+'u'
+"unibl"
+```
+For strings each character is one byte of memory and strings are encoded using little endian
+```nasm
+"unibl" == 0x6c62696e75000000
+;            l b i n u . . . 
+```
+Since arguments to functions can only hold up to 64 bits of information string length is also capped at 8 characters.
+
+Hello World example using strings:
+```nasm
+; Load 64 bit value into A
+.MACRO LDA64 x
+LDA 0, %x + 0
+LDA 1, %x + 1
+LDA 2, %x + 2
+LDA 3, %x + 3
+LDA 4, %x + 4
+LDA 5, %x + 5
+LDA 6, %x + 6
+LDA 7, %x + 7
+.ENMAC
+
+; Reverse and store 64 bits of A
+.MACRO STA64R x
+STA %x + 0, 7
+STA %x + 1, 6
+STA %x + 2, 5
+STA %x + 3, 4
+STA %x + 4, 3
+STA %x + 5, 2
+STA %x + 6, 1
+STA %x + 7, 0
+.ENMAC
+
+; Output starts at 0x0400
+$DEF STDOUT 0x400
+
+; Load text into memory
+text_0:
+VOID "Hello Wo"
+text_1:
+VOID "rld\n"
+
+; Write to output
+LDA64 text_0 + 1
+STA64R STDOUT
+LDA64 text_1 + 1
+STA64R STDOUT + 8
+```
+
+```bash
+./unibl_asm helloworld.uasm
+./unibl_vm helloworld.bin
+Program execution ended at PC=2386
+ACC_A=8245075011920986112
+ACC_B=0
+Dumping Standard Output...
+Hello World
+```
 
 ### Macros and Preprocessing
 
@@ -261,15 +329,22 @@ and finally assembled to
 ```
 ### Assembler Directives
 
-Assembler directives are instructions that don't have opcodes and aren't executed on the virtual machine but tell the assembler itself how to generate code. These directives start with the `$` prefix. For example the only current assembler directive implemented is PC which tells the assembler what the value of the program counter should be at the point of byte emission. For example in the UNIBL standard library the first 256 bytes are reserved for the call stack meaning the program counter needs to know to start at `0x900` instead of `0x0800` during both execution and codegen time. To resolve this `$PC` is implemented with an immediate jump to address `0x900`
-```nasm
-; Jump ahead 0x100 addresses to clear memory for call stack
+Assembler directives are instructions that don't have opcodes and aren't executed on the virtual machine but tell the assembler itself how to generate code. These directives start with the `$` prefix.
+
+**$PC**
+
+The assembler directive PC tells the assembler what the value of the program counter should be at the point of byte emission. As an example, this is useful in the UNIBL standard library where the first `0x400` bytes are reserved for the call stack. The program counter needs to know to start at `0x0C00` instead of `0x0800` during both execution and codegen time. To resolve this `$PC` is implemented with an immediate jump to address `0xC00`
+```nasm; Jump ahead 0x400 addresses to clear memory for call stack
+$DEF STACK_SIZE 0x400
 ENTRY_POINT:
-VOID ENTRY_POINT + 0x100
+CALLSTACK:
+VOID ENTRY_POINT + STACK_SIZE
+_CSLDA:
 LDA 1, ENTRY_POINT + 7
+_CSJMPA:
 JMPA
 
-$PC ENTRY_POINT + 0x100
+$PC ENTRY_POINT + STACK_SIZE
 ; Assembler is now synced with execution-time PC
 ...
 ```
@@ -280,6 +355,20 @@ $PC LABEL + 0x100
 ```
 which would recursively tell the assembler that the program counter should be 256 addresses forward of wherever it is after it makes this jump.
 
+**$DEF**
+
+The DEF directive works identically to a label (and is actually syntactic sugar for a label under the hood) that uses a value other than the program counter to define the label. This works since labels are just identifiers that store the value of the program counter
+
 ## The UNIBL Standard Library
-(Work in progress)
+
+### Memory Mapping
+
+```
+0x0000 - 0x03FF STDIN
+0x0400 - 0x07FF STDOUT
+0x0800 - 0x0BFF CALL STACK
+0x0C00 - 0x0C01 STDIN POINTER
+0x0C02 - 0x0C03 STDOUT POINTER
+0x0C04 - 0x0C05 CALL STACK POINTER
+```
 
