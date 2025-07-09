@@ -31,7 +31,7 @@ void asm_error(const char *s) {
 %token <u64> NUM
 %token COLON COMMA NEWLINE PLUS MINUS DIRECTIVE DEF_DIRECTIVE
 
-%type <u64> term expression directive_term
+%type <u64> term expression directive_term directive_expression
 %type <oplist> operands directive_operands
 
 %%
@@ -71,11 +71,15 @@ term:
 directive_term:
 	NUM 			{ $$ = $1; }
 	| IDENT			{ $$ = get_label($1, 1); }
-	| expression		{ $$ = $1; }
+	| directive_expression		{ $$ = $1; }
 
 expression:
 	term PLUS term		{ $$ = $1 + $3; }
 	| term MINUS term	{ $$ = $1 - $3; }
+
+directive_expression:
+	directive_term PLUS directive_term	{ $$ = $1 + $3; }
+	| directive_term MINUS directive_term	{ $$ = $1 - $3; }
 
 %%
 
