@@ -12,3 +12,6 @@ TARGET:
 		assembler/build/preprocessor.tab.c \
 		assembler/build/lex.asm.c \
 		assembler/build/lex.pp.c
+	sudo cp uasm.vim ~/.vim/syntax/uasm.vim
+	mkdir -p ~/.vim/ftdetect
+	echo "au BufRead,BufNewFile *.uasm set filetype=uasm" > ~/.vim/ftdetect/uasm.vim
