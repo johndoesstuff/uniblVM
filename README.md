@@ -77,7 +77,7 @@ Jump to address if B is zero
 
 **6 = ADDAB**
 
-Add the values of A and B and store the result in B
+Add the values of A and B and store the result in A
 
 *Some form of addition is absolutely necessary for computation.*
 
@@ -110,6 +110,12 @@ Set B to 0 if A and B are equal, otherwise set B to 1
 Do nothing
 
 *Why is it necessary to have an instruction that takes an argument and literally does nothing? Unexpectedly the* `VOID` *command is one of the most useful commands. Voiding a* `u64` *means that argument will be stored in memory so it is pure data that can be referenced later. For example, if a program needs a constant that constant can be passed into* `VOID` *and will appear in program memory at the address of* `VOID + 1`*, this constant can then be referenced and stored as desired using other instructions. Trying to store memory in program space can only be done as an argument to an instruction and trying to use any instruction that does something with its arguments will cause unexpected behaviour.*
+
+**12 = LDPCA**
+
+Set A to the address of the Program Counter
+
+*Absolutely necessary for building functions and any program that can dynamically return to an execution point. Having a way of loading the value of the Program Counter is critical.*
 
 ### What are offsets?
 
@@ -357,18 +363,34 @@ which would recursively tell the assembler that the program counter should be 25
 
 **$DEF**
 
-The DEF directive works identically to a label (and is actually syntactic sugar for a label under the hood) that uses a value other than the program counter to define the label. This works since labels are just identifiers that store the value of the program counter
+The DEF directive works identically to a label (and is actually syntactic sugar for a label under the hood) that uses a value other than the program counter to define the label. This works since labels are just identifiers that store the value of the program counter. Important to note is that because the DEF directive is operating on assigning values to an identifier there is no comma required during value assignment. For example
+```nasm
+$DEF IDENT 0x100
+```
+is valid whereas most instructions require a comma to differentiate arguments. There is potential that in the future this syntax will change and DEF will require a comma to make syntax more cohesive.
+
+**$DEBUG**
+
+The DEBUG directive is very simple, it will print the values passed into it upon assembly and it can be used to test if labels and definitions are as expected. If no arguments are passed it will print the current value of the program counter.
 
 ## The UNIBL Standard Library
 
 ### Memory Mapping
 
+Despite the UNIBL virtual machine only needing to manage memory for input and output the UNIBL standard library `stdlib.uasm` defines necessary blocks of memory to implement additional functionality into the UASM lanuage. Including the standard library implements the ability to call and return from subroutines and many macros for essential features.
+
 ```
 0x0000 - 0x03FF STDIN
 0x0400 - 0x07FF STDOUT
-0x0800 - 0x0BFF CALL STACK
-0x0C00 - 0x0C01 STDIN POINTER
-0x0C02 - 0x0C03 STDOUT POINTER
-0x0C04 - 0x0C05 CALL STACK POINTER
-```
+0x0800 - 0x0BFF CALLSTACK
+0x0C00 - 0x17FF STACK
 
+0x1800 - 0x1801 STDIN POINTER
+0x1802 - 0x1803 STDOUT POINTER
+0x1804 - 0x1805 CALLSTACK POINTER
+0x1806 - 0x1807 STACK POINTER
+
+0x1808 - 0x18FF (RESERVED FOR FUTURE)
+
+0x1900 - 0x19FF TEMP MEMORY
+```

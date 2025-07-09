@@ -74,12 +74,19 @@ void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
 	if (strcmp(instr, "PC") == 0) {
 		uint64_t new_pc = ops->values[0];
 		if (new_pc < *pc) {
-			fprintf(stderr, "Cannot set PC to previous position in execution, %lu %lu", new_pc, *pc);
+			fprintf(stderr, "Cannot set PC to previous position in execution, %" PRIu64 " %" PRIu64, new_pc, *pc);
 			exit(1);
 		}
 		uint64_t diff = new_pc - *pc;
 		for (int i = 0; i < diff; i++) {
 			_halt();
+		}
+	} else if (strcmp(instr, "DEBUG") == 0) {
+		if (current_pass == 2) {
+			for (int i = 0; i < ops->count; i++) {
+				printf((i == 0 ? "$DEBUG %" PRIu64 : " %" PRIu64), ops->values[i]);
+			}
+			printf("\n");
 		}
 	} else {
 		fprintf(stderr, "Unrecognized directive: %s\n", instr);
@@ -113,8 +120,14 @@ void add_si(const char *instr, uint64_t *pc) {
 
 // SETS DIRECTIVES WITHOUT ARGUMENTS
 void directive_si(const char *instr, uint64_t *pc) {
-	fprintf(stderr, "Unrecognized directive: %s\n", instr);
-	exit(1);
+	if (strcmp(instr, "DEBUG") == 0) {
+		if (current_pass == 2) {
+			printf("$DEBUG %" PRIu64 "\n", *pc);
+		}
+	} else {
+		fprintf(stderr, "Unrecognized directive: %s\n", instr);
+		exit(1);
+	}
 }
 
 // ADDS A LABEL TO LABEL TABLE
