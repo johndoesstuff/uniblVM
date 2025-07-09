@@ -8,7 +8,7 @@
 #include "unibl_preprocessor.h"
 
 #define DEBUG 0
-#define MAX_MACRO_RECURSION 3
+#define MAX_MACRO_RECURSION 64
 
 extern FILE *pp_in;
 extern FILE *asm_in;
@@ -71,7 +71,6 @@ void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 
 // SETS DIRECTIVES WITH ARGUMENTS
 void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
-	if (current_pass != 2) return;
 	if (strcmp(instr, "PC") == 0) {
 		uint64_t new_pc = ops->values[0];
 		if (new_pc < *pc) {
@@ -86,6 +85,7 @@ void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
 		fprintf(stderr, "Unrecognized directive: %s\n", instr);
 		exit(1);
 	}
+	*pc = ENTRY_POINT + program_size;
 }
 
 // ADDS A SINGLE INSTRUCTION (NO ARGUMENTS)
@@ -231,7 +231,8 @@ int main(int argc, char *argv[]) {
 		last_length = total_length;
 
 		if (i == MAX_MACRO_RECURSION - 1) {
-			fprintf(stderr, "MAX_MACRO_RECURSION reached; (%d)", MAX_MACRO_RECURSION);
+			fprintf(stderr, "MAX_MACRO_RECURSION (%d) reached", MAX_MACRO_RECURSION);
+			exit(1);
 		}
 	}
 

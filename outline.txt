@@ -62,3 +62,6 @@ ACC_B = (ACC_A == ACC_B) ? 0 : 1
 
 VOID (op == 11)
 read_u64()
+
+LDPCA (op == 12)
+ACC_A = PC

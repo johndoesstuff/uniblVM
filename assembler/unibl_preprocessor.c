@@ -27,6 +27,7 @@ MacroParams* make_macro_params(char* param) {
 		if (DEBUG) printf("Making Macro Param %s\n", param);
 		MacroParams* mp = malloc(sizeof(MacroParams));
 		mp->count = 1;
+		if (param[0] == ' ') mp->count = 0;
 		mp->capacity = INITIAL_CAPACITY;
 		mp->params = malloc(sizeof(char*) * mp->capacity);
 		mp->params[0] = strdup(param);
@@ -235,7 +236,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	if (DEBUG) printf("Found macro to expand: %s\n", inst);
 	Macro* macro = find_macro(inst);
 	if (macro == NULL) {
-		fprintf(stderr, "Unexpected instruction %s", inst);
+		fprintf(stderr, "Unexpected instruction %s\n", inst);
 		exit(1);
 	}
 	MacroBody* body = macro->body;

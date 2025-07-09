@@ -16,6 +16,23 @@ LDA64 %x
 SWP
 .ENMAC
 
+.MACRO STA64 x
+STA %x, 7
+STA %x + 1, 6
+STA %x + 2, 5
+STA %x + 3, 4
+STA %x + 4, 3
+STA %x + 5, 2
+STA %x + 6, 1
+STA %x + 7, 0
+.ENMAC
+
+.MACRO STB64 x
+SWP
+STA64 %x
+SWP
+.ENMAC
+
 .MACRO LDB x, y
 SWP
 LDA %x, %y
@@ -24,12 +41,17 @@ SWP
 
 ; Set B to 0
 .MACRO SETBZ
-; a = ? b = 0|1
 CMPAB
-SWP
 v:
 VOID 0
 LDB 0, v + 1
+.ENMAC
+
+.MACRO SETB1
+CMPAB
+v:
+VOID 1
+LDB 0, v + 8
 .ENMAC
 
 .MACRO JMP addr
@@ -39,6 +61,13 @@ JMPBZ %addr
 
 .MACRO CALL addr
 LDPCA
+.ENMAC
+
+.MACRO INCA
+STB64 TEMP_INC
+SETB1
+ADDAB
+LDB64 TEMP_INC
 .ENMAC
 
 $DEF CALLSTACK_SIZE 0x400
@@ -60,18 +89,22 @@ $DEF P_STACK P_CALLSTACK + 2
 ; *Stack: 0x1806 - 0x1807
 ; Reserved: 0x1808 - 0x18FF
 
+$DEF TEMP 0x1900
+; Temp memory for critical macros
+$DEF TEMP_INC TEMP
+
 $DEF RETURN 0x0000
 ; 0x0000 = Return Code
 
-; Jump ahead to clear memory for call stack and stack
+; Jump ahead to clear memory for call stack, stack and temp
 ; Round up to nearest 0x0100
-VOID P_STACK + 0x0100
+VOID TEMP + 0x0100
 _CSLDA:
 LDA 1, ENTRY_POINT + 7
 _CSJMPA:
 JMPA
 
-$PC ENTRY_POINT + STACK_SIZE
+$PC 0x1A00
 
 ; Set Callstack to 0
 SWP
@@ -81,3 +114,5 @@ STA _CSLDA + 1, 0
 STA _CSLDA + 8, 0
 STA _CSLDA + 9, 0
 STA _CSJMPA, 0
+
+INCA
