@@ -89,13 +89,13 @@ Subtract B from A and store the result in A
 
 **8 = LDAB [u8: offset]**
 
-Same as `LDA` but using B as the address
+Same as `LDA` but using B + offset as the address
 
-*Could theoretically be implemented as a reference to* `LDA` *that uses* `SWP` *and* `STA` *to store B in the parameter address of* `LDA` *however this is extremely memory inefficient for such a fundemental dereference operation.*
+*Could theoretically be implemented as a reference to* `LDA` *that uses* `SWP` *and* `STA` *to store B in the parameter address of* `LDA` *however this is extremely memory inefficient for such a fundemental dereference operation. Used to use only B as offset but later changed to use B + offset for 64bit compatibility.*
 
 **9 = STAB [u8: offset]**
 
-Same as `STA` but using B as the address
+Same as `STA` but using B + offset as the address
 
 *The same argument could be made here as* `LDAB` *for its redundancy but everything is a tradeoff and if we were to boil everything down only to completely fundemental operators we would end up with a bytecode that is so memory inefficient and computationally intensive it is virtually useless.*
 
@@ -340,7 +340,8 @@ Assembler directives are instructions that don't have opcodes and aren't execute
 **$PC**
 
 The assembler directive PC tells the assembler what the value of the program counter should be at the point of byte emission. As an example, this is useful in the UNIBL standard library where the first `0x400` bytes are reserved for the call stack. The program counter needs to know to start at `0x0C00` instead of `0x0800` during both execution and codegen time. To resolve this `$PC` is implemented with an immediate jump to address `0xC00`
-```nasm; Jump ahead 0x400 addresses to clear memory for call stack
+```nasm
+; Jump ahead 0x400 addresses to clear memory for call stack
 $DEF STACK_SIZE 0x400
 ENTRY_POINT:
 CALLSTACK:
@@ -394,3 +395,4 @@ Despite the UNIBL virtual machine only needing to manage memory for input and ou
 
 0x1900 - 0x19FF TEMP MEMORY
 ```
+

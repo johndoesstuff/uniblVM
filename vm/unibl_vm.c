@@ -102,12 +102,12 @@ int main(int argc, char** argv) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			ACC_A &= ~(0xff << offset);
-			ACC_A |= MEM[ACC_B] << offset;
+			ACC_A |= MEM[ACC_B + offset/8] << offset;
 			if (DEBUG) printf("LDAB %u\n", offset);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
-			MEM[ACC_B] = 0xff & (ACC_A >> offset);
+			MEM[ACC_B + offset/8] = 0xff & (ACC_A >> offset);
 			if (DEBUG) printf("STAB %u\n", offset);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
