@@ -28,6 +28,4 @@ void directive_si(const char *instr, uint64_t *pc);
 void add_label(const char *label, uint64_t *pc);
 uint64_t get_label(const char *label, int directive_override);
 
-
-
 #endif

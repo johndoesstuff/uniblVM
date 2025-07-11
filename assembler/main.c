@@ -3,6 +3,7 @@
 #include <string.h>
 #include "unibl_asm.h"
 #include "unibl_codegen.h"
+#include "include.h"
 #include "../inc/unibl.h"
 #include <inttypes.h>
 #include "unibl_preprocessor.h"
@@ -163,6 +164,12 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Usage: %s <input.uasm>\n", argv[0]);
 		return 1;
 	}
+
+	// EXPAND INCLUDES
+	char* expanded_input = expand_includes(argv[1]);
+	size_t input_length = strlen(expanded_input);
+	FILE* mem_fp = fmemopen(expanded_input, input_length, "r");
+	pp_in = mem_fp;
 
 	// PREPROCESSING STAGE
 	initialize_macros();

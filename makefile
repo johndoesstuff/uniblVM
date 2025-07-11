@@ -6,6 +6,7 @@ TARGET:
 	bison -H assembler/preprocessor.y -o assembler/build/preprocessor.tab.c -p pp_
 	gcc -g -o unibl_asm \
 		assembler/unibl_codegen.c \
+		assembler/include.c \
 		assembler/main.c \
 		assembler/unibl_preprocessor.c \
 		assembler/build/parser.tab.c \
