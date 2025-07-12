@@ -111,6 +111,15 @@ VOID 0
 LDB 0, v + 1
 .ENMAC
 
+.MACRO SETAZ
+SWP
+CMPAB
+SWP
+v:
+VOID 0
+LDA 0, v + 1
+.ENMAC
+
 ; Set A and B to 0
 .MACRO SETABZ
 CMPAB

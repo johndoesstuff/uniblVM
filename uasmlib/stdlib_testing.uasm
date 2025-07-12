@@ -1,0 +1,40 @@
+$INCLUDE <uasmlib/stdlib_macros.uasm>
+$INCLUDE <uasmlib/stdlib.uasm>
+
+; TODO: Write test cases to verify architecture integrity
+SETABZ
+
+; Verify VOID + LDB + SETABZ + FJMP
+va_0:
+VOID 0x0102030405060707
+LDA 0, va_0 + 7
+LDB 0, va_0 + 7
+CMPAB
+JMPBZ success_0
+FJMP failure
+
+; Verify STA64R
+success_0:
+SETAZ
+vb_0:
+VOID vb_0 + 1
+LDB64 vb_0 + 1
+HALT
+STAB64
+STB64 vb_0 + 1
+HALT
+JMPBZ success_1
+FJMP failure
+
+success_1:
+
+
+success_f:
+VOID "Success\n"
+LDA64 success_f + 1
+STA64R 0x400
+HALT
+failure:
+VOID "Failure\n"
+LDA64 failure + 1
+STA64R 0x400
