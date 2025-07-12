@@ -1,5 +1,3 @@
-
-
 # UNIBL
 (Universal Bootstrappable Language)
 
@@ -370,6 +368,14 @@ $DEF IDENT 0x100
 ```
 is valid whereas most instructions require a comma to differentiate arguments. There is potential that in the future this syntax will change and DEF will require a comma to make syntax more cohesive.
 
+**$INCLUDE [FString: file]**
+
+To build useful programs it's essential to be able to include code from previous programs defining macros, constants, and setting up desired environments. Since in UASM string constants are limited to 8 characters and are evaluated to `u64` integers the include directive takes an FString (Full String, File String, I don't care or know) which is a string constructed using angle brackets instead of quotes. For example, to include the standard library in your program:
+```nasm
+$INCLUDE <uasmlib/stdlib.uasm>
+```
+This directive works by replacing itself with the entire contents of the file included and it expands recursively
+
 **$DEBUG**
 
 The DEBUG directive is very simple, it will print the values passed into it upon assembly and it can be used to test if labels and definitions are as expected. If no arguments are passed it will print the current value of the program counter.
@@ -395,4 +401,3 @@ Despite the UNIBL virtual machine only needing to manage memory for input and ou
 
 0x1900 - 0x19FF TEMP MEMORY
 ```
-
