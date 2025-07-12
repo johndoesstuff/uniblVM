@@ -168,12 +168,12 @@ int main(int argc, char *argv[]) {
 	// EXPAND INCLUDES
 	char* expanded_input = expand_includes(argv[1]);
 	size_t input_length = strlen(expanded_input);
+	//printf("%s", expanded_input);
 	FILE* mem_fp = fmemopen(expanded_input, input_length, "r");
 	pp_in = mem_fp;
 
 	// PREPROCESSING STAGE
 	initialize_macros();
-	pp_in = fopen(argv[1], "r");
 	if (!pp_in) {
 		perror("Failed to open input file");
 		return 1;
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
 	if (pp_parse() == 0) {
 		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
-		printf("Parsing failed.\n");
+		printf("Parsing failed at PP1.\n");
 		exit(1);
 	}
 
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
 	if (pp_parse() == 0) {
 		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
-		printf("Parsing failed.\n");
+		printf("Parsing failed at PP2.\n");
 		exit(1);
 	}
 
@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
 		if (pp_parse() == 0) {
 			if (DEBUG) printf("Third pass completed successfully. (%d/%d)\n", i, MAX_MACRO_RECURSION);
 		} else {
-			printf("Parsing failed.\n");
+			printf("Parsing failed at PP3.\n");
 			exit(1);
 		}
 
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
 	if (asm_parse() == 0) {
 		if (DEBUG) printf("First pass completed successfully.\n");
 	} else {
-		printf("Parsing failed.\n");
+		printf("Parsing failed at ASM1.\n");
 		exit(1);
 	}
 
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
 	if (asm_parse() == 0) {
 		if (DEBUG) printf("Second pass completed successfully.\n");
 	} else {
-		printf("Parsing failed.\n");
+		printf("Parsing failed ASM2.\n");
 		exit(1);
 	}
 

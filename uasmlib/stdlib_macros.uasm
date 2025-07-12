@@ -1,0 +1,264 @@
+; 64 Bit storage macros
+.MACRO LDA64 x
+LDA 7, %x
+LDA 6, %x + 1
+LDA 5, %x + 2
+LDA 4, %x + 3
+LDA 3, %x + 4
+LDA 2, %x + 5
+LDA 1, %x + 6
+LDA 0, %x + 7
+.ENMAC
+
+.MACRO LDA64R x
+LDA 0, %x
+LDA 1, %x + 1
+LDA 2, %x + 2
+LDA 3, %x + 3
+LDA 4, %x + 4
+LDA 5, %x + 5
+LDA 6, %x + 6
+LDA 7, %x + 7
+.ENMAC
+
+.MACRO LDB64 x
+SWP
+LDA64 %x
+SWP
+.ENMAC
+
+.MACRO LDB64R x
+SWP
+LDA64R %x
+SWP
+.ENMAC
+
+.MACRO STA64 x
+STA %x, 7
+STA %x + 1, 6
+STA %x + 2, 5
+STA %x + 3, 4
+STA %x + 4, 3
+STA %x + 5, 2
+STA %x + 6, 1
+STA %x + 7, 0
+.ENMAC
+
+.MACRO STA64R x
+STA %x, 0
+STA %x + 1, 1
+STA %x + 2, 2
+STA %x + 3, 3
+STA %x + 4, 4
+STA %x + 5, 5
+STA %x + 6, 6
+STA %x + 7, 7
+.ENMAC
+
+.MACRO STB64 x
+SWP
+STA64 %x
+SWP
+.ENMAC
+
+.MACRO STB64R x
+SWP
+STA64R %x
+SWP
+.ENMAC
+
+; 16 Bit storage macros
+.MACRO LDA16 x
+LDA 1, %x
+LDA 0, %x + 1
+.ENMAC
+
+.MACRO LDB16 x
+SWP
+LDA16 %x
+SWP
+.ENMAC
+
+.MACRO STA16 x
+STA %x, 1
+STA %x + 1, 0
+.ENMAC
+
+.MACRO STB16 x
+SWP
+STA16 %x
+SWP
+.ENMAC
+
+; General purpose macros
+.MACRO LDB x, y
+SWP
+LDA %x, %y
+SWP
+.ENMAC
+
+.MACRO STB x, y
+SWP
+STA %x, %y
+SWP
+.ENMAC
+
+; Set B to 0
+.MACRO SETBZ
+CMPAB
+v:
+VOID 0
+LDB 0, v + 1
+.ENMAC
+
+; Set A and B to 0
+.MACRO SETABZ
+CMPAB
+SWP
+CMPAB
+v:
+VOID 0
+LDA 0, v + 1
+SWP
+LDA 0, v + 1
+.ENMAC
+
+; Set B to 1
+.MACRO SETB1
+CMPAB
+v:
+VOID 1
+LDB 0, v + 8
+.ENMAC
+
+.MACRO SETA1
+SWP
+SETB1
+SWP
+.ENMAC
+
+.MACRO FJMP addr
+SETBZ
+JMPBZ %addr
+.ENMAC
+
+.MACRO CALL addr
+LDPCA
+.ENMAC
+
+.MACRO LDAB64
+LDAB 0
+LDAB 1
+LDAB 2
+LDAB 3
+LDAB 4
+LDAB 5
+LDAB 6
+LDAB 7
+.ENMAC
+
+.MACRO STAB64
+STAB 0
+STAB 1
+STAB 2
+STAB 3
+STAB 4
+STAB 5
+STAB 6
+STAB 7
+.ENMAC
+
+.MACRO INCA64
+STB64 TEMP_INC
+SETB1
+ADDAB
+LDB64 TEMP_INC
+.ENMAC
+
+.MACRO INC8A64
+STB64 TEMP_INC
+SETB1
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+LDB64 TEMP_INC
+.ENMAC
+
+.MACRO INCB64
+SWP
+INCA64
+SWP
+.ENMAC
+
+.MACRO INC8B64
+SWP
+INC8A64
+SWP
+.ENMAC
+
+.MACRO INCA16
+STB16 TEMP_INC
+SETB1
+ADDAB
+LDB16 TEMP_INC
+.ENMAC
+
+.MACRO INC8A16
+STB16 TEMP_INC
+SETB1
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+ADDAB
+LDB16 TEMP_INC
+.ENMAC
+
+.MACRO INCB16
+SWP
+INCA16
+SWP
+.ENMAC
+
+.MACRO INC8B16
+SWP
+INC8A16
+SWP
+.ENMAC
+
+.MACRO SET64 addr, val
+; save state
+STA64 TEMP_SET
+v:
+VOID %val
+; set A to value
+LDA64 v+1
+; set addr to a
+STA64 %addr
+; reset state
+LDA64 TEMP_SET
+.ENMAC
+
+.MACRO PUSHA
+; save state of B
+STB64 TEMP_PUSH
+; load stack pointer to B
+SETBZ
+LDB16 P_STACK
+; set *sp to A
+STAB64
+; inc B by 8 (64bit addr width)
+INC8B16
+; restore incremented stack pointer
+STB16 P_STACK
+; restore state of B
+LDB64 TEMP_PUSH
+.ENMAC
