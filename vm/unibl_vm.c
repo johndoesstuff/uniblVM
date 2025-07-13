@@ -37,7 +37,7 @@ uint8_t read_u8() {
 uint64_t read_u64() {
 	uint64_t u64 = 0;
 	for (int i = 0; i < 8; i++) {
-		u64 = (u64 << 8) | read_u8();
+		u64 |= (uint64_t)read_u8() << (i * 8);
 	}
 	if (DEV) printf("Loaded u64 %" PRIX64 "\n", u64);
 	return u64;
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
 		} else if (op == JMP) {
 			uint64_t addr = read_u64();
 			PC = addr;
-			if (DEBUG) printf("%-20s", "JMP");
+			if (DEBUG) printf("%-10s %-10" PRIX64, "JMP", addr);
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
 			if (ACC_B == 0) {

@@ -44,21 +44,65 @@ SET16 P_STDOUT, 0x400
 SET16 P_CALLSTACK, CALLSTACK
 SET16 P_STACK, STACK
 
+JMP _STDLIB_ENDLIB
+
+_STDLIB_RET:
+; save
+STA64 TEMP_RET
+STB64 TEMP_RET + 8
+; load csp
+SETBZ
+LDB16 P_CALLSTACK
+; dec csp
+DEC8B16
+; load address from csp
+LDAB64
+STB16 P_CALLSTACK
+; goto a
+LDB64 TEMP_RET + 8
+JMPA
+
+_STDLIB_CALL:
+; preserve B
+STB64 TEMP_CALL + 8
+; load csp into B
+SETBZ
+; inc a to end of call macro (+19)
+SWP
+SETAV16 19
+SWP
+ADDAB
+LDB16 P_CALLSTACK
+; store A at csp
+STAB64
+; inc csp
+INC8B16
+STB16 P_CALLSTACK
+; get addr (ldpca - 17)
+SWP
+SETAV16 18
+SWP
+SUBAB
+SWP
+LDAB64
+JMPA
+
+
+_STDLIB_ENDLIB:
+
 SIZEOF:
 CALL print_hello_world
 ESIZEOF:
 CALL print_welcome
-$DEBUG ESIZEOF - SIZEOF
 HALT
 
 print_hello_world:
-CREST
 FPRINT "Hello Wo"
 FPRINT "rld,\n"
 RET
 
+$DEBUG print_hello_world
 print_welcome:
-CREST
 FPRINT "Welcome "
 FPRINT "to UASM\n"
 RET

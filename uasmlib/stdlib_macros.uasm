@@ -1,16 +1,5 @@
 ; 64 Bit storage macros
 .MACRO LDA64 x
-LDA 7, %x
-LDA 6, %x + 1
-LDA 5, %x + 2
-LDA 4, %x + 3
-LDA 3, %x + 4
-LDA 2, %x + 5
-LDA 1, %x + 6
-LDA 0, %x + 7
-.ENMAC
-
-.MACRO LDA64R x
 LDA 0, %x
 LDA 1, %x + 1
 LDA 2, %x + 2
@@ -19,6 +8,17 @@ LDA 4, %x + 4
 LDA 5, %x + 5
 LDA 6, %x + 6
 LDA 7, %x + 7
+.ENMAC
+
+.MACRO LDA64R x
+LDA 7, %x
+LDA 6, %x + 1
+LDA 5, %x + 2
+LDA 4, %x + 3
+LDA 3, %x + 4
+LDA 2, %x + 5
+LDA 1, %x + 6
+LDA 0, %x + 7
 .ENMAC
 
 .MACRO LDB64 x
@@ -34,17 +34,6 @@ SWP
 .ENMAC
 
 .MACRO STA64 x
-STA %x, 7
-STA %x + 1, 6
-STA %x + 2, 5
-STA %x + 3, 4
-STA %x + 4, 3
-STA %x + 5, 2
-STA %x + 6, 1
-STA %x + 7, 0
-.ENMAC
-
-.MACRO STA64R x
 STA %x, 0
 STA %x + 1, 1
 STA %x + 2, 2
@@ -53,6 +42,17 @@ STA %x + 4, 4
 STA %x + 5, 5
 STA %x + 6, 6
 STA %x + 7, 7
+.ENMAC
+
+.MACRO STA64R x
+STA %x, 7
+STA %x + 1, 6
+STA %x + 2, 5
+STA %x + 3, 4
+STA %x + 4, 3
+STA %x + 5, 2
+STA %x + 6, 1
+STA %x + 7, 0
 .ENMAC
 
 .MACRO STB64 x
@@ -69,8 +69,8 @@ SWP
 
 ; 16 Bit storage macros
 .MACRO LDA16 x
-LDA 1, %x
-LDA 0, %x + 1
+LDA 0, %x
+LDA 1, %x + 1
 .ENMAC
 
 .MACRO LDB16 x
@@ -80,8 +80,8 @@ SWP
 .ENMAC
 
 .MACRO STA16 x
-STA %x, 1
-STA %x + 1, 0
+STA %x, 0
+STA %x + 1, 1
 .ENMAC
 
 .MACRO STB16 x
@@ -144,18 +144,13 @@ LDB 0, v + 8
 CMPAB
 v:
 VOID 8
-LDB 0, v + 8
+LDB 0, v + 1
 .ENMAC
 
 .MACRO SETA1
 SWP
 SETB1
 SWP
-.ENMAC
-
-.MACRO FJMP addr
-SETBZ
-JMPBZ %addr
 .ENMAC
 
 .MACRO LDAB64
@@ -183,6 +178,14 @@ STAB 7
 .MACRO INCA64
 STB64 TEMP_INC
 SETB1
+ADDAB
+LDB64 TEMP_INC
+.ENMAC
+
+.MACRO INC2A64
+STB64 TEMP_INC
+SETB1
+ADDAB
 ADDAB
 LDB64 TEMP_INC
 .ENMAC
@@ -303,7 +306,7 @@ STA16 TEMP_SET
 v:
 VOID %val
 ; set A to value
-LDA16 v+7
+LDA16 v+1
 ; set addr to a
 STA16 %addr
 ; reset state
@@ -313,7 +316,7 @@ LDA16 TEMP_SET
 .MACRO SETAV16 val
 v:
 VOID %val
-LDA16 v+7
+LDA16 v+1
 .ENMAC
 
 .MACRO PUSHA
@@ -334,58 +337,15 @@ LDB64 TEMP_PUSH
 
 .MACRO CALL addr
 STA64 TEMP_CALL
-call_start:
-; a = PC
 LDPCA
-; save B
-STB64 TEMP_CALL + 8
-; account for call offset
-SETBZ
-SWP
-SETAV16 call_end - call_start - 1
-SWP
-ADDAB
-; load csp into B
-SETBZ
-LDB16 P_CALLSTACK
-; store A at csp
-STAB64
-; inc csp
-INC8B16
-STB16 P_CALLSTACK
-; goto addr
-LDA64 TEMP_CALL
-FJMP %addr
-call_end:
-; after call returns reset from return
-RREST
-.ENMAC
-
-; Restore state from call
-.MACRO CREST
-LDB64 TEMP_CALL + 8
+; voiding addr allows us to grab it from ldpca instead
+; of running an expensive 64bit macro
+VOID %addr
+JMP _STDLIB_CALL
 .ENMAC
 
 .MACRO RET
-; save
-STA64 TEMP_RET
-STB64 TEMP_RET + 8
-; load csp
-SETBZ
-LDB16 P_CALLSTACK
-; dec csp
-DEC8B16
-; load address from csp
-LDAB64
-STB16 P_CALLSTACK
-; goto a
-LDB64 TEMP_RET + 8
-JMPA
-.ENMAC
-
-; Restore state from ret
-.MACRO RREST
-LDA64 TEMP_RET
+JMP _STDLIB_RET
 .ENMAC
 
 .MACRO PUTA64

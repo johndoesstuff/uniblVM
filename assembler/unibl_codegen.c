@@ -30,7 +30,7 @@ void emit_byte(uint8_t byte) {
 
 // WRITES 8 BYTES TO PROGRAM (64 BIT VALUE)
 void emit_u64(uint64_t val) {
-	for (int i = 7; i >= 0; i--) {
+	for (int i = 0; i < 8; i++) {
 		emit_byte((val >> (8 * i)) & 0xFF);
 	}
 }
