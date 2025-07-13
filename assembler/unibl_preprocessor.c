@@ -229,7 +229,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	
 	// DONT EXPAND KNOWN OPCODES
 	static const char* ops[] = {"HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA"};
-	for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < 13; i++) {
 		if (strcmp(inst, ops[i]) == 0) return inst_to_str(inst, arguments);
 	}
 
@@ -272,7 +272,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 			char* key;
 			asprintf(&key, "%%%s", label);
 			char* val;
-			asprintf(&val, "%s_%d", label, macro_call_id);
+			asprintf(&val, "__macro_%s_%s_%d", inst, label, macro_call_id);
 			char* replaced = replace_substr(line, key, val);
 			free(line);
 			free(key);

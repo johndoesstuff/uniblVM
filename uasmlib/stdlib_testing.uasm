@@ -19,10 +19,8 @@ SETAZ
 vb_0:
 VOID vb_0 + 1
 LDB64 vb_0 + 1
-HALT
 STAB64
-STB64 vb_0 + 1
-HALT
+LDB64 vb_0 + 1
 JMPBZ success_1
 FJMP failure
 
