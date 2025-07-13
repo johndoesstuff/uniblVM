@@ -357,6 +357,8 @@ STB16 P_CALLSTACK
 LDA64 TEMP_CALL
 FJMP %addr
 call_end:
+; after call returns reset from return
+RREST
 .ENMAC
 
 ; Restore state from call

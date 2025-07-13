@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
+#include <time.h>
 #include "../inc/unibl.h"
+#define OPS 13
 
 uint8_t* MEM;
 uint64_t ACC_A;
@@ -16,10 +18,17 @@ int DUMP;
 uint64_t DUMP_START;
 uint64_t DUMP_END;
 int EXPAND;
+int STATS;
+int STATS_DET;
+int COMPLEXITY;
+size_t bytes_loaded = 0;
+size_t bytes_read = 0;
+char* inst_set[] = { "HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA" };
 
 // LOAD BYTE FROM PROGRAM
 uint8_t read_u8() {
 	uint8_t u = MEM[PC++];
+	bytes_loaded++;
 	if (DEV) printf("Loaded u8 %" PRIX8 "\n", u);
 	return u;
 }
@@ -42,7 +51,7 @@ void load_binary(const char* filename) {
 		exit(1);
 	}
 	
-	size_t bytes_read = fread(MEM + ENTRY_POINT, 1, MEM_SIZE - ENTRY_POINT, f);
+	bytes_read = fread(MEM + ENTRY_POINT, 1, MEM_SIZE - ENTRY_POINT, f);
 	if (ferror(f)) {
 		fprintf(stderr, "Error reading file %s", filename);
 		fclose(f);
@@ -79,6 +88,9 @@ int main(int argc, char** argv) {
 	DUMP_START = 0;
 	DUMP_END = 0;
 	EXPAND = 0;
+	STATS = 0;
+	STATS_DET = 0;
+	COMPLEXITY = 0;
 	argv++;
 	for (int i = 1; i < argc; argv++, i++) {
 		if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0) {
@@ -105,15 +117,31 @@ int main(int argc, char** argv) {
 		} else if (strcmp(*argv, "-e") == 0 || strcmp(*argv, "--expand") == 0) {
 			DEBUG = 1;
 			EXPAND = 1;
+		} else if (strcmp(*argv, "-s") == 0 || strcmp(*argv, "--stats") == 0) {
+			STATS = 1;
+		} else if (strcmp(*argv, "-S") == 0 || strcmp(*argv, "--stats-detail") == 0) {
+			STATS = 1;
+			STATS_DET = 1;
+		} else if (strcmp(*argv, "-c") == 0 || strcmp(*argv, "--complexity") == 0) {
+			COMPLEXITY = 1;
 		} else {
 			load_binary(*argv);
 		}
 	}
 
+	int stats[OPS + 3];
+	size_t cycles = 0;
+	struct timespec start_time, end_time;
+	if (COMPLEXITY) {
+		clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+	}
+
+
 	// LOAD PROGRAM BINARY
 
 	while (1) {
 		uint8_t op = read_u8();
+		if (STATS) stats[op]++;
 		//if (DEBUG) printf("Loaded op %u\n", op);
 		uint64_t spc = PC;
 
@@ -185,6 +213,7 @@ int main(int argc, char** argv) {
 		if (EXPAND) printf("\tB=0x%-8" PRIX64, ACC_B);
 		if (EXPAND) printf("\tPC=0x%-8" PRIX64, spc);
 		if (DEBUG) printf("\n");
+		cycles++;
 	}
 
 	// DEBUG INFORMATION
@@ -192,6 +221,27 @@ int main(int argc, char** argv) {
 		printf("Program execution ended at PC=0x%" PRIX64 "\n", PC - 1);
 		printf("ACC_A=0x%" PRIX64 "\n", ACC_A);
 		printf("ACC_B=0x%" PRIX64 "\n", ACC_B);
+	}
+	
+	if (STATS) {
+		int sum = 0;
+		for (int i = 0; i < OPS; i++) {
+			sum += stats[i];
+		}
+		printf("Execution stats:\n");
+		for (int i = 0; i < OPS; i++) {
+			printf("%s:\t%5d\t%7.2f%%\n", inst_set[i], stats[i], (float)stats[i]/sum*100);
+		}
+	}
+
+	if (COMPLEXITY) {
+		printf("%lu Program Size\n", bytes_read);
+		printf("%lu Bytes Loaded\n", bytes_loaded);
+		printf("%lu Cycles\n", cycles);
+		clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
+		uint64_t micros = (end_time.tv_sec - start_time.tv_sec) * 1000000
+			+ (end_time.tv_nsec - start_time.tv_nsec) / 1000;
+		printf("%lu Microseconds\n", micros);
 	}
 
 	if (DUMP) {
