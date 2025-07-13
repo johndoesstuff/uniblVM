@@ -411,3 +411,10 @@ VOID %str
 LDA64 data + 1
 PUTA64
 .ENMAC
+
+; Rest well king, you did your job and I will miss you
+.MACRO JMPA
+STA64 jmpa + 1
+jmpa:
+JMP 0
+.ENMAC
