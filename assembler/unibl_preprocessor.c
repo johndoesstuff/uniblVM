@@ -295,6 +295,7 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 		free(line);
 		st = new_st;
 	}
+	macro_call_id++;
 	return st;
 }
 

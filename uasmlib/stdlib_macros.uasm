@@ -232,6 +232,58 @@ INC8A16
 SWP
 .ENMAC
 
+.MACRO DECA64
+STB64 TEMP_INC
+SETB1
+SUBAB
+LDB64 TEMP_INC
+.ENMAC
+
+.MACRO DEC8A64
+STB64 TEMP_INC
+SETB8
+SUBAB
+LDB64 TEMP_INC
+.ENMAC
+
+.MACRO DECB64
+SWP
+DECA64
+SWP
+.ENMAC
+
+.MACRO DEC8B64
+SWP
+DEC8A64
+SWP
+.ENMAC
+
+.MACRO DECA16
+STB16 TEMP_INC
+SETB1
+SUBAB
+LDB16 TEMP_INC
+.ENMAC
+
+.MACRO DEC8A16
+STB16 TEMP_INC
+SETB8
+SUBAB
+LDB16 TEMP_INC
+.ENMAC
+
+.MACRO DECB16
+SWP
+DECA16
+SWP
+.ENMAC
+
+.MACRO DEC8B16
+SWP
+DEC8A16
+SWP
+.ENMAC
+
 .MACRO SET64 addr, val
 ; save state
 STA64 TEMP_SET
@@ -241,6 +293,20 @@ VOID %val
 LDA64 v+1
 ; set addr to a
 STA64 %addr
+; reset state
+LDA64 TEMP_SET
+.ENMAC
+
+.MACRO SET16 addr, val
+; save state
+STA64 TEMP_SET
+SETAZ
+v:
+VOID %val
+; set A to value
+LDA16 v+7
+; set addr to a
+STA16 %addr
 ; reset state
 LDA64 TEMP_SET
 .ENMAC
@@ -262,10 +328,11 @@ LDB64 TEMP_PUSH
 .ENMAC
 
 .MACRO CALL addr
+STA64 TEMP_CALL
 ; a = PC
 LDPCA
 ; save B
-STB64 TEMP_CALL
+STB64 TEMP_CALL + 8
 ; load csp into B
 SETBZ
 LDB16 P_CALLSTACK
@@ -275,9 +342,57 @@ STAB64
 INC8B16
 STB16 P_CALLSTACK
 ; goto addr
+LDA64 TEMP_CALL
 FJMP %addr
 .ENMAC
 
+; Restore state from call
 .MACRO CREST
-LDA64 TEMP_CALL
+LDB64 TEMP_CALL + 8
+.ENMAC
+
+.MACRO RET
+; save
+STA64 TEMP_RET
+STB64 TEMP_RET + 8
+; load csp
+SETBZ
+LDB16 P_CALLSTACK
+; load address from csp
+LDAB64
+; dec csp
+DEC8B16
+STB16 P_CALLSTACK
+; goto a
+LDB64 TEMP_RET + 8
+JMPA
+.ENMAC
+
+; Restore state from ret
+.MACRO RREST
+LDA64 TEMP_RET
+.ENMAC
+
+.MACRO PUTA64
+; save state of B
+STB64 TEMP_PUT
+; load stack pointer to B
+SETBZ
+LDB16 P_STDOUT
+; set *sp to A
+STAB64
+; inc B by 8 (64bit addr width)
+INC8B16
+; restore incremented stack pointer
+STB16 P_STDOUT
+; restore state of B
+LDB64 TEMP_PUT
+.ENMAC
+
+; print without preserving a register
+.MACRO FPRINT str
+data:
+VOID %str
+LDA64 data + 1
+PUTA64
 .ENMAC

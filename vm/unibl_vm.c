@@ -13,8 +13,9 @@ uint64_t PC = ENTRY_POINT;
 int DEBUG;
 int DEV;
 int DUMP;
-int DUMP_START;
-int DUMP_END;
+uint64_t DUMP_START;
+uint64_t DUMP_END;
+int EXPAND;
 
 // LOAD BYTE FROM PROGRAM
 uint8_t read_u8() {
@@ -77,6 +78,7 @@ int main(int argc, char** argv) {
 	DUMP = 0;
 	DUMP_START = 0;
 	DUMP_END = 0;
+	EXPAND = 0;
 	argv++;
 	for (int i = 1; i < argc; argv++, i++) {
 		if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0) {
@@ -100,6 +102,9 @@ int main(int argc, char** argv) {
 			DUMP_START = strtoull(range, NULL, 0);
 			DUMP_END = strtoull(sep + 1, NULL, 0);
 			DUMP = 1;
+		} else if (strcmp(*argv, "-e") == 0 || strcmp(*argv, "--expand") == 0) {
+			DEBUG = 1;
+			EXPAND = 1;
 		} else {
 			load_binary(*argv);
 		}
@@ -110,6 +115,7 @@ int main(int argc, char** argv) {
 	while (1) {
 		uint8_t op = read_u8();
 		//if (DEBUG) printf("Loaded op %u\n", op);
+		uint64_t spc = PC;
 
 		if (op == HALT) {
 			break;
@@ -119,75 +125,83 @@ int main(int argc, char** argv) {
 			if (offset >= 64) continue;
 			ACC_A &= ~((uint64_t)0xff << offset);
 			ACC_A |= (uint64_t)MEM[addr] << offset;
-			if (DEBUG) printf("LDA %u %" PRIX64 "\n", offset, addr);
+			if (DEBUG) printf("%-10s %-5u %-5" PRIX64, "LDA", offset, addr);
 		} else if (op == STA) {
 			uint64_t addr = read_u64();
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			MEM[addr] = 0xff & (ACC_A >> offset);
-			if (DEBUG) printf("STA %" PRIX64 " %u\n", addr, offset);
+			if (DEBUG) printf("%-10s %-5" PRIX64 " %-5u", "STA",  addr, offset);
 		} else if (op == SWP) {
 			uint64_t tmp = ACC_A;
 			ACC_A = ACC_B;
 			ACC_B = tmp;
-			if (DEBUG) printf("SWP\n");
+			if (DEBUG) printf("%-20s", "SWP");
 		} else if (op == JMPA) {
 			PC = ACC_A;
-			if (DEBUG) printf("JMPA\n");
-			if (DEBUG) printf("ACC_A=%" PRIX64 "\n", ACC_A);
+			if (DEBUG) printf("%-20s", "JMPA");
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
 			if (ACC_B == 0) {
 				PC = addr;
 			}
-			if (DEBUG) printf("JMPBZ %" PRIX64 "\n", addr);
+			if (DEBUG) printf("%-10s %-10" PRIX64, "JMPBZ", addr);
 		} else if (op == ADDAB) {
-			if (DEBUG) printf("ADDAB\n");
 			ACC_A += ACC_B;
+			if (DEBUG) printf("%-20s", "ADDAB");
 		} else if (op == SUBAB) {
 			if (ACC_B > ACC_A) {
 				ACC_A = 0;
 			} else {
 				ACC_A -= ACC_B;
 			}
-			if (DEBUG) printf("SUBAB\n");
+			if (DEBUG) printf("%-20s", "SUBAB");
 		} else if (op == LDAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			ACC_A &= ~(0xff << offset);
 			ACC_A |= MEM[ACC_B + offset/8] << offset;
-			if (DEBUG) printf("LDAB %u\n", offset);
+			if (DEBUG) printf("%-10s %-10u", "LDAB", offset);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
 			MEM[ACC_B + offset/8] = 0xff & (ACC_A >> offset);
-			if (DEBUG) printf("STAB %u\n", offset);
+			if (DEBUG) printf("%-10s %-10u", "STAB", offset);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
-			if (DEBUG) printf("CMPAB\n");
+			if (DEBUG) printf("%-20s", "CMPAB");
 		} else if (op == VOID) {
 			uint64_t u64 = read_u64();
-			if (DEBUG) printf("VOID %" PRIX64 "\n", u64);
+			if (DEBUG) printf("%-10s %-10" PRIX64, "VOID", u64);
 		} else if (op == LDPCA) {
 			ACC_A = PC;
-			if (DEBUG) printf("LDPCA\n");
+			if (DEBUG) printf("%-20s", "LDPCA");
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
 			exit(1);
 		}
+		if (EXPAND) printf("\t\t\tA=0x%-8" PRIX64, ACC_A);
+		if (EXPAND) printf("\tB=0x%-8" PRIX64, ACC_B);
+		if (EXPAND) printf("\tPC=0x%-8" PRIX64, spc);
+		if (DEBUG) printf("\n");
 	}
 
 	// DEBUG INFORMATION
 	if (DEBUG) {
-		printf("Program execution ended at PC=%" PRIX64 "\n", PC - 1);
-		printf("ACC_A=%" PRIX64 "\n", ACC_A);
-		printf("ACC_B=%" PRIX64 "\n", ACC_B);
-		printf("Dumping Standard Output...\n");
+		printf("Program execution ended at PC=0x%" PRIX64 "\n", PC - 1);
+		printf("ACC_A=0x%" PRIX64 "\n", ACC_A);
+		printf("ACC_B=0x%" PRIX64 "\n", ACC_B);
 	}
 
-	if (DUMP) dump_memory(DUMP_START, DUMP_END);
+	if (DUMP) {
+		printf("Dumping Memory 0x%" PRIX64 "-0x%" PRIX64 "\n", DUMP_START, DUMP_END);
+		dump_memory(DUMP_START, DUMP_END);
+	}
 
 	// OUTPUT STANDARD OUTPUT (0x0400-0x07FF)
+	if (DEBUG) {
+		printf("Dumping Standard Output...\n");
+	}
 	for (uint64_t addr = 0x0400; addr < 0x07FF; addr++) {
 		printf("%c", MEM[addr]);
 	}

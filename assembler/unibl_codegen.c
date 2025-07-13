@@ -45,7 +45,7 @@ void write_program_to_file(const char* filename) {
 
 	fwrite(program, 1, program_size, f);
 	fclose(f);
-	printf("Wrote %zu bytes to %s\n", program_size, filename);
+	//printf("Wrote %zu bytes to %s\n", program_size, filename);
 }
 
 // HALT PROGRAM
