@@ -57,6 +57,8 @@ void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 		_sta(ops->values[0], ops->values[1]);
 	} else if (strcmp(instr, "JMPBZ") == 0) {
 		_jmpbz(ops->values[0]);
+	} else if (strcmp(instr, "JMP") == 0) {
+		_jmp(ops->values[0]);
 	} else if (strcmp(instr, "LDAB") == 0) {
 		_ldab(ops->values[0]);
 	} else if (strcmp(instr, "STAB") == 0) {
@@ -98,9 +100,7 @@ void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
 
 // ADDS A SINGLE INSTRUCTION (NO ARGUMENTS)
 void add_si(const char *instr, uint64_t *pc) {
-	if (strcmp(instr, "JMPA") == 0) {
-		_jmpa();
-	} else if (strcmp(instr, "SWP") == 0) {
+	if (strcmp(instr, "SWP") == 0) {
 		_swp();
 	} else if (strcmp(instr, "ADDAB") == 0) {
 		_addab();

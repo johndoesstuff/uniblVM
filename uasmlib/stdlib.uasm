@@ -35,23 +35,8 @@ $DEF RETURN 0x0000
 ; 0x0000 = Return Code
 
 ; Jump ahead to clear memory for call stack, stack and temp
-; Round up to nearest 0x0100
-VOID TEMP + 0x0100
-_CSLDA:
-LDA 1, ENTRY_POINT + 7
-_CSJMPA:
-JMPA
-
-$PC 0x1A00
-
-; Set Callstack to 0
-SWP
-STA CALLSTACK, 0
-STA _CSLDA, 0
-STA _CSLDA + 1, 0
-STA _CSLDA + 8, 0
-STA _CSLDA + 9, 0
-STA _CSJMPA, 0
+JMP TEMP + 0x0100
+$PC TEMP + 0x0100
 
 ; Initialize Pointers
 SET16 P_STDIN, 0x000
@@ -59,10 +44,11 @@ SET16 P_STDOUT, 0x400
 SET16 P_CALLSTACK, CALLSTACK
 SET16 P_STACK, STACK
 
+SIZEOF:
 CALL print_hello_world
-RREST
+ESIZEOF:
 CALL print_welcome
-RREST
+$DEBUG ESIZEOF - SIZEOF
 HALT
 
 print_hello_world:

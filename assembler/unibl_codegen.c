@@ -72,9 +72,10 @@ void _swp() {
 	emit_byte(SWP);
 }
 
-// JUMP TO VALUE AT REGISTER A
-void _jmpa() {
-	emit_byte(JMPA);
+// JUMP TO VALUE
+void _jmp(uint64_t addr) {
+	emit_byte(JMP);
+	emit_u64(addr);
 }
 
 // JUMP TO ADDRESS IF REGISTER B IS ZERO

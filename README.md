@@ -61,9 +61,9 @@ Swap values of A and B
 
 *This is what gives power to the B accumulator, SWP allows any function that works on A to share the same behaviour on B. For example:* `LDB` *could be defined as* `SWP -> LDA -> SWP`
 
-**4 = JMPA**
+**4 = JMP [u64: address]**
 
-Jump to address of A
+Jump to address
 
 *Being able to jump to any position in program during execution is extremely useful and necessary for turing completeness.*
 
@@ -71,7 +71,7 @@ Jump to address of A
 
 Jump to address if B is zero
 
-*Jumping is useful but having a conditional jump is also required for turing completeness. You may have noticed that* `JMPBZ` *could potentially eliminate the need for* `JMPA` *by using STA to override the value at the address of the argument then setting B to zero, however this is more tedious and memory inefficient than simply implementing this function into the virtual machine. Especially because JMPA allows for the value of B to transfer without having to store it in memory.*
+*Jumping is useful but having a conditional jump is also required for turing completeness. You may have noticed that* `JMPBZ` *could potentially eliminate the need for* `JMP` *by always setting B to zero, however this is more tedious and memory inefficient than simply implementing this function into the virtual machine. The power of JMP is that it allows for the value of B to transfer without having to store it in memory.*
 
 **6 = ADDAB**
 

@@ -94,9 +94,10 @@ int main(int argc, char** argv) {
 			ACC_A = ACC_A ^ ACC_B;
 			ACC_B = ACC_A ^ ACC_B;
 			ACC_A = ACC_A ^ ACC_B;
-		} else if (op == JMPA) {
-			// SET PROGRAM COUNTER TO ACC_A
-			PC = ACC_A;
+		} else if (op == JMP) {
+			uint64_t addr = read_u64();
+			// SET PROGRAM COUNTER TO ADDRESS
+			PC = addr;
 		} else if (op == JMPBZ) {
 			// SET PROGRAM COUNTER TO addr IF ACC_B IS ZERO
 			uint64_t addr = read_u64();

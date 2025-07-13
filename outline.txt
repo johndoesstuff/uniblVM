@@ -39,8 +39,8 @@ tmp = ACC_A
 ACC_A = ACC_B
 ACC_B = tmp
 
-JMPA (op == 4)
-PC = ACC_A
+JMP (op == 4)
+PC = read_u64()
 
 JMPBZ (op == 5)
 IF ACC_B == 0 THEN PC = read_u64()

@@ -3,7 +3,7 @@
 #define LDA 1
 #define STA 2
 #define SWP 3
-#define JMPA 4
+#define JMP 4
 #define JMPBZ 5
 #define ADDAB 6
 #define SUBAB 7

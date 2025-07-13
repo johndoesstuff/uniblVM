@@ -23,7 +23,7 @@ int STATS_DET;
 int COMPLEXITY;
 size_t bytes_loaded = 0;
 size_t bytes_read = 0;
-char* inst_set[] = { "HALT", "LDA", "STA", "SWP", "JMPA", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA" };
+char* inst_set[] = { "HALT", "LDA", "STA", "SWP", "JMP", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA" };
 
 // LOAD BYTE FROM PROGRAM
 uint8_t read_u8() {
@@ -165,9 +165,10 @@ int main(int argc, char** argv) {
 			ACC_A = ACC_B;
 			ACC_B = tmp;
 			if (DEBUG) printf("%-20s", "SWP");
-		} else if (op == JMPA) {
-			PC = ACC_A;
-			if (DEBUG) printf("%-20s", "JMPA");
+		} else if (op == JMP) {
+			uint64_t addr = read_u64();
+			PC = addr;
+			if (DEBUG) printf("%-20s", "JMP");
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
 			if (ACC_B == 0) {
