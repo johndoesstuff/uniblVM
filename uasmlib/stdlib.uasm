@@ -67,9 +67,9 @@ _STDLIB_CALL:
 STB64 TEMP_CALL + 8
 ; load csp into B
 SETBZ
-; inc a to end of call macro (+19)
+; inc a to end of call macro (+18)
 SWP
-SETAV16 19
+SETAV16 18
 SWP
 ADDAB
 LDB16 P_CALLSTACK
@@ -78,9 +78,9 @@ STAB64
 ; inc csp
 INC8B16
 STB16 P_CALLSTACK
-; get addr (ldpca - 17)
+; get addr (ldpca - 1)
 SWP
-SETAV16 18
+SETAV16 17
 SWP
 SUBAB
 SWP
@@ -101,7 +101,7 @@ FPRINT "Hello Wo"
 FPRINT "rld,\n"
 RET
 
-$DEBUG print_hello_world
+$DEBUG ESIZEOF - SIZEOF
 print_welcome:
 FPRINT "Welcome "
 FPRINT "to UASM\n"
