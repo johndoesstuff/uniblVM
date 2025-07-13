@@ -59,10 +59,20 @@ SET16 P_STDOUT, 0x400
 SET16 P_CALLSTACK, CALLSTACK
 SET16 P_STACK, STACK
 
+CALL print_hello_world
+RREST
+CALL print_welcome
+RREST
+HALT
+
+print_hello_world:
+CREST
 FPRINT "Hello Wo"
-FPRINT "rld, wel"
-FPRINT "come to "
-FPRINT "the UNIB"
-FPRINT "L Standa"
-FPRINT "rd Libra"
-FPRINT "ry!\n"
+FPRINT "rld,\n"
+RET
+
+print_welcome:
+CREST
+FPRINT "Welcome "
+FPRINT "to UASM\n"
+RET

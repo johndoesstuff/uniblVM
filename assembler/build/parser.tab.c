@@ -530,9 +530,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    40,    40,    44,    45,    49,    50,    51,    52,    53,
-      54,    55,    59,    60,    63,    64,    67,    68,    69,    72,
-      73,    74,    77,    78,    81,    82
+       0,    42,    42,    46,    47,    51,    52,    53,    54,    55,
+      56,    57,    61,    62,    65,    66,    69,    70,    71,    74,
+      75,    76,    79,    80,    83,    84
 };
 #endif
 
@@ -579,8 +579,8 @@ static const yytype_int8 yypact[] =
       -2,    -1,   -17,     4,     9,    35,    -2,   -17,   -17,   -17,
      -17,   -17,    18,    19,   -17,     7,    26,   -17,   -17,    28,
      -17,    28,    28,   -17,   -17,   -17,    27,    29,   -17,    14,
-      19,    19,    19,    26,   -17,    26,    26,   -17,    29,    29,
-      29
+      19,   -17,   -17,    26,   -17,    26,    26,   -17,    29,   -17,
+     -17
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1498,121 +1498,121 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: IDENT COLON  */
-#line 49 "assembler/parser.y"
+#line 51 "assembler/parser.y"
                                                 { add_label((yyvsp[-1].str), &PC); }
 #line 1504 "assembler/build/parser.tab.c"
     break;
 
   case 6: /* line: DEF_DIRECTIVE IDENT directive_term NEWLINE  */
-#line 50 "assembler/parser.y"
+#line 52 "assembler/parser.y"
                                                         { add_label((yyvsp[-2].str), &(yyvsp[-1].u64)); }
 #line 1510 "assembler/build/parser.tab.c"
     break;
 
   case 7: /* line: IDENT operands NEWLINE  */
-#line 51 "assembler/parser.y"
+#line 53 "assembler/parser.y"
                                                 { add_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
 #line 1516 "assembler/build/parser.tab.c"
     break;
 
   case 8: /* line: DIRECTIVE IDENT directive_operands NEWLINE  */
-#line 52 "assembler/parser.y"
+#line 54 "assembler/parser.y"
                                                         { directive_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
 #line 1522 "assembler/build/parser.tab.c"
     break;
 
   case 9: /* line: IDENT NEWLINE  */
-#line 53 "assembler/parser.y"
+#line 55 "assembler/parser.y"
                                                 { add_si((yyvsp[-1].str), &PC); }
 #line 1528 "assembler/build/parser.tab.c"
     break;
 
   case 10: /* line: DIRECTIVE IDENT NEWLINE  */
-#line 54 "assembler/parser.y"
+#line 56 "assembler/parser.y"
                                                 { directive_si((yyvsp[-1].str), &PC); }
 #line 1534 "assembler/build/parser.tab.c"
     break;
 
   case 12: /* operands: term  */
-#line 59 "assembler/parser.y"
+#line 61 "assembler/parser.y"
                                 { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
 #line 1540 "assembler/build/parser.tab.c"
     break;
 
   case 13: /* operands: operands COMMA term  */
-#line 60 "assembler/parser.y"
+#line 62 "assembler/parser.y"
                                 { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
 #line 1546 "assembler/build/parser.tab.c"
     break;
 
   case 14: /* directive_operands: directive_term  */
-#line 63 "assembler/parser.y"
+#line 65 "assembler/parser.y"
                                                         { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
 #line 1552 "assembler/build/parser.tab.c"
     break;
 
   case 15: /* directive_operands: directive_operands COMMA directive_term  */
-#line 64 "assembler/parser.y"
+#line 66 "assembler/parser.y"
                                                         { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
 #line 1558 "assembler/build/parser.tab.c"
     break;
 
   case 16: /* term: NUM  */
-#line 67 "assembler/parser.y"
+#line 69 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
 #line 1564 "assembler/build/parser.tab.c"
     break;
 
   case 17: /* term: IDENT  */
-#line 68 "assembler/parser.y"
+#line 70 "assembler/parser.y"
                                 { (yyval.u64) = get_label((yyvsp[0].str), 0); }
 #line 1570 "assembler/build/parser.tab.c"
     break;
 
   case 18: /* term: expression  */
-#line 69 "assembler/parser.y"
+#line 71 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
 #line 1576 "assembler/build/parser.tab.c"
     break;
 
   case 19: /* directive_term: NUM  */
-#line 72 "assembler/parser.y"
+#line 74 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
 #line 1582 "assembler/build/parser.tab.c"
     break;
 
   case 20: /* directive_term: IDENT  */
-#line 73 "assembler/parser.y"
+#line 75 "assembler/parser.y"
                                 { (yyval.u64) = get_label((yyvsp[0].str), 1); }
 #line 1588 "assembler/build/parser.tab.c"
     break;
 
   case 21: /* directive_term: directive_expression  */
-#line 74 "assembler/parser.y"
+#line 76 "assembler/parser.y"
                                         { (yyval.u64) = (yyvsp[0].u64); }
 #line 1594 "assembler/build/parser.tab.c"
     break;
 
   case 22: /* expression: term PLUS term  */
-#line 77 "assembler/parser.y"
+#line 79 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
 #line 1600 "assembler/build/parser.tab.c"
     break;
 
   case 23: /* expression: term MINUS term  */
-#line 78 "assembler/parser.y"
+#line 80 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[-2].u64) - (yyvsp[0].u64); }
 #line 1606 "assembler/build/parser.tab.c"
     break;
 
   case 24: /* directive_expression: directive_term PLUS directive_term  */
-#line 81 "assembler/parser.y"
+#line 83 "assembler/parser.y"
                                                 { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
 #line 1612 "assembler/build/parser.tab.c"
     break;
 
   case 25: /* directive_expression: directive_term MINUS directive_term  */
-#line 82 "assembler/parser.y"
+#line 84 "assembler/parser.y"
                                                 { (yyval.u64) = (yyvsp[-2].u64) - (yyvsp[0].u64); }
 #line 1618 "assembler/build/parser.tab.c"
     break;
@@ -1847,6 +1847,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 84 "assembler/parser.y"
+#line 86 "assembler/parser.y"
 
 

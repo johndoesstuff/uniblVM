@@ -36,6 +36,8 @@ void yyerror(const char *s) {
 %type <par> params
 %type <mac> macro_body
 
+%left PLUS MINUS
+
 %%
 
 program:

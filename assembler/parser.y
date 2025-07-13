@@ -34,6 +34,8 @@ void asm_error(const char *s) {
 %type <u64> term expression directive_term directive_expression
 %type <oplist> operands directive_operands
 
+%left PLUS MINUS
+
 %%
 
 program:

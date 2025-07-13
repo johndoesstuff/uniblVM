@@ -159,13 +159,13 @@ int main(int argc, char** argv) {
 		} else if (op == LDAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
-			ACC_A &= ~(0xff << offset);
-			ACC_A |= MEM[ACC_B + offset/8] << offset;
+			ACC_A &= ~((uint64_t)0xff << offset);
+			ACC_A |= (uint64_t)MEM[ACC_B + offset/8] << offset;
 			if (DEBUG) printf("%-10s %-10u", "LDAB", offset);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
 			if (offset >= 64) continue;
-			MEM[ACC_B + offset/8] = 0xff & (ACC_A >> offset);
+			MEM[ACC_B + offset/8] = (uint64_t)0xff & (ACC_A >> offset);
 			if (DEBUG) printf("%-10s %-10u", "STAB", offset);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
@@ -174,7 +174,8 @@ int main(int argc, char** argv) {
 			uint64_t u64 = read_u64();
 			if (DEBUG) printf("%-10s %-10" PRIX64, "VOID", u64);
 		} else if (op == LDPCA) {
-			ACC_A = PC;
+			// WHEN LOADING PC LOAD PC FROM BEFORE OPCODE WAS CONSUMED
+			ACC_A = spc;
 			if (DEBUG) printf("%-20s", "LDPCA");
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);

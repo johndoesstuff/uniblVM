@@ -299,8 +299,7 @@ LDA64 TEMP_SET
 
 .MACRO SET16 addr, val
 ; save state
-STA64 TEMP_SET
-SETAZ
+STA16 TEMP_SET
 v:
 VOID %val
 ; set A to value
@@ -308,7 +307,13 @@ LDA16 v+7
 ; set addr to a
 STA16 %addr
 ; reset state
-LDA64 TEMP_SET
+LDA16 TEMP_SET
+.ENMAC
+
+.MACRO SETAV16 val
+v:
+VOID %val
+LDA16 v+7
 .ENMAC
 
 .MACRO PUSHA
@@ -329,10 +334,17 @@ LDB64 TEMP_PUSH
 
 .MACRO CALL addr
 STA64 TEMP_CALL
+call_start:
 ; a = PC
 LDPCA
 ; save B
 STB64 TEMP_CALL + 8
+; account for call offset
+SETBZ
+SWP
+SETAV16 call_end - call_start - 1
+SWP
+ADDAB
 ; load csp into B
 SETBZ
 LDB16 P_CALLSTACK
@@ -344,6 +356,7 @@ STB16 P_CALLSTACK
 ; goto addr
 LDA64 TEMP_CALL
 FJMP %addr
+call_end:
 .ENMAC
 
 ; Restore state from call
@@ -358,10 +371,10 @@ STB64 TEMP_RET + 8
 ; load csp
 SETBZ
 LDB16 P_CALLSTACK
-; load address from csp
-LDAB64
 ; dec csp
 DEC8B16
+; load address from csp
+LDAB64
 STB16 P_CALLSTACK
 ; goto a
 LDB64 TEMP_RET + 8

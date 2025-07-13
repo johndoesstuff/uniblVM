@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 
 	// EXECUTION LOOP
 	while (1) {
+		uint64_t PC_AT_OP = PC;
 		uint8_t op = read_u8();
 
 		if (op == HALT) {
@@ -133,13 +134,13 @@ int main(int argc, char** argv) {
 			// READ 8 BYTES AND DO NOTHING
 			uint64_t u64 = read_u64();
 		} else if (op == LDPCA) {
-			// SET ACC_A TO PROGRAM COUNTER
-			ACC_A = PC;
+			// ITS CRITICAL THAT LDPCA LOADS THE PC AT THE LDPCA INSTRUCTION
+			ACC_A = PC_AT_OP;
 		} else {
 			// ANY OTHER OPCODE IS NOT VALID
 			// THIS IS ALL THAT IS REQUIRED TO MAKE A
 			// COMPLETE UNIBL VIRTUAL MACHINE
-			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
+			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC_AT_OP);
 			exit(1);
 		}
 	}

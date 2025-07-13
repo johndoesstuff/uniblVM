@@ -539,11 +539,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    42,    42,    42,    46,    47,    51,    52,    56,    56,
-      60,    61,    62,    66,    67,    71,    72,    73,    74,    75,
-      76,    77,    80,    81,    84,    85,    86,    94,    98,    99,
-     103,   104,   105,   106,   107,   108,   109,   113,   114,   117,
-     118,   119,   122,   123
+       0,    44,    44,    44,    48,    49,    53,    54,    58,    58,
+      62,    63,    64,    68,    69,    73,    74,    75,    76,    77,
+      78,    79,    82,    83,    86,    87,    88,    96,   100,   101,
+     105,   106,   107,   108,   109,   110,   111,   115,   116,   119,
+     120,   121,   124,   125
 };
 #endif
 
@@ -591,10 +591,10 @@ static const yytype_int8 yypact[] =
      -42,    38,    -3,   -42,    24,   -42,    17,    31,    60,    -3,
      -42,   -42,   -42,   -42,   -42,   -42,   -42,    33,    46,   -42,
      -42,    34,    49,   -42,    49,   -42,    49,    49,    65,   -42,
-      50,    35,    46,    46,    46,   -42,    52,   -42,   -42,    66,
+      50,    35,    46,   -42,   -42,   -42,    52,   -42,   -42,    66,
        4,   -42,    20,   -42,    67,    68,     1,   -42,   -42,   -42,
      -42,   -42,   -42,    54,    55,   -42,    -2,    43,   -42,   -42,
-      43,   -42,    43,    43,   -42,    59,    41,    55,    55,    55,
+      43,   -42,    43,    43,   -42,    59,    41,    55,   -42,   -42,
      -42,   -42
 };
 
@@ -1533,127 +1533,127 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 42 "assembler/preprocessor.y"
+#line 44 "assembler/preprocessor.y"
         { init_program(program_str); }
 #line 1539 "assembler/build/preprocessor.tab.c"
     break;
 
   case 7: /* item: line  */
-#line 52 "assembler/preprocessor.y"
+#line 54 "assembler/preprocessor.y"
                         { if ((yyvsp[0].str)[0] != '\0') append_line(program_str, (yyvsp[0].str)); }
 #line 1545 "assembler/build/preprocessor.tab.c"
     break;
 
   case 8: /* $@2: %empty  */
-#line 56 "assembler/preprocessor.y"
+#line 58 "assembler/preprocessor.y"
                     { start_macro((yyvsp[0].str)); }
 #line 1551 "assembler/build/preprocessor.tab.c"
     break;
 
   case 9: /* macro: MACRO IDENT $@2 params NEWLINE macro_body ENDMACRO  */
-#line 56 "assembler/preprocessor.y"
+#line 58 "assembler/preprocessor.y"
                                                                                 { define_macro((yyvsp[-5].str), (yyvsp[-3].par), (yyvsp[-1].mac)); exit_macro(); free((yyvsp[-5].str)); }
 #line 1557 "assembler/build/preprocessor.tab.c"
     break;
 
   case 10: /* params: IDENT  */
-#line 60 "assembler/preprocessor.y"
+#line 62 "assembler/preprocessor.y"
                                         { (yyval.par) = make_macro_params((yyvsp[0].str)); free((yyvsp[0].str));  }
 #line 1563 "assembler/build/preprocessor.tab.c"
     break;
 
   case 11: /* params: params COMMA IDENT  */
-#line 61 "assembler/preprocessor.y"
+#line 63 "assembler/preprocessor.y"
                                         { (yyval.par) = append_macro_params((yyvsp[-2].par), (yyvsp[0].str)); free((yyvsp[0].str)); }
 #line 1569 "assembler/build/preprocessor.tab.c"
     break;
 
   case 12: /* params: %empty  */
-#line 62 "assembler/preprocessor.y"
+#line 64 "assembler/preprocessor.y"
                                         { (yyval.par) = make_macro_params(" "); }
 #line 1575 "assembler/build/preprocessor.tab.c"
     break;
 
   case 13: /* macro_body: macro_line  */
-#line 66 "assembler/preprocessor.y"
+#line 68 "assembler/preprocessor.y"
                                         { (yyval.mac) = make_macro_body((yyvsp[0].str)); free((yyvsp[0].str)); }
 #line 1581 "assembler/build/preprocessor.tab.c"
     break;
 
   case 14: /* macro_body: macro_body macro_line  */
-#line 67 "assembler/preprocessor.y"
+#line 69 "assembler/preprocessor.y"
                                         { (yyval.mac) = append_macro_body((yyvsp[-1].mac), (yyvsp[0].str)); free((yyvsp[0].str)); }
 #line 1587 "assembler/build/preprocessor.tab.c"
     break;
 
   case 15: /* macro_line: IDENT COLON  */
-#line 71 "assembler/preprocessor.y"
+#line 73 "assembler/preprocessor.y"
                                         { add_label_to_macro((yyvsp[-1].str)); char* st; asprintf(&st, "%%%s:", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
 #line 1593 "assembler/build/preprocessor.tab.c"
     break;
 
   case 16: /* macro_line: DEF_DIRECTIVE IDENT macro_term NEWLINE  */
-#line 72 "assembler/preprocessor.y"
+#line 74 "assembler/preprocessor.y"
                                                         { char* st; asprintf(&st, "$DEF %s %s", (yyvsp[-2].str), (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[-1].str)); }
 #line 1599 "assembler/build/preprocessor.tab.c"
     break;
 
   case 17: /* macro_line: IDENT macro_operands NEWLINE  */
-#line 73 "assembler/preprocessor.y"
+#line 75 "assembler/preprocessor.y"
                                         { char* st; asprintf(&st, "%s %s", (yyvsp[-2].str), (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[-1].str)); }
 #line 1605 "assembler/build/preprocessor.tab.c"
     break;
 
   case 18: /* macro_line: DIRECTIVE IDENT macro_operands NEWLINE  */
-#line 74 "assembler/preprocessor.y"
+#line 76 "assembler/preprocessor.y"
                                                         { char* st; asprintf(&st, "$%s %s", (yyvsp[-2].str), (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[-1].str)); }
 #line 1611 "assembler/build/preprocessor.tab.c"
     break;
 
   case 19: /* macro_line: IDENT NEWLINE  */
-#line 75 "assembler/preprocessor.y"
+#line 77 "assembler/preprocessor.y"
                                         { char* st; asprintf(&st, "%s", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
 #line 1617 "assembler/build/preprocessor.tab.c"
     break;
 
   case 20: /* macro_line: DIRECTIVE IDENT NEWLINE  */
-#line 76 "assembler/preprocessor.y"
+#line 78 "assembler/preprocessor.y"
                                                         { char* st; asprintf(&st, "$%s", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
 #line 1623 "assembler/build/preprocessor.tab.c"
     break;
 
   case 21: /* macro_line: NEWLINE  */
-#line 77 "assembler/preprocessor.y"
+#line 79 "assembler/preprocessor.y"
                                         { (yyval.str) = strdup(""); }
 #line 1629 "assembler/build/preprocessor.tab.c"
     break;
 
   case 22: /* macro_operands: macro_term  */
-#line 80 "assembler/preprocessor.y"
+#line 82 "assembler/preprocessor.y"
                                                 { (yyval.str) = (yyvsp[0].str); }
 #line 1635 "assembler/build/preprocessor.tab.c"
     break;
 
   case 23: /* macro_operands: macro_operands COMMA macro_term  */
-#line 81 "assembler/preprocessor.y"
+#line 83 "assembler/preprocessor.y"
                                                 { char* st; asprintf(&st, "%s, %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
 #line 1641 "assembler/build/preprocessor.tab.c"
     break;
 
   case 24: /* macro_term: PARAM  */
-#line 84 "assembler/preprocessor.y"
+#line 86 "assembler/preprocessor.y"
                                 { (yyval.str) = (yyvsp[0].str); }
 #line 1647 "assembler/build/preprocessor.tab.c"
     break;
 
   case 25: /* macro_term: NUM  */
-#line 85 "assembler/preprocessor.y"
+#line 87 "assembler/preprocessor.y"
                                 { (yyval.str) = (yyvsp[0].str); }
 #line 1653 "assembler/build/preprocessor.tab.c"
     break;
 
   case 26: /* macro_term: IDENT  */
-#line 86 "assembler/preprocessor.y"
+#line 88 "assembler/preprocessor.y"
                                 {
 					if (check_label_in_macro((yyvsp[0].str))) {
 						char* st;
@@ -1666,103 +1666,103 @@ yyreduce:
     break;
 
   case 27: /* macro_term: macro_expression  */
-#line 94 "assembler/preprocessor.y"
+#line 96 "assembler/preprocessor.y"
                                 { (yyval.str) = (yyvsp[0].str); }
 #line 1672 "assembler/build/preprocessor.tab.c"
     break;
 
   case 28: /* macro_expression: macro_term PLUS macro_term  */
-#line 98 "assembler/preprocessor.y"
+#line 100 "assembler/preprocessor.y"
                                                 { char* st; asprintf(&st, "%s + %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
 #line 1678 "assembler/build/preprocessor.tab.c"
     break;
 
   case 29: /* macro_expression: macro_term MINUS macro_term  */
-#line 99 "assembler/preprocessor.y"
+#line 101 "assembler/preprocessor.y"
                                                 { char* st; asprintf(&st, "%s - %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
 #line 1684 "assembler/build/preprocessor.tab.c"
     break;
 
   case 30: /* line: IDENT COLON  */
-#line 103 "assembler/preprocessor.y"
+#line 105 "assembler/preprocessor.y"
                                         { char* st; asprintf(&st, "%s:", (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-1].str)); }
 #line 1690 "assembler/build/preprocessor.tab.c"
     break;
 
   case 31: /* line: DEF_DIRECTIVE IDENT term NEWLINE  */
-#line 104 "assembler/preprocessor.y"
+#line 106 "assembler/preprocessor.y"
                                                 { char* st; asprintf(&st, "$DEF %s %s", (yyvsp[-2].str), (yyvsp[-1].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[-1].str)); }
 #line 1696 "assembler/build/preprocessor.tab.c"
     break;
 
   case 32: /* line: IDENT operands NEWLINE  */
-#line 105 "assembler/preprocessor.y"
+#line 107 "assembler/preprocessor.y"
                                         { (yyval.str) = check_macro_expansion((yyvsp[-2].str), (yyvsp[-1].arg)); }
 #line 1702 "assembler/build/preprocessor.tab.c"
     break;
 
   case 33: /* line: DIRECTIVE IDENT operands NEWLINE  */
-#line 106 "assembler/preprocessor.y"
+#line 108 "assembler/preprocessor.y"
                                                 { char* st; asprintf(&st, "$%s", (yyvsp[-2].str)); (yyval.str) = check_macro_expansion(st, (yyvsp[-1].arg)); free((yyvsp[-2].str)); }
 #line 1708 "assembler/build/preprocessor.tab.c"
     break;
 
   case 34: /* line: IDENT NEWLINE  */
-#line 107 "assembler/preprocessor.y"
+#line 109 "assembler/preprocessor.y"
                                         { (yyval.str) = check_macro_expansion((yyvsp[-1].str), NULL); }
 #line 1714 "assembler/build/preprocessor.tab.c"
     break;
 
   case 35: /* line: DIRECTIVE IDENT NEWLINE  */
-#line 108 "assembler/preprocessor.y"
+#line 110 "assembler/preprocessor.y"
                                         { char* st; asprintf(&st, "$%s", (yyvsp[-1].str)); (yyval.str) = check_macro_expansion(st, NULL); free((yyvsp[-1].str)); }
 #line 1720 "assembler/build/preprocessor.tab.c"
     break;
 
   case 36: /* line: NEWLINE  */
-#line 109 "assembler/preprocessor.y"
+#line 111 "assembler/preprocessor.y"
                                         { (yyval.str) = strdup(""); }
 #line 1726 "assembler/build/preprocessor.tab.c"
     break;
 
   case 37: /* operands: term  */
-#line 113 "assembler/preprocessor.y"
+#line 115 "assembler/preprocessor.y"
                                 { (yyval.arg) = make_argument_list((yyvsp[0].str)); }
 #line 1732 "assembler/build/preprocessor.tab.c"
     break;
 
   case 38: /* operands: operands COMMA term  */
-#line 114 "assembler/preprocessor.y"
+#line 116 "assembler/preprocessor.y"
                                 { (yyval.arg) = append_argument_list((yyvsp[-2].arg), (yyvsp[0].str)); }
 #line 1738 "assembler/build/preprocessor.tab.c"
     break;
 
   case 39: /* term: NUM  */
-#line 117 "assembler/preprocessor.y"
+#line 119 "assembler/preprocessor.y"
                         { (yyval.str) = (yyvsp[0].str); }
 #line 1744 "assembler/build/preprocessor.tab.c"
     break;
 
   case 40: /* term: IDENT  */
-#line 118 "assembler/preprocessor.y"
+#line 120 "assembler/preprocessor.y"
                         { (yyval.str) = (yyvsp[0].str); }
 #line 1750 "assembler/build/preprocessor.tab.c"
     break;
 
   case 41: /* term: expression  */
-#line 119 "assembler/preprocessor.y"
+#line 121 "assembler/preprocessor.y"
                         { (yyval.str) = (yyvsp[0].str); }
 #line 1756 "assembler/build/preprocessor.tab.c"
     break;
 
   case 42: /* expression: term PLUS term  */
-#line 122 "assembler/preprocessor.y"
+#line 124 "assembler/preprocessor.y"
                                 { char* st; asprintf(&st, "%s + %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
 #line 1762 "assembler/build/preprocessor.tab.c"
     break;
 
   case 43: /* expression: term MINUS term  */
-#line 123 "assembler/preprocessor.y"
+#line 125 "assembler/preprocessor.y"
                                 { char* st; asprintf(&st, "%s - %s", (yyvsp[-2].str), (yyvsp[0].str)); (yyval.str) = st; free((yyvsp[-2].str)); free((yyvsp[0].str)); }
 #line 1768 "assembler/build/preprocessor.tab.c"
     break;
@@ -1997,6 +1997,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 125 "assembler/preprocessor.y"
+#line 127 "assembler/preprocessor.y"
 
 
