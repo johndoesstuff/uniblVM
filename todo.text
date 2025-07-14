@@ -1,0 +1,34 @@
+INCOMING CHANGES SOON
+
+- Fundementally redesign LDA STA LDAB AND STAB to take a LENGTH argument (cut STA64 etc calls into 11 bytes instead of fucking 72 dear god please)
+- Add a NANDAB operator to bootstrap shift multiplication and other logic stuff
+
+Notes: If I have to implement another VM operator im crashing out everywhere john pork style
+
+Thats all for now i think stay tuned
+
+
+
+oh also i need to implement strings of more than 8 characters using <> notation
+^ probably should be done in an assembler directive?? idk man
+
+FPRINT <i am a big string>
+turns into
+FPRINT "i am a b"
+FPRINT "ig strin"
+FPRINT "g"
+
+
+
+
+
+also also i need to update docs on endianness and make sure the vm specifics are covered especially for the example vm - im not even sure if the example vm is currently working i havent compiled it once lol
+
+<uasmlib/math.uasm> would be goated
+- multiplication
+- division
+- modulus
+
+<uasmlib/float.uasm> would be insanely goated but horrifying to implement so thats later down the line once i have all my bitwise shit sorted out
+
+<uasmlib/string.uasm> for strcmp, strlen, and general string management. need to think of a clever way to store strings in memory that doesnt require a void call every 8 bytes. possibly i implement some kind of malloc in stdlib but i have no idea where i would even attach that in program space. this is a problem for future me to deal with.
