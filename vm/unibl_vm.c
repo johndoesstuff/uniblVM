@@ -170,54 +170,55 @@ int main(int argc, char** argv) {
 			uint64_t tmp = ACC_A;
 			ACC_A = ACC_B;
 			ACC_B = tmp;
-			if (DEBUG) printf("%-20s", "SWP");
+			if (DEBUG) printf("%-25s", "SWP");
 		} else if (op == JMP) {
 			uint64_t addr = read_u64();
 			PC = addr;
-			if (DEBUG) printf("%-10s %-10" PRIX64, "JMP", addr);
+			if (DEBUG) printf("%-10s %-15" PRIX64, "JMP", addr);
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
 			if (ACC_B == 0) {
 				PC = addr;
 			}
-			if (DEBUG) printf("%-10s %-10" PRIX64, "JMPBZ", addr);
+			if (DEBUG) printf("%-10s %-15" PRIX64, "JMPBZ", addr);
 		} else if (op == ADDAB) {
 			ACC_A += ACC_B;
-			if (DEBUG) printf("%-20s", "ADDAB");
+			if (DEBUG) printf("%-25s", "ADDAB");
 		} else if (op == SUBAB) {
 			if (ACC_B > ACC_A) {
 				ACC_A = 0;
 			} else {
 				ACC_A -= ACC_B;
 			}
-			if (DEBUG) printf("%-20s", "SUBAB");
+			if (DEBUG) printf("%-25s", "SUBAB");
 		} else if (op == LDAB) {
-			uint8_t offset = 8*read_u8();
+			uint8_t byte_offset = read_u8();
 			uint8_t width = read_u8();
-			if (offset + (width - 1) * 8 >= 64) continue;
+			uint8_t bit_offset = 8*byte_offset;
+			if (bit_offset + (width - 1) * 8 >= 64) continue;
 			for (int i = 0; i < width; i++) {
-				ACC_A &= ~(uint64_t)0xff << (offset + i*8);
-				ACC_A |= (uint64_t)MEM[ACC_B + offset/8 + i] << (offset + i*8);
+				ACC_A &= ~((uint64_t)0xff << (bit_offset + i*8));
+				ACC_A |= (uint64_t)MEM[ACC_B + byte_offset + i] << (bit_offset + i*8);
 			}
-			if (DEBUG) printf("%-10s %-5u %-5u", "LDAB", offset, width);
+			if (DEBUG) printf("%-10s %-5u %-10u", "LDAB", bit_offset, width);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
 			uint8_t width = read_u8();
 			if (offset + (width - 1) * 8 >= 64) continue;
 			for (int i = 0; i < width; i++) {
-				MEM[ACC_B + offset/8] = (uint64_t)0xff & (ACC_A >> offset);
+				MEM[ACC_B + offset/8 + i] = (uint64_t)0xff & (ACC_A >> (offset + i*8));
 			}
-			if (DEBUG) printf("%-10s %-5u %-5u", "STAB", offset, width);
+			if (DEBUG) printf("%-10s %-5u %-10u", "STAB", offset, width);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
-			if (DEBUG) printf("%-20s", "CMPAB");
+			if (DEBUG) printf("%-25s", "CMPAB");
 		} else if (op == VOID) {
 			uint64_t u64 = read_u64();
-			if (DEBUG) printf("%-10s %-10" PRIX64, "VOID", u64);
+			if (DEBUG) printf("%-10s %-15" PRIX64, "VOID", u64);
 		} else if (op == LDPCA) {
 			// WHEN LOADING PC LOAD PC FROM BEFORE OPCODE WAS CONSUMED
 			ACC_A = spc;
-			if (DEBUG) printf("%-20s", "LDPCA");
+			if (DEBUG) printf("%-25s", "LDPCA");
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
 			exit(1);

@@ -1,23 +1,23 @@
 .MACRO LDA64 x
-LDA 0, %x + 0
-LDA 1, %x + 1
-LDA 2, %x + 2
-LDA 3, %x + 3
-LDA 4, %x + 4
-LDA 5, %x + 5
-LDA 6, %x + 6
-LDA 7, %x + 7
+LDA 0, %x + 0, 1
+LDA 1, %x + 1, 1
+LDA 2, %x + 2, 1
+LDA 3, %x + 3, 1
+LDA 4, %x + 4, 1
+LDA 5, %x + 5, 1
+LDA 6, %x + 6, 1
+LDA 7, %x + 7, 1
 .ENMAC
 
 .MACRO STA64R x
-STA %x + 0, 7
-STA %x + 1, 6
-STA %x + 2, 5
-STA %x + 3, 4
-STA %x + 4, 3
-STA %x + 5, 2
-STA %x + 6, 1
-STA %x + 7, 0
+STA %x + 0, 0, 1
+STA %x + 1, 1, 1
+STA %x + 2, 2, 1
+STA %x + 3, 3, 1
+STA %x + 4, 4, 1
+STA %x + 5, 5, 1
+STA %x + 6, 6, 1
+STA %x + 7, 7, 1
 .ENMAC
 
 $DEF STDOUT 0x400

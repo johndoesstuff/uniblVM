@@ -1,24 +1,24 @@
 ; 64 Bit storage macros
 .MACRO LDA64 x
-LDA 0, %x
-LDA 1, %x + 1
-LDA 2, %x + 2
-LDA 3, %x + 3
-LDA 4, %x + 4
-LDA 5, %x + 5
-LDA 6, %x + 6
-LDA 7, %x + 7
+LDA 0, %x, 1
+LDA 1, %x + 1, 1
+LDA 2, %x + 2, 1
+LDA 3, %x + 3, 1
+LDA 4, %x + 4, 1
+LDA 5, %x + 5, 1
+LDA 6, %x + 6, 1
+LDA 7, %x + 7, 1
 .ENMAC
 
 .MACRO LDA64R x
-LDA 7, %x
-LDA 6, %x + 1
-LDA 5, %x + 2
-LDA 4, %x + 3
-LDA 3, %x + 4
-LDA 2, %x + 5
-LDA 1, %x + 6
-LDA 0, %x + 7
+LDA 7, %x, 1
+LDA 6, %x + 1, 1
+LDA 5, %x + 2, 1
+LDA 4, %x + 3, 1
+LDA 3, %x + 4, 1
+LDA 2, %x + 5, 1
+LDA 1, %x + 6, 1
+LDA 0, %x + 7, 1
 .ENMAC
 
 .MACRO LDB64 x
@@ -34,25 +34,25 @@ SWP
 .ENMAC
 
 .MACRO STA64 x
-STA %x, 0
-STA %x + 1, 1
-STA %x + 2, 2
-STA %x + 3, 3
-STA %x + 4, 4
-STA %x + 5, 5
-STA %x + 6, 6
-STA %x + 7, 7
+STA %x, 0, 1
+STA %x + 1, 1, 1
+STA %x + 2, 2, 1
+STA %x + 3, 3, 1
+STA %x + 4, 4, 1
+STA %x + 5, 5, 1
+STA %x + 6, 6, 1
+STA %x + 7, 7, 1
 .ENMAC
 
 .MACRO STA64R x
-STA %x, 7
-STA %x + 1, 6
-STA %x + 2, 5
-STA %x + 3, 4
-STA %x + 4, 3
-STA %x + 5, 2
-STA %x + 6, 1
-STA %x + 7, 0
+STA %x, 7, 1
+STA %x + 1, 6, 1
+STA %x + 2, 5, 1
+STA %x + 3, 4, 1
+STA %x + 4, 3, 1
+STA %x + 5, 2, 1
+STA %x + 6, 1, 1
+STA %x + 7, 0, 1
 .ENMAC
 
 .MACRO STB64 x
@@ -69,8 +69,8 @@ SWP
 
 ; 16 Bit storage macros
 .MACRO LDA16 x
-LDA 0, %x
-LDA 1, %x + 1
+LDA 0, %x, 1
+LDA 1, %x + 1, 1
 .ENMAC
 
 .MACRO LDB16 x
@@ -80,8 +80,8 @@ SWP
 .ENMAC
 
 .MACRO STA16 x
-STA %x, 0
-STA %x + 1, 1
+STA %x, 0, 1
+STA %x + 1, 1, 1
 .ENMAC
 
 .MACRO STB16 x
@@ -93,13 +93,13 @@ SWP
 ; General purpose macros
 .MACRO LDB x, y
 SWP
-LDA %x, %y
+LDA %x, %y, 1
 SWP
 .ENMAC
 
 .MACRO STB x, y
 SWP
-STA %x, %y
+STA %x, %y, 1
 SWP
 .ENMAC
 
@@ -117,7 +117,7 @@ CMPAB
 SWP
 v:
 VOID 0
-LDA 0, v + 1
+LDA 0, v + 1, 1
 .ENMAC
 
 ; Set A and B to 0
@@ -127,9 +127,9 @@ SWP
 CMPAB
 v:
 VOID 0
-LDA 0, v + 1
+LDA 0, v + 1, 1
 SWP
-LDA 0, v + 1
+LDA 0, v + 1, 1
 .ENMAC
 
 ; Set B to 1
@@ -154,25 +154,25 @@ SWP
 .ENMAC
 
 .MACRO LDAB64
-LDAB 0
-LDAB 1
-LDAB 2
-LDAB 3
-LDAB 4
-LDAB 5
-LDAB 6
-LDAB 7
+LDAB 0, 1
+LDAB 1, 1
+LDAB 2, 1
+LDAB 3, 1
+LDAB 4, 1
+LDAB 5, 1
+LDAB 6, 1
+LDAB 7, 1
 .ENMAC
 
 .MACRO STAB64
-STAB 0
-STAB 1
-STAB 2
-STAB 3
-STAB 4
-STAB 5
-STAB 6
-STAB 7
+STAB 0, 1
+STAB 1, 1
+STAB 2, 1
+STAB 3, 1
+STAB 4, 1
+STAB 5, 1
+STAB 6, 1
+STAB 7, 1
 .ENMAC
 
 .MACRO INCA64

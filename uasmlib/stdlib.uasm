@@ -89,6 +89,7 @@ JMPA
 
 
 _STDLIB_ENDLIB:
+FPRINT "TEST\n"
 
 SIZEOF:
 CALL print_hello_world

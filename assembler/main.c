@@ -52,17 +52,29 @@ OperandList *append_operand(OperandList *list, uint64_t value) {
 // ADDS AN INSTRUCTION WITH ARGUMENTS
 void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
 	if (strcmp(instr, "LDA") == 0) {
-		_lda(ops->values[0], ops->values[1]);
+		if (ops->count < 3) {
+			printf("Error generating LDA, expected 3 arguments but recieved %d\n", ops->count);
+		}
+		_lda(ops->values[0], ops->values[1], ops->values[2]);
 	} else if (strcmp(instr, "STA") == 0) {
-		_sta(ops->values[0], ops->values[1]);
+		if (ops->count < 3) {
+			printf("Error generating STA, expected 3 arguments but recieved %d\n", ops->count);
+		}
+		_sta(ops->values[0], ops->values[1], ops->values[2]);
 	} else if (strcmp(instr, "JMPBZ") == 0) {
 		_jmpbz(ops->values[0]);
 	} else if (strcmp(instr, "JMP") == 0) {
 		_jmp(ops->values[0]);
 	} else if (strcmp(instr, "LDAB") == 0) {
-		_ldab(ops->values[0]);
+		if (ops->count < 2) {
+			printf("Error generating LDAB, expected 2 arguments but recieved %d\n", ops->count);
+		}
+		_ldab(ops->values[0], ops->values[1]);
 	} else if (strcmp(instr, "STAB") == 0) {
-		_stab(ops->values[0]);
+		if (ops->count < 2) {
+			printf("Error generating STAB, expected 2 arguments but recieved %d\n", ops->count);
+		}
+		_stab(ops->values[0], ops->values[1]);
 	} else if (strcmp(instr, "VOID") == 0) {
 		_void(ops->values[0]);
 	} else {
