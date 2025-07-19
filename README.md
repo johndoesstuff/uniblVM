@@ -43,13 +43,13 @@ End program execution
 
 *If you are encountering a halt it is likely because you are at the end of a program anyway, since all memory addresses default to 0. Implementing this is useful and highly recommended but not necessary.*
 
-**1 = LDA [u8: offset] [u64: address]**
+**1 = LDA [u8: offset] [u64: address] [u8: width]**
 
 Load address into A
 
 *Having a function that is able to load an address from memory into an accumulator is absolutely necessary. For information on what* `offset` *means see* **What are offsets?**
 
-**2 = STA [u64: address] [u8: offset]**
+**2 = STA [u64: address] [u8: offset] [u8: width]**
 
 Store A into address
 
@@ -85,13 +85,13 @@ Subtract B from A and store the result in A
 
 *Could subtraction be implemented using the already defined instructions? Yes, but very VERY laboriously; to the point where the compute time would make it not worth it.*
 
-**8 = LDAB [u8: offset]**
+**8 = LDAB [u8: offset] [u8: width]**
 
 Same as `LDA` but using B + offset as the address
 
 *Could theoretically be implemented as a reference to* `LDA` *that uses* `SWP` *and* `STA` *to store B in the parameter address of* `LDA` *however this is extremely memory inefficient for such a fundemental dereference operation. Used to use only B as offset but later changed to use B + offset for 64bit compatibility.*
 
-**9 = STAB [u8: offset]**
+**9 = STAB [u8: offset] [u8: width]**
 
 Same as `STA` but using B + offset as the address
 
@@ -117,7 +117,7 @@ Set A to the address of the Program Counter
 
 ### What are offsets?
 
-In a function such as `LDA [u8: offset] [u64: address]` the offset refers to the section of A that the `u8` from memory is to be stored in. Since A is a `u64` BUT memory is a tape of `u8`'s there would be no purpose in having a `u64` register if the maximum value that could be loaded was `255`. Moreover if `255` was the maximum value loadable then only up to `0xFF` of memory would be addressable and the entire system would fall apart. To avoid this `u8`'s are stored in 8 bit sections of `u64` registers. For example:
+In a function such as `LDA [u8: offset] [u64: address] [u8: width]` the offset refers to the section of A that the `u8` from memory is to be stored in. Since A is a `u64` BUT memory is a tape of `u8`'s there would be no purpose in having a `u64` register if the maximum value that could be loaded was `255`. Moreover if `255` was the maximum value loadable then only up to `0xFF` of memory would be addressable and the entire system would fall apart. To avoid this `u8`'s are stored in 8 bit sections of `u64` registers. For example:
 ```
 OFFSET = 0
 ACC_A :      0x0000000000000000;
@@ -140,7 +140,11 @@ if (offset >= 64) continue;               // BIT OFFSET CANNOT BE MORE THAN 63
 ACC_A &= ~((uint64_t)0xFF << offset);     // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
 ACC_A |= (uint64_t)MEM[addr] << offset;   // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
 ```
-For more precise definitions of instruction sets see `vm/unibl_vm.c`
+For more precise definitions of instruction sets see `vm/example_vm.c`
+
+### What are widths?
+
+Widths are arguments to `LDA` `STA` `LDAB` and `STAB` that tell the virtual machine how many relative bytes to perform the operation on. For example instead of writing 8 `STA` calls of incrementing offsets to store 8 bytes into A you can write `STA [u64: addr] 0, 8` which tells the virtual machine to store 8 bytes of `addr` into A starting at offset `0` ending at offset `offset + width - 1 => 7`. For this obvious reason `width` cannot be more than `8 - offset` without indexing an out of bounds offset.
 
 ## The UNIBL Assembler
 
@@ -401,3 +405,4 @@ Despite the UNIBL virtual machine only needing to manage memory for input and ou
 
 0x1900 - 0x19FF TEMP MEMORY
 ```
+

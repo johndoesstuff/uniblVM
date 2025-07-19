@@ -101,7 +101,6 @@ FPRINT "Hello Wo"
 FPRINT "rld,\n"
 RET
 
-$DEBUG ESIZEOF - SIZEOF
 print_welcome:
 FPRINT "Welcome "
 FPRINT "to UASM\n"

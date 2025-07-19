@@ -54,17 +54,19 @@ void _halt() {
 }
 
 // LOAD INTO REGISTER A
-void _lda(uint8_t offset, uint64_t addr) {
+void _lda(uint8_t offset, uint64_t addr, uint8_t width) {
 	emit_byte(LDA);
 	emit_byte(offset);
 	emit_u64(addr);
+	emit_byte(width);
 }
 
 // STORE REGISTER A INTO MEMORY
-void _sta(uint64_t addr, uint8_t offset) {
+void _sta(uint64_t addr, uint8_t offset, uint8_t width) {
 	emit_byte(STA);
 	emit_u64(addr);
 	emit_byte(offset);
+	emit_byte(width);
 }
 
 // SWAP REGISTER A AND B
@@ -95,15 +97,17 @@ void _subab() {
 }
 
 // LOAD THE ADDRESS AT REGISTRY B INTO REGISTRY A
-void _ldab(uint8_t offset) {
+void _ldab(uint8_t offset, uint8_t width) {
 	emit_byte(LDAB);
 	emit_byte(offset);
+	emit_byte(width);
 }
 
 // STORE THE VALUE AT REGISTRY A INTO THE ADDRESS IN REGISTRY B
-void _stab(uint8_t offset) {
+void _stab(uint8_t offset, uint8_t width) {
 	emit_byte(STAB);
 	emit_byte(offset);
+	emit_byte(width);
 }
 
 // SET TO 0 IF REGISTRY A AND B ARE EQUAL AND 1 IF NOT

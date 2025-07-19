@@ -150,16 +150,22 @@ int main(int argc, char** argv) {
 		} else if (op == LDA) {
 			uint8_t offset = 8*read_u8();
 			uint64_t addr = read_u64();
-			if (offset >= 64) continue;
-			ACC_A &= ~((uint64_t)0xff << offset);
-			ACC_A |= (uint64_t)MEM[addr] << offset;
-			if (DEBUG) printf("%-10s %-5u %-5" PRIX64, "LDA", offset, addr);
+			uint8_t width = read_u8();
+			if (offset + (width - 1) * 8 >= 64) continue;
+			for (int i = 0; i < width; i++) {
+				ACC_A &= ~((uint64_t)0xff << (offset + i*8));
+				ACC_A |= (uint64_t)MEM[addr + i] << (offset + i*8);
+			}
+			if (DEBUG) printf("%-10s %-5u %-5" PRIX64 " %-5u", "LDA", offset, addr, width);
 		} else if (op == STA) {
 			uint64_t addr = read_u64();
 			uint8_t offset = 8*read_u8();
-			if (offset >= 64) continue;
-			MEM[addr] = 0xff & (ACC_A >> offset);
-			if (DEBUG) printf("%-10s %-5" PRIX64 " %-5u", "STA",  addr, offset);
+			uint8_t width = read_u8();
+			if (offset + (width - 1) * 8 >= 64) continue;
+			for (int i = 0; i < width; i++) {
+				MEM[addr + i] = 0xff & (ACC_A >> (offset + i*8));
+			}
+			if (DEBUG) printf("%-10s %-5" PRIX64 " %-5u %-5u", "STA",  addr, offset, width);
 		} else if (op == SWP) {
 			uint64_t tmp = ACC_A;
 			ACC_A = ACC_B;
@@ -187,15 +193,21 @@ int main(int argc, char** argv) {
 			if (DEBUG) printf("%-20s", "SUBAB");
 		} else if (op == LDAB) {
 			uint8_t offset = 8*read_u8();
-			if (offset >= 64) continue;
-			ACC_A &= ~((uint64_t)0xff << offset);
-			ACC_A |= (uint64_t)MEM[ACC_B + offset/8] << offset;
-			if (DEBUG) printf("%-10s %-10u", "LDAB", offset);
+			uint8_t width = read_u8();
+			if (offset + (width - 1) * 8 >= 64) continue;
+			for (int i = 0; i < width; i++) {
+				ACC_A &= ~(uint64_t)0xff << (offset + i*8);
+				ACC_A |= (uint64_t)MEM[ACC_B + offset/8 + i] << (offset + i*8);
+			}
+			if (DEBUG) printf("%-10s %-5u %-5u", "LDAB", offset, width);
 		} else if (op == STAB) {
 			uint8_t offset = 8*read_u8();
-			if (offset >= 64) continue;
-			MEM[ACC_B + offset/8] = (uint64_t)0xff & (ACC_A >> offset);
-			if (DEBUG) printf("%-10s %-10u", "STAB", offset);
+			uint8_t width = read_u8();
+			if (offset + (width - 1) * 8 >= 64) continue;
+			for (int i = 0; i < width; i++) {
+				MEM[ACC_B + offset/8] = (uint64_t)0xff & (ACC_A >> offset);
+			}
+			if (DEBUG) printf("%-10s %-5u %-5u", "STAB", offset, width);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
 			if (DEBUG) printf("%-20s", "CMPAB");

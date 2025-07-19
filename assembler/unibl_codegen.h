@@ -15,15 +15,15 @@ void write_program_to_file(const char* filename);
 
 // Instruction wrappers
 void _halt(void);
-void _lda(uint8_t offset, uint64_t addr);
-void _sta(uint64_t addr, uint8_t offset);
+void _lda(uint8_t offset, uint64_t addr, uint8_t width);
+void _sta(uint64_t addr, uint8_t offset, uint8_t width);
 void _swp(void);
 void _jmp(uint64_t addr);
 void _jmpbz(uint64_t addr);
 void _addab(void);
 void _subab(void);
-void _ldab(uint8_t offset);
-void _stab(uint8_t offset);
+void _ldab(uint8_t offset, uint8_t width);
+void _stab(uint8_t offset, uint8_t width);
 void _cmpab(void);
 void _void(uint64_t _data);
 void _ldpca(void);
