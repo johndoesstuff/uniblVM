@@ -1,13 +1,6 @@
 ; 64 Bit storage macros
 .MACRO LDA64 x
-LDA 0, %x, 1
-LDA 1, %x + 1, 1
-LDA 2, %x + 2, 1
-LDA 3, %x + 3, 1
-LDA 4, %x + 4, 1
-LDA 5, %x + 5, 1
-LDA 6, %x + 6, 1
-LDA 7, %x + 7, 1
+LDA 0, %x, 8
 .ENMAC
 
 .MACRO LDA64R x
@@ -34,14 +27,7 @@ SWP
 .ENMAC
 
 .MACRO STA64 x
-STA %x, 0, 1
-STA %x + 1, 1, 1
-STA %x + 2, 2, 1
-STA %x + 3, 3, 1
-STA %x + 4, 4, 1
-STA %x + 5, 5, 1
-STA %x + 6, 6, 1
-STA %x + 7, 7, 1
+STA %x, 0, 8
 .ENMAC
 
 .MACRO STA64R x
@@ -69,8 +55,7 @@ SWP
 
 ; 16 Bit storage macros
 .MACRO LDA16 x
-LDA 0, %x, 1
-LDA 1, %x + 1, 1
+LDA 0, %x, 2
 .ENMAC
 
 .MACRO LDB16 x
@@ -80,8 +65,7 @@ SWP
 .ENMAC
 
 .MACRO STA16 x
-STA %x, 0, 1
-STA %x + 1, 1, 1
+STA %x, 0, 2
 .ENMAC
 
 .MACRO STB16 x
@@ -91,24 +75,23 @@ SWP
 .ENMAC
 
 ; General purpose macros
-.MACRO LDB x, y
+.MACRO LDB x, y, z
 SWP
-LDA %x, %y, 1
+LDA %x, %y, %z
 SWP
 .ENMAC
 
-.MACRO STB x, y
+.MACRO STB x, y, z
 SWP
-STA %x, %y, 1
+STA %x, %y, %z
 SWP
 .ENMAC
 
 ; Set B to 0
 .MACRO SETBZ
-CMPAB
 v:
 VOID 0
-LDB 0, v + 1
+LDB 0, v + 1, 8
 .ENMAC
 
 .MACRO SETAZ
@@ -134,17 +117,15 @@ LDA 0, v + 1, 1
 
 ; Set B to 1
 .MACRO SETB1
-CMPAB
 v:
 VOID 1
-LDB 0, v + 8
+LDB 0, v + 8, 8
 .ENMAC
 
 .MACRO SETB8
-CMPAB
 v:
 VOID 8
-LDB 0, v + 1
+LDB 0, v + 1, 8
 .ENMAC
 
 .MACRO SETA1
@@ -154,25 +135,11 @@ SWP
 .ENMAC
 
 .MACRO LDAB64
-LDAB 0, 1
-LDAB 1, 1
-LDAB 2, 1
-LDAB 3, 1
-LDAB 4, 1
-LDAB 5, 1
-LDAB 6, 1
-LDAB 7, 1
+LDAB 0, 8
 .ENMAC
 
 .MACRO STAB64
-STAB 0, 1
-STAB 1, 1
-STAB 2, 1
-STAB 3, 1
-STAB 4, 1
-STAB 5, 1
-STAB 6, 1
-STAB 7, 1
+STAB 0, 8
 .ENMAC
 
 .MACRO INCA64

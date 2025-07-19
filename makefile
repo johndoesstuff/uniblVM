@@ -1,10 +1,12 @@
 TARGET:
-	gcc vm/unibl_vm.c -o unibl_vm
+	gcc -c common/instruction.c -o common/instruction.o
+	gcc vm/unibl_vm.c common/instruction.o -o unibl_vm
 	flex -o assembler/build/lex.asm.c assembler/lexer.l
 	flex -o assembler/build/lex.pp.c assembler/preprocessor.l
 	bison -H assembler/parser.y -o assembler/build/parser.tab.c -p asm_
 	bison -H assembler/preprocessor.y -o assembler/build/preprocessor.tab.c -p pp_
 	gcc -g -o unibl_asm \
+		common/instruction.o \
 		assembler/unibl_codegen.c \
 		assembler/include.c \
 		assembler/main.c \

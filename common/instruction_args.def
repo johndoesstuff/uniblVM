@@ -1,0 +1,13 @@
+static const uint8_t HALT_args[]  = {};
+static const uint8_t LDA_args[]   = {1, 8, 1};
+static const uint8_t STA_args[]   = {8, 1, 1};
+static const uint8_t SWP_args[]   = {};
+static const uint8_t JMP_args[]   = {8};
+static const uint8_t JMPBZ_args[] = {8};
+static const uint8_t ADDAB_args[] = {};
+static const uint8_t SUBAB_args[] = {};
+static const uint8_t LDAB_args[]  = {1, 1};
+static const uint8_t STAB_args[]  = {1, 1};
+static const uint8_t CMPAB_args[] = {};
+static const uint8_t VOID_args[]  = {8};
+static const uint8_t LDPCA_args[] = {};
