@@ -7,6 +7,7 @@
 #include "../inc/unibl.h"
 #include <inttypes.h>
 #include "unibl_preprocessor.h"
+#include "../common/instruction.h"
 
 #define DEBUG 0
 #define MAX_MACRO_RECURSION 64
@@ -50,38 +51,22 @@ OperandList *append_operand(OperandList *list, uint64_t value) {
 }
 
 // ADDS AN INSTRUCTION WITH ARGUMENTS
-void add_i(const char *instr, OperandList *ops, uint64_t *pc) {
-	if (strcmp(instr, "LDA") == 0) {
-		if (ops->count < 3) {
-			printf("Error generating LDA, expected 3 arguments but recieved %d\n", ops->count);
+void add_i(const char *instr_str, OperandList *ops, uint64_t *pc) {
+	for (size_t i = 0; i < INSTRUCTION_COUNT; i++) {
+		if (strcmp(instr_str, INSTRUCTION_TABLE[i].name) == 0) {
+			InstructionInfo* instr = &INSTRUCTION_TABLE[i];
+			int opsc = ops == NULL ? 0 : ops->count;
+			if (instr->argc != opsc) {
+				fprintf(stderr, "Argument mismatch for %s, expected %d but recieved %d", instr_str, instr->argc, opsc);
+				exit(1);
+			} 
+			emit_instruction(instr, ops);
+			*pc = ENTRY_POINT + program_size;
+			return;
 		}
-		_lda(ops->values[0], ops->values[1], ops->values[2]);
-	} else if (strcmp(instr, "STA") == 0) {
-		if (ops->count < 3) {
-			printf("Error generating STA, expected 3 arguments but recieved %d\n", ops->count);
-		}
-		_sta(ops->values[0], ops->values[1], ops->values[2]);
-	} else if (strcmp(instr, "JMPBZ") == 0) {
-		_jmpbz(ops->values[0]);
-	} else if (strcmp(instr, "JMP") == 0) {
-		_jmp(ops->values[0]);
-	} else if (strcmp(instr, "LDAB") == 0) {
-		if (ops->count < 2) {
-			printf("Error generating LDAB, expected 2 arguments but recieved %d\n", ops->count);
-		}
-		_ldab(ops->values[0], ops->values[1]);
-	} else if (strcmp(instr, "STAB") == 0) {
-		if (ops->count < 2) {
-			printf("Error generating STAB, expected 2 arguments but recieved %d\n", ops->count);
-		}
-		_stab(ops->values[0], ops->values[1]);
-	} else if (strcmp(instr, "VOID") == 0) {
-		_void(ops->values[0]);
-	} else {
-		fprintf(stderr, "Unrecognized instruction: %s\n", instr);
-		exit(1);
 	}
-	*pc = ENTRY_POINT + program_size;
+	fprintf(stderr, "Unrecognized instruction: %s\n", instr_str);
+	exit(1);
 }
 
 // SETS DIRECTIVES WITH ARGUMENTS
@@ -94,7 +79,7 @@ void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
 		}
 		uint64_t diff = new_pc - *pc;
 		for (int i = 0; i < diff; i++) {
-			_halt();
+			emit_byte(0);
 		}
 	} else if (strcmp(instr, "DEBUG") == 0) {
 		if (current_pass == 2) {
@@ -105,27 +90,6 @@ void directive_i(const char *instr, OperandList *ops, uint64_t *pc) {
 		}
 	} else {
 		fprintf(stderr, "Unrecognized directive: %s\n", instr);
-		exit(1);
-	}
-	*pc = ENTRY_POINT + program_size;
-}
-
-// ADDS A SINGLE INSTRUCTION (NO ARGUMENTS)
-void add_si(const char *instr, uint64_t *pc) {
-	if (strcmp(instr, "SWP") == 0) {
-		_swp();
-	} else if (strcmp(instr, "ADDAB") == 0) {
-		_addab();
-	} else if (strcmp(instr, "SUBAB") == 0) {
-		_subab();
-	} else if (strcmp(instr, "CMPAB") == 0) {
-		_cmpab();
-	} else if (strcmp(instr, "HALT") == 0) {
-		_halt();
-	} else if (strcmp(instr, "LDPCA") == 0) {
-		_ldpca();
-	} else {
-		fprintf(stderr, "Unrecognized instruction: %s\n", instr);
 		exit(1);
 	}
 	*pc = ENTRY_POINT + program_size;

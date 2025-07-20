@@ -1523,7 +1523,7 @@ yyreduce:
 
   case 9: /* line: IDENT NEWLINE  */
 #line 55 "assembler/parser.y"
-                                                { add_si((yyvsp[-1].str), &PC); }
+                                                { add_i((yyvsp[-1].str), NULL, &PC); }
 #line 1528 "assembler/build/parser.tab.c"
     break;
 

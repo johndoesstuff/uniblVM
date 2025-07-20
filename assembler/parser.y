@@ -52,7 +52,7 @@ line:
 	| DEF_DIRECTIVE IDENT directive_term NEWLINE	{ add_label($2, &$3); }
 	| IDENT operands NEWLINE		{ add_i($1, $2, &PC); }
 	| DIRECTIVE IDENT directive_operands NEWLINE	{ directive_i($2, $3, &PC); }
-	| IDENT NEWLINE				{ add_si($1, &PC); }
+	| IDENT NEWLINE				{ add_i($1, NULL, &PC); }
 	| DIRECTIVE IDENT NEWLINE		{ directive_si($2, &PC); }
 	| NEWLINE
 ;

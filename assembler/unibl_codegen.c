@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "../inc/unibl.h"
+#include "unibl_asm.h"
+#include "../common/instruction.h"
 
 #define _PC ENTRY_POINT + program_size
 
@@ -45,83 +47,16 @@ void write_program_to_file(const char* filename) {
 
 	fwrite(program, 1, program_size, f);
 	fclose(f);
-	//printf("Wrote %zu bytes to %s\n", program_size, filename);
 }
 
-// HALT PROGRAM
-void _halt() {
-	emit_byte(HALT);
-}
-
-// LOAD INTO REGISTER A
-void _lda(uint8_t offset, uint64_t addr, uint8_t width) {
-	emit_byte(LDA);
-	emit_byte(offset);
-	emit_u64(addr);
-	emit_byte(width);
-}
-
-// STORE REGISTER A INTO MEMORY
-void _sta(uint64_t addr, uint8_t offset, uint8_t width) {
-	emit_byte(STA);
-	emit_u64(addr);
-	emit_byte(offset);
-	emit_byte(width);
-}
-
-// SWAP REGISTER A AND B
-void _swp() {
-	emit_byte(SWP);
-}
-
-// JUMP TO VALUE
-void _jmp(uint64_t addr) {
-	emit_byte(JMP);
-	emit_u64(addr);
-}
-
-// JUMP TO ADDRESS IF REGISTER B IS ZERO
-void _jmpbz(uint64_t addr) {
-	emit_byte(JMPBZ);
-	emit_u64(addr);
-}
-
-// ADD REGISTER A AND REGISTER B AND STORE IN REGISTER A
-void _addab() {
-	emit_byte(ADDAB);
-}
-
-// SUBTRACT REGISTER A AND REGISTER B AND STORE IN REGISTER A
-void _subab() {
-	emit_byte(SUBAB);
-}
-
-// LOAD THE ADDRESS AT REGISTRY B INTO REGISTRY A
-void _ldab(uint8_t offset, uint8_t width) {
-	emit_byte(LDAB);
-	emit_byte(offset);
-	emit_byte(width);
-}
-
-// STORE THE VALUE AT REGISTRY A INTO THE ADDRESS IN REGISTRY B
-void _stab(uint8_t offset, uint8_t width) {
-	emit_byte(STAB);
-	emit_byte(offset);
-	emit_byte(width);
-}
-
-// SET TO 0 IF REGISTRY A AND B ARE EQUAL AND 1 IF NOT
-void _cmpab() {
-	emit_byte(CMPAB);
-}
-
-// DO NOTHING
-void _void(uint64_t _data) {
-	emit_byte(VOID);
-	emit_u64(_data);
-}
-
-// LOAD PC INTO REGISTRY A
-void _ldpca() {
-	emit_byte(LDPCA);
+// EMIT INSTRUCTION
+void emit_instruction(InstructionInfo* inst, OperandList* ops) {
+	emit_byte(inst->opcode);
+	for (size_t i = 0; i < inst->argc; i++) {
+		if (inst->argsz[i] == 1) {
+			emit_byte(ops->values[i]);
+		} else {
+			emit_u64(ops->values[i]);
+		}
+	}
 }

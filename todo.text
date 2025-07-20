@@ -1,6 +1,5 @@
 INCOMING CHANGES SOON
 
-- Fundementally redesign LDA STA LDAB AND STAB to take a LENGTH argument (cut STA64 etc calls into 11 bytes instead of fucking 72 dear god please)
 - Add a NANDAB operator to bootstrap shift multiplication and other logic stuff
 
 Notes: If I have to implement another VM operator im crashing out everywhere john pork style
@@ -18,8 +17,17 @@ FPRINT "i am a b"
 FPRINT "ig strin"
 FPRINT "g"
 
+ok ive been thinking and i think i need a $DUMP directive to put raw data and i can use <> to represent strings of more than 8 bytes, i really need to clean up a lot of the syntax and ways things are worked out
 
+also on the chopping block due to the introduction of width: STAB and LDAB
+with width STAB and LDAB are trivial to implement in about 2.5x space complexity, however this is acceptable due to how much space is being saved by width and how infrequently they are used relative to just STA and LDA
 
+additionally LDPCA may be on the chopping block as i cant think of a reason i would be at part of code in the assembler and not already know the PC at codegen time, meaning LDPCA is just 
+.MACRO LDPCA
+pc:
+VOID pc
+STA 0, pc + 1, 8
+.ENMAC
 
 
 also also i need to update docs on endianness and make sure the vm specifics are covered especially for the example vm - im not even sure if the example vm is currently working i havent compiled it once lol

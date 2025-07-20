@@ -1,4 +1,3 @@
-// instruction.h
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
@@ -15,6 +14,7 @@ typedef struct {
 #include "instruction.def"
 #undef X
 
-extern InstructionInfo instruction_table[256];
+extern int INSTRUCTION_COUNT;
+extern InstructionInfo INSTRUCTION_TABLE[];
 
 #endif
