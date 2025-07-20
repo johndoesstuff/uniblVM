@@ -87,6 +87,12 @@ STA %x, %y, %z
 SWP
 .ENMAC
 
+.MACRO LDPCA
+pc:
+VOID pc
+LDA 0, pc + 1, 8
+.ENMAC
+
 ; Set B to 0
 .MACRO SETBZ
 v:
@@ -304,11 +310,12 @@ LDB64 TEMP_PUSH
 
 .MACRO CALL addr
 STA64 TEMP_CALL
-LDPCA
+LDA64 end_call
 ; voiding addr allows us to grab it from ldpca instead
 ; of running an expensive 64bit macro
 VOID %addr
 JMP _STDLIB_CALL
+end_call:
 .ENMAC
 
 .MACRO RET

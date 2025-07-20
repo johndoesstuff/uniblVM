@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include "../inc/unibl.h"
-#define OPS 13
+#include "../common/instruction.h"
 
 uint8_t* MEM;
 uint64_t ACC_A;
@@ -23,7 +23,6 @@ int STATS_DET;
 int COMPLEXITY;
 size_t bytes_loaded = 0;
 size_t bytes_read = 0;
-char* inst_set[] = { "HALT", "LDA", "STA", "SWP", "JMP", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA" };
 
 // LOAD BYTE FROM PROGRAM
 uint8_t read_u8() {
@@ -129,7 +128,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	int stats[OPS + 3];
+	int stats[16];
 	size_t cycles = 0;
 	struct timespec start_time, end_time;
 	if (COMPLEXITY) {
@@ -239,12 +238,12 @@ int main(int argc, char** argv) {
 	
 	if (STATS) {
 		int sum = 0;
-		for (int i = 0; i < OPS; i++) {
+		for (int i = 0; i < INSTRUCTION_COUNT; i++) {
 			sum += stats[i];
 		}
 		printf("Execution stats:\n");
-		for (int i = 0; i < OPS; i++) {
-			printf("%s:\t%5d\t%7.2f%%\n", inst_set[i], stats[i], (float)stats[i]/sum*100);
+		for (int i = 0; i < INSTRUCTION_COUNT; i++) {
+			printf("%s:\t%5d\t%7.2f%%\n", INSTRUCTION_TABLE[i].name, stats[i], (float)stats[i]/sum*100);
 		}
 	}
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "../common/instruction.h"
 
 #define DEBUG 0
 #define INITIAL_CAPACITY 2
@@ -228,9 +229,8 @@ char* check_macro_expansion(char* inst, ArgumentList* arguments) {
 	}
 	
 	// DONT EXPAND KNOWN OPCODES
-	static const char* ops[] = {"HALT", "LDA", "STA", "SWP", "JMP", "JMPBZ", "ADDAB", "SUBAB", "LDAB", "STAB", "CMPAB", "VOID", "LDPCA"};
-	for (int i = 0; i < 13; i++) {
-		if (strcmp(inst, ops[i]) == 0) return inst_to_str(inst, arguments);
+	for (int i = 0; i < INSTRUCTION_COUNT; i++) {
+		if (strcmp(inst, INSTRUCTION_TABLE[i].name) == 0) return inst_to_str(inst, arguments);
 	}
 
 	if (DEBUG) printf("Found macro to expand: %s\n", inst);
