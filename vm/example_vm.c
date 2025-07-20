@@ -134,9 +134,6 @@ int main(int argc, char** argv) {
 		} else if (op == VOID) {
 			// READ 8 BYTES AND DO NOTHING
 			uint64_t u64 = read_u64();
-		} else if (op == LDPCA) {
-			// ITS CRITICAL THAT LDPCA LOADS THE PC AT THE LDPCA INSTRUCTION
-			ACC_A = PC_AT_OP;
 		} else {
 			// ANY OTHER OPCODE IS NOT VALID
 			// THIS IS ALL THAT IS REQUIRED TO MAKE A

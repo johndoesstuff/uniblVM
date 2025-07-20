@@ -22,13 +22,6 @@ ok ive been thinking and i think i need a $DUMP directive to put raw data and i 
 also on the chopping block due to the introduction of width: STAB and LDAB
 with width STAB and LDAB are trivial to implement in about 2.5x space complexity, however this is acceptable due to how much space is being saved by width and how infrequently they are used relative to just STA and LDA
 
-additionally LDPCA may be on the chopping block as i cant think of a reason i would be at part of code in the assembler and not already know the PC at codegen time, meaning LDPCA is just 
-.MACRO LDPCA
-pc:
-VOID pc
-STA 0, pc + 1, 8
-.ENMAC
-
 
 also also i need to update docs on endianness and make sure the vm specifics are covered especially for the example vm - im not even sure if the example vm is currently working i havent compiled it once lol
 

@@ -11,7 +11,6 @@
 #define STAB 9
 #define CMPAB 10
 #define VOID 11
-#define LDPCA 12
 
 #define ENTRY_POINT 0x0800
 #define MEM_SIZE 0xFFFF

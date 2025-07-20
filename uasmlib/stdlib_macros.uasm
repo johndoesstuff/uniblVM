@@ -310,8 +310,10 @@ LDB64 TEMP_PUSH
 
 .MACRO CALL addr
 STA64 TEMP_CALL
-LDA64 end_call
-; voiding addr allows us to grab it from ldpca instead
+deref:
+VOID end_call
+LDA64 deref + 1
+; voiding addr allows us to grab it from end_call instead
 ; of running an expensive 64bit macro
 VOID %addr
 JMP _STDLIB_CALL

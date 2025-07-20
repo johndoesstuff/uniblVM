@@ -1,6 +1,6 @@
 " ~/.vim/syntax/uasm.vim
 
-syntax keyword uniblInstruction HALT LDA STA SWP JMP JMPBZ ADDAB SUBAB LDAB STAB CMPAB VOID LDPCA
+syntax keyword uniblInstruction HALT LDA STA SWP JMP JMPBZ ADDAB SUBAB LDAB STAB CMPAB VOID
 syntax match uniblDirective /^\s*\$\(PC\|DEF\|INCLUDE\|DEBUG\)\>/
 syntax match uniblMacro /^\s*\.\(MACRO\|ENMAC\)\>/
 

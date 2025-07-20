@@ -109,12 +109,6 @@ Do nothing
 
 *Why is it necessary to have an instruction that takes an argument and literally does nothing? Unexpectedly the* `VOID` *command is one of the most useful commands. Voiding a* `u64` *means that argument will be stored in memory so it is pure data that can be referenced later. For example, if a program needs a constant that constant can be passed into* `VOID` *and will appear in program memory at the address of* `VOID + 1`*, this constant can then be referenced and stored as desired using other instructions. Trying to store memory in program space can only be done as an argument to an instruction and trying to use any instruction that does something with its arguments will cause unexpected behaviour.*
 
-**12 = LDPCA**
-
-Set A to the address of the Program Counter
-
-*Absolutely necessary for building functions and any program that can dynamically return to an execution point. Having a way of loading the value of the Program Counter is critical.*
-
 ### What are offsets?
 
 In a function such as `LDA [u8: offset] [u64: address] [u8: width]` the offset refers to the section of A that the `u8` from memory is to be stored in. Since A is a `u64` BUT memory is a tape of `u8`'s there would be no purpose in having a `u64` register if the maximum value that could be loaded was `255`. Moreover if `255` was the maximum value loadable then only up to `0xFF` of memory would be addressable and the entire system would fall apart. To avoid this `u8`'s are stored in 8 bit sections of `u64` registers. For example:
