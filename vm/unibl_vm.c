@@ -214,6 +214,9 @@ int main(int argc, char** argv) {
 		} else if (op == VOID) {
 			uint64_t u64 = read_u64();
 			if (DEBUG) printf("%-10s %-15" PRIX64, "VOID", u64);
+		} else if (op == NANDAB) {
+			ACC_A = ~(ACC_A & ACC_B);
+			if (DEBUG) printf("%-25s", "NANDAB");
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
 			exit(1);

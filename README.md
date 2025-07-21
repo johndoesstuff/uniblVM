@@ -109,6 +109,12 @@ Do nothing
 
 *Why is it necessary to have an instruction that takes an argument and literally does nothing? Unexpectedly the* `VOID` *command is one of the most useful commands. Voiding a* `u64` *means that argument will be stored in memory so it is pure data that can be referenced later. For example, if a program needs a constant that constant can be passed into* `VOID` *and will appear in program memory at the address of* `VOID + 1`*, this constant can then be referenced and stored as desired using other instructions. Trying to store memory in program space can only be done as an argument to an instruction and trying to use any instruction that does something with its arguments will cause unexpected behaviour.*
 
+**12 = NANDAB**
+
+Take the logical NAND of A and B and store it in A
+
+*NAND is a fundemental building block for all logical operations, anything that can't be implemented using addition or subtraction can be implemented using NAND.*
+
 ### What are offsets?
 
 In a function such as `LDA [u8: offset] [u64: address] [u8: width]` the offset refers to the section of A that the `u8` from memory is to be stored in. Since A is a `u64` BUT memory is a tape of `u8`'s there would be no purpose in having a `u64` register if the maximum value that could be loaded was `255`. Moreover if `255` was the maximum value loadable then only up to `0xFF` of memory would be addressable and the entire system would fall apart. To avoid this `u8`'s are stored in 8 bit sections of `u64` registers. For example:
@@ -127,18 +133,59 @@ LDA TARGETS: 0xFF00000000000000;
 ```
 Specifically in my VM implementation `LDA` is explicitly defined as
 ```C
-uint8_t offset = 8 * read_u8();           // LOAD AND CONVERT BYTE OFFSET TO BIT OFFSET
+uint8_t offset = 8*read_u8();
 uint64_t addr = read_u64();
-if (offset >= 64) continue;               // BIT OFFSET CANNOT BE MORE THAN 63
-                                          // ( THIS WOULD IMPLY STORING INTO A NON EXISTANT SECTOR OF A )
-ACC_A &= ~((uint64_t)0xFF << offset);     // BITSHIFT MASK BY OFFSET AND RESET SECTOR OF A
-ACC_A |= (uint64_t)MEM[addr] << offset;   // ADD MEMORY AT ADDRESS TO SECTOR AT OFFSET OF A
+uint8_t width = read_u8();
+if (offset + (width - 1) * 8 >= 64) continue;
+for (int i = 0; i < width; i++) {
+	ACC_A &= ~((uint64_t)0xff << (offset + i*8));
+	ACC_A |= (uint64_t)MEM[addr + i] << (offset + i*8);
+}
 ```
 For more precise definitions of instruction sets see `vm/example_vm.c`
 
 ### What are widths?
 
 Widths are arguments to `LDA` `STA` `LDAB` and `STAB` that tell the virtual machine how many relative bytes to perform the operation on. For example instead of writing 8 `STA` calls of incrementing offsets to store 8 bytes into A you can write `STA [u64: addr] 0, 8` which tells the virtual machine to store 8 bytes of `addr` into A starting at offset `0` ending at offset `offset + width - 1 => 7`. For this obvious reason `width` cannot be more than `8 - offset` without indexing an out of bounds offset.
+
+### Arguments
+
+The provided UNIBL virtual machine comes with a variety of built in arguments to help debug UASM code. These are not necessary to build a complete virtual machine but can be useful during code execution to analyze performance and other metrics.
+
+**-d --debug**
+
+Prints every instruction run on the virtual machine in text form including the arguments passed into it. Also displays the values of `PC` `ACC_A` and `ACC_B` upon program termination.
+
+**-D --dev**
+
+Includes all of the functionality of **-\-debug** but also displays all byte loads and `u64` loads that lead to interpreting instructions.
+
+**-e --expand**
+
+Prints debug instructions and includes the values of `PC` `ACC_A` and `ACC_B` at the end of every instruction.
+
+**-i --dump [range]** 
+
+Dumps hex of the state of the virtual machine at the end of execution for a given range in memory. For example
+```
+user@root:~/unibl$ ./unibl_asm test.uasm && ./unibl_vm test.bin -i 0x400:0x41F
+Dumping Memory 0x400-0x41F
+0400: 54 45 53 54 0A 00 00 00
+0408: 48 65 6C 6C 6F 20 57 6F
+0410: 72 6C 64 2C 0A 00 00 00
+0418: 57 65 6C 63 6F 6D 65 20
+TEST
+Hello World,
+Welcome to UASM
+```
+
+**-s --stats**
+
+Displays execution stats on most commonly used instructions including number of calls and percentage breakdowns.
+
+**-c --complexity**
+
+Displays stats on the complexity of the program executed, including program size, how many bytes loads were called, vm cycles, and execution time.
 
 ## The UNIBL Assembler
 
@@ -162,7 +209,7 @@ VOID 0x33
 ; and our desired constant is at
 ; an offset of 7 we get 0x0800 + 1 + 7
 ; = 0x0808
-LDA 0, 0x0808
+LDA 0, 0x0808, 1
 
 ; SWAP A AND B TO STORE 0x33 INTO B
 SWP
@@ -180,7 +227,7 @@ Labels allow for more dynamic programming, instead of hard-coding addresses in m
 ```nasm
 start:
 VOID 0x33
-LDA 0, start + 8
+LDA 0, start + 8, 1
 SWP
 ```
 Label definitions are shorthand for "this identifier now means the address that this line exists at in program space." Alternatively defining a label sets that label to mean the value of the program counter at that point. In the example above `start` is defined at the beginning of the program so in the entire program `start` will hold a value of `0x0800` since that is the entry point of code. However since it uses labels instead of hard coded constants this program can be put anywhere in memory and will still work. Labels can also be useful in jumping to different points in execution.
@@ -188,7 +235,7 @@ Label definitions are shorthand for "this identifier now means the address that 
 ; LOAD 1 INTO A
 init:
 VOID 0x01
-LDA 0, init + 8
+LDA 0, init + 8, 1
 
 ; WE DONT WANT TO SWAP
 ; B IS 0 BY DEFAULT
@@ -212,7 +259,7 @@ Constants are just data that can be immediately evaluated as a number in the ass
 'u'
 "unibl"
 ```
-For strings each character is one byte of memory and strings are encoded using little endian
+For strings each character is one byte of memory and strings are encoded using little endian, this is because all of UNIBL uses little endian encoding to store and retrieve values.
 ```nasm
 "unibl" == 0x6c62696e75000000
 ;            l b i n u . . . 
@@ -223,26 +270,12 @@ Hello World example using strings:
 ```nasm
 ; Load 64 bit value into A
 .MACRO LDA64 x
-LDA 0, %x + 0
-LDA 1, %x + 1
-LDA 2, %x + 2
-LDA 3, %x + 3
-LDA 4, %x + 4
-LDA 5, %x + 5
-LDA 6, %x + 6
-LDA 7, %x + 7
+LDA 0, %x + 0, 8
 .ENMAC
 
 ; Reverse and store 64 bits of A
-.MACRO STA64R x
-STA %x + 0, 7
-STA %x + 1, 6
-STA %x + 2, 5
-STA %x + 3, 4
-STA %x + 4, 3
-STA %x + 5, 2
-STA %x + 6, 1
-STA %x + 7, 0
+.MACRO STA64 x
+STA %x + 0, 0, 8
 .ENMAC
 
 ; Output starts at 0x0400
@@ -256,18 +289,14 @@ VOID "rld\n"
 
 ; Write to output
 LDA64 text_0 + 1
-STA64R STDOUT
+STA64 STDOUT
 LDA64 text_1 + 1
-STA64R STDOUT + 8
+STA64 STDOUT + 8
 ```
 
 ```bash
 ./unibl_asm helloworld.uasm
 ./unibl_vm helloworld.bin
-Program execution ended at PC=2386
-ACC_A=8245075011920986112
-ACC_B=0
-Dumping Standard Output...
 Hello World
 ```
 
@@ -276,18 +305,18 @@ Hello World
 The real power of the assembler is in the preprocessor. Since doing very simple tasks is incredibly tedious, even using UASM, the assembler comes with a built in preprocessor that allows for macro definitions. Instead of writing
 ```nasm
 SWP
-LDA 0, addr
+LDA 0, addr, 1
 SWP
 ```
 every time you wanted to load a value to B, you could write
 ```nasm
-.MACRO LDB x, y
+.MACRO LDB x, y, z
 SWP
-LDA %x, %y
+LDA %x, %y, %z
 SWP
 .ENMAC
 ```
-then call `LDB 0, addr` like a regular instruction in your code. The preprocessor will expand every LDB call into the text between the macro definition line `.MACRO ...` and `.ENMAC`. Parameters are treated as constants since after preprocessing they become constant values before being sent into the codegen stage. Macro definition is as follows: 
+then call `LDB 0, addr, 1` like a regular instruction in your code. The preprocessor will expand every LDB call into the text between the macro definition line `.MACRO ...` and `.ENMAC`. Parameters are treated as constants since after preprocessing they become constant values before being sent into the codegen stage. Macro definition is as follows: 
 ```nasm
 .MACRO <MACRO NAME> <params>
 <macro_body>
@@ -298,7 +327,7 @@ Macros can be nested in other macros however since macros are based on text expa
 .MACRO SETA x
 v:
 VOID %x
-LDA 0, v + 8
+LDA 0, v + 8, 1
 .ENMAC
 
 .MACRO SETB x
@@ -320,7 +349,7 @@ then to
 SWP
 v_0:
 VOID 0x10
-LDA 0, v_0 + 8
+LDA 0, v_0 + 8, 1
 SWP
 ```
 and finally assembled to
@@ -399,4 +428,3 @@ Despite the UNIBL virtual machine only needing to manage memory for input and ou
 
 0x1900 - 0x19FF TEMP MEMORY
 ```
-

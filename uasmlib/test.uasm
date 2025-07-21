@@ -1,0 +1,23 @@
+$INCLUDE <uasmlib/stdlib.uasm>
+$INCLUDE <uasmlib/math.uasm>
+
+FPRINT "TEST\n"
+
+SIZEOF:
+CALL print_hello_world
+ESIZEOF:
+CALL print_welcome
+NOTA
+HALT
+
+print_hello_world:
+FPRINT "Poopy he"
+FPRINT "ad\n"
+RET
+
+print_welcome:
+FPRINT "Welcome "
+FPRINT "to UASM\n"
+RET
+
+$DEBUG ESIZEOF - SIZEOF

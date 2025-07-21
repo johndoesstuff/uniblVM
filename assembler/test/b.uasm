@@ -1,9 +1,0 @@
-init:
-; LOAD 1 INTO A
-VOID 0x01
-LDA 0, init + 8
-; WE DONT WANT TO SWAP
-JMPBZ skip_swap
-SWP
-skip_swap:
-

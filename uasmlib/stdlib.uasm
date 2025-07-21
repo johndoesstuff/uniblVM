@@ -60,7 +60,11 @@ LDAB64
 STB16 P_CALLSTACK
 ; goto a
 LDB64 TEMP_RET + 8
-JMPA
+; jmpa but preserve a
+STA64 _STDLIB_RET_JMP + 1
+LDA64 TEMP_RET
+_STDLIB_RET_JMP:
+JMP 0
 
 _STDLIB_CALL:
 ; preserve B
@@ -84,20 +88,3 @@ LDAB64
 JMPA
 
 _STDLIB_ENDLIB:
-FPRINT "TEST\n"
-
-SIZEOF:
-CALL print_hello_world
-ESIZEOF:
-CALL print_welcome
-HALT
-
-print_hello_world:
-FPRINT "Hello Wo"
-FPRINT "rld,\n"
-RET
-
-print_welcome:
-FPRINT "Welcome "
-FPRINT "to UASM\n"
-RET
