@@ -10,3 +10,4 @@ static const uint8_t LDAB_args[]  = {1, 1};
 static const uint8_t STAB_args[]  = {1, 1};
 static const uint8_t CMPAB_args[] = {};
 static const uint8_t VOID_args[]  = {8};
+static const uint8_t NANDAB_args[] = {};
