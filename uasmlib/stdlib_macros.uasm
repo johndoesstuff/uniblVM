@@ -1,4 +1,20 @@
 ; 64 Bit storage macros
+
+; 2 of the longest standing opcodes killed by width introduction
+; your contributions to the codebase will not be forgotten
+; fly high LDAB and STAB <3
+.MACRO LDAB offset, width
+STB64 lda_pc + 2
+lda_pc:
+LDA %offset + 8 - %width, 0, %width
+.ENMAC
+
+.MACRO STAB offset, width
+STB64 lda_pc + 1
+lda_pc:
+STA 0, %offset + 8 - %width, %width
+.ENMAC
+
 .MACRO LDA64 x
 LDA 0, %x, 8
 .ENMAC

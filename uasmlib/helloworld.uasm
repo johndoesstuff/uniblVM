@@ -1,32 +1,23 @@
-.MACRO LDA64 x
-LDA 0, %x + 0, 1
-LDA 1, %x + 1, 1
-LDA 2, %x + 2, 1
-LDA 3, %x + 3, 1
-LDA 4, %x + 4, 1
-LDA 5, %x + 5, 1
-LDA 6, %x + 6, 1
-LDA 7, %x + 7, 1
-.ENMAC
+$INCLUDE <uasmlib/stdlib.uasm>
+$INCLUDE <uasmlib/math.uasm>
 
-.MACRO STA64R x
-STA %x + 0, 0, 1
-STA %x + 1, 1, 1
-STA %x + 2, 2, 1
-STA %x + 3, 3, 1
-STA %x + 4, 4, 1
-STA %x + 5, 5, 1
-STA %x + 6, 6, 1
-STA %x + 7, 7, 1
-.ENMAC
+FPRINT "TEST\n"
 
-$DEF STDOUT 0x400
+SIZEOF:
+CALL print_hello_world
+ESIZEOF:
+CALL print_welcome
+NOTA
+HALT
 
-text_0:
-VOID "Hello Wo"
-text_1:
-VOID "rld\n"
-LDA64 text_0 + 1
-STA64R STDOUT
-LDA64 text_1 + 1
-STA64R STDOUT + 8
+print_hello_world:
+FPRINT "Poopy he"
+FPRINT "ad\n"
+RET
+
+print_welcome:
+FPRINT "Welcome "
+FPRINT "to UASM\n"
+RET
+
+$DEBUG ESIZEOF - SIZEOF

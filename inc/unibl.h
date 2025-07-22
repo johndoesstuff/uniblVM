@@ -7,11 +7,9 @@
 #define JMPBZ 5
 #define ADDAB 6
 #define SUBAB 7
-#define LDAB 8
-#define STAB 9
-#define CMPAB 10
-#define VOID 11
-#define NANDAB 12
+#define CMPAB 8
+#define VOID 9
+#define NANDAB 10
 
 #define ENTRY_POINT 0x0800
 #define MEM_SIZE 0xFFFF

@@ -1,6 +1,7 @@
 INCOMING CHANGES SOON
 
 Notes: If I have to implement another VM operator im crashing out everywhere john pork style
+^ 32 shr1a calls taking 835k cycles is absurd. unfortunately since there is just no way to optimize this i may just have to crash out and add a SHRA [val] operator. this is quite unfortunate but implementing multiplication requires many shr calls. 14 ops is getting kinda bloated... however i cant think of any really that i could reasonably remove.. except maybe LDAB and STAB however id have to run the numbers before id feel comfortable taking those out
 
 
 i need to implement strings of more than 8 characters using <> notation

@@ -190,24 +190,6 @@ int main(int argc, char** argv) {
 				ACC_A -= ACC_B;
 			}
 			if (DEBUG) printf("%-25s", "SUBAB");
-		} else if (op == LDAB) {
-			uint8_t byte_offset = read_u8();
-			uint8_t width = read_u8();
-			uint8_t bit_offset = 8*byte_offset;
-			if (bit_offset + (width - 1) * 8 >= 64) continue;
-			for (int i = 0; i < width; i++) {
-				ACC_A &= ~((uint64_t)0xff << (bit_offset + i*8));
-				ACC_A |= (uint64_t)MEM[ACC_B + byte_offset + i] << (bit_offset + i*8);
-			}
-			if (DEBUG) printf("%-10s %-5u %-10u", "LDAB", bit_offset, width);
-		} else if (op == STAB) {
-			uint8_t offset = 8*read_u8();
-			uint8_t width = read_u8();
-			if (offset + (width - 1) * 8 >= 64) continue;
-			for (int i = 0; i < width; i++) {
-				MEM[ACC_B + offset/8 + i] = (uint64_t)0xff & (ACC_A >> (offset + i*8));
-			}
-			if (DEBUG) printf("%-10s %-5u %-10u", "STAB", offset, width);
 		} else if (op == CMPAB) {
 			ACC_B = (ACC_A == ACC_B) ? 0 : 1;
 			if (DEBUG) printf("%-25s", "CMPAB");

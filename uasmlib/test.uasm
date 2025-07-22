@@ -2,8 +2,10 @@ $INCLUDE <uasmlib/stdlib.uasm>
 $INCLUDE <uasmlib/math.uasm>
 
 val:
-VOID 42
+VOID 0x953050609
 LDA64 val + 1
-ACCA P_STDOUT
-ACCA P_STDOUT
+
+
 HALT
+
+
