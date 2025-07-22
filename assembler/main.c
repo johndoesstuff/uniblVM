@@ -141,8 +141,22 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	// EXPAND INCLUDES
-	char* expanded_input = expand_includes(argv[1]);
+	char* expanded_input;
+	char* output_file;
+
+	for (int i = 1; i < argc; argv++, i++) {
+		if (strcmp(*argv, "-o") == 0 || strcmp(*argv, "--output") == 0) {
+			output_file = strdup(*(++argv));
+		} else {
+			expanded_input = expand_includes(*argv);
+		}
+	}
+
+	if (!expanded_input) {
+		perror("You must include a file to assemble\n");
+		exit(1);
+	}
+
 	size_t input_length = strlen(expanded_input);
 	//printf("%s", expanded_input);
 	FILE* mem_fp = fmemopen(expanded_input, input_length, "r");
@@ -151,8 +165,8 @@ int main(int argc, char *argv[]) {
 	// PREPROCESSING STAGE
 	initialize_macros();
 	if (!pp_in) {
-		perror("Failed to open input file");
-		return 1;
+		perror("Failed to open input file\n");
+		exit(1);
 	}
 
 	if (pp_parse() == 0) {
@@ -267,6 +281,10 @@ int main(int argc, char *argv[]) {
 	fclose(asm_in);
 
 	// EXPORT AS program.bin
-	write_program_to_file("program.bin");
+	if (!output_file) {
+		write_program_to_file("program.bin");
+	} else {
+		write_program_to_file(output_file);
+	}
 	return 0;
 }

@@ -1,14 +1,9 @@
 INCOMING CHANGES SOON
 
-- Add a NANDAB operator to bootstrap shift multiplication and other logic stuff
-
 Notes: If I have to implement another VM operator im crashing out everywhere john pork style
 
-Thats all for now i think stay tuned
 
-
-
-oh also i need to implement strings of more than 8 characters using <> notation
+i need to implement strings of more than 8 characters using <> notation
 ^ probably should be done in an assembler directive?? idk man
 
 FPRINT <i am a big string>
