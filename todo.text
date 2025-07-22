@@ -4,6 +4,10 @@ Notes: If I have to implement another VM operator im crashing out everywhere joh
 ^ 32 shr1a calls taking 835k cycles is absurd. unfortunately since there is just no way to optimize this i may just have to crash out and add a SHRA [val] operator. this is quite unfortunate but implementing multiplication requires many shr calls. 14 ops is getting kinda bloated... however i cant think of any really that i could reasonably remove.. except maybe LDAB and STAB however id have to run the numbers before id feel comfortable taking those out
 
 
+possibly on the chopping block: SUBAB
+heres my reasoning, NANDAB and ADDAB make SUBAB easy to implement. the thing is SUBAB is good for LEQ and GEQ because it mins at zero so it introduces new behaviour. if i can find a way to efficiently emulate that then ill consider removing it.
+
+
 i need to implement strings of more than 8 characters using <> notation
 ^ probably should be done in an assembler directive?? idk man
 
@@ -14,9 +18,6 @@ FPRINT "ig strin"
 FPRINT "g"
 
 ok ive been thinking and i think i need a $DUMP directive to put raw data and i can use <> to represent strings of more than 8 bytes, i really need to clean up a lot of the syntax and ways things are worked out
-
-also on the chopping block due to the introduction of width: STAB and LDAB
-with width STAB and LDAB are trivial to implement in about 2.5x space complexity, however this is acceptable due to how much space is being saved by width and how infrequently they are used relative to just STA and LDA
 
 
 also also i need to update docs on endianness and make sure the vm specifics are covered especially for the example vm - im not even sure if the example vm is currently working i havent compiled it once lol

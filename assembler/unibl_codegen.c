@@ -13,6 +13,8 @@ size_t program_size = 0;
 size_t program_capacity = 0;
 extern int current_pass;
 
+int previous_op = 0;
+
 // WRITES A BYTE TO PROGRAM
 void emit_byte(uint8_t byte) {
 	if (current_pass == 2) {
@@ -27,6 +29,14 @@ void emit_byte(uint8_t byte) {
 		program[program_size++] = byte;
 	} else {
 		program_size++;
+	}
+}
+
+void delete_byte() {
+	if (current_pass == 2) {
+		program[program_size--] = (uint8_t)0;
+	} else {
+		program_size--;
 	}
 }
 
@@ -51,6 +61,14 @@ void write_program_to_file(const char* filename) {
 
 // EMIT INSTRUCTION
 void emit_instruction(InstructionInfo* inst, OperandList* ops) {
+	// double swaps do nothing
+	if (strcmp(inst->name, "SWP") == 0) {
+		if (previous_op == inst->opcode) {
+			previous_op = -1;
+			delete_byte();
+			return;
+		}
+	}
 	emit_byte(inst->opcode);
 	for (size_t i = 0; i < inst->argc; i++) {
 		if (inst->argsz[i] == 1) {
@@ -59,4 +77,5 @@ void emit_instruction(InstructionInfo* inst, OperandList* ops) {
 			emit_u64(ops->values[i]);
 		}
 	}
+	previous_op = inst->opcode;
 }
