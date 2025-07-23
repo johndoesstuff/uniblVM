@@ -4,8 +4,7 @@ $INCLUDE <uasmlib/math.uasm>
 val:
 VOID 0x953050609
 LDA64 val + 1
+SHRA 1
 
 
 HALT
-
-

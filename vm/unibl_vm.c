@@ -199,6 +199,10 @@ int main(int argc, char** argv) {
 		} else if (op == NANDAB) {
 			ACC_A = ~(ACC_A & ACC_B);
 			if (DEBUG) printf("%-25s", "NANDAB");
+		} else if (op == SHRA) {
+			uint8_t shift = read_u8();
+			ACC_A >>= shift;
+			if (DEBUG) printf("%-10s %-15u", "SHRA", shift);
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
 			exit(1);

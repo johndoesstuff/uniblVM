@@ -10,6 +10,7 @@
 #define CMPAB 8
 #define VOID 9
 #define NANDAB 10
+#define SHRA 11
 
 #define ENTRY_POINT 0x0800
 #define MEM_SIZE 0xFFFF

@@ -23,6 +23,7 @@ InstructionInfo INSTRUCTION_TABLE[] = {
 	{ "SUBAB",  0x07, 0, SUBAB_args },
 	{ "CMPAB",  0x08, 0, CMPAB_args },
 	{ "VOID",   0x09, 1, VOID_args },
-	{ "NANDAB",   0x0A, 0, NANDAB_args },
+	{ "NANDAB", 0x0A, 0, NANDAB_args },
+	{ "SHRA",   0x0B, 1, SHRA_args },
 };
 int INSTRUCTION_COUNT = sizeof(INSTRUCTION_TABLE) / sizeof(INSTRUCTION_TABLE[0]);

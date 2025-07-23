@@ -370,3 +370,21 @@ STA64 jmpa + 1
 jmpa:
 JMP 0
 .ENMAC
+
+.MACRO PUTA8
+; save state of B
+STB64 TEMP_PUT
+; load stack pointer to B
+SETBZ
+LDB16 P_STDOUT
+; set *sp to A
+STAB 7, 1
+; inc B by 8 (64bit addr width)
+SWP
+INCA16
+SWP
+; restore incremented stack pointer
+STB16 P_STDOUT
+; restore state of B
+LDB64 TEMP_PUT
+.ENMAC
