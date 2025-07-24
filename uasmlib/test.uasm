@@ -2,9 +2,12 @@ $INCLUDE <uasmlib/stdlib.uasm>
 $INCLUDE <uasmlib/math.uasm>
 
 val:
-VOID 0x953050609
+VOID 29
+val_2:
+VOID 13
 LDA64 val + 1
-SHRA 1
+LDB64 val_2 + 1
+MULAB
 
 
 HALT
