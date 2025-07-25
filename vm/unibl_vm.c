@@ -141,6 +141,7 @@ int main(int argc, char** argv) {
 
 
 	// LOAD PROGRAM BINARY
+	uint8_t last_op = 255;
 
 	while (1) {
 		uint8_t op = read_u8();
@@ -149,7 +150,7 @@ int main(int argc, char** argv) {
 		uint64_t spc = PC;
 
 		if (op == HALT) {
-			if (IGNORE_HALT) {
+			if (IGNORE_HALT && last_op != op) {
 				if (DEBUG) {
 					if (DEBUG) printf("%-25s", "HALT");
 				}
@@ -215,13 +216,14 @@ int main(int argc, char** argv) {
 			if (DEBUG) printf("%-10s %-15u", "SHRA", shift);
 		} else {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
-			exit(1);
+			break;
 		}
 		if (EXPAND) printf("\t\t\tA=0x%-8" PRIX64, ACC_A);
 		if (EXPAND) printf("\tB=0x%-8" PRIX64, ACC_B);
 		if (EXPAND) printf("\tPC=0x%-8" PRIX64, spc);
 		if (DEBUG) printf("\n");
 		if (IGNORE_HALT && op == HALT) getc(stdin);
+		last_op = op;
 		cycles++;
 	}
 

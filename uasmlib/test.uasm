@@ -2,9 +2,9 @@ $INCLUDE <uasmlib/stdlib.uasm>
 $INCLUDE <uasmlib/math.uasm>
 
 val:
-VOID 5
+VOID 723
 val_2:
-VOID 9
+VOID 412
 LDA64 val + 1
 LDB64 val_2 + 1
 MULAB

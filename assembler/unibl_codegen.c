@@ -62,13 +62,13 @@ void write_program_to_file(const char* filename) {
 // EMIT INSTRUCTION
 void emit_instruction(InstructionInfo* inst, OperandList* ops) {
 	// double swaps do nothing
-	if (strcmp(inst->name, "SWP") == 0) {
+	/*if (strcmp(inst->name, "SWP") == 0) {
 		if (previous_op == inst->opcode) {
 			previous_op = -1;
 			delete_byte();
 			return;
 		}
-	}
+	}*/
 	emit_byte(inst->opcode);
 	for (size_t i = 0; i < inst->argc; i++) {
 		if (inst->argsz[i] == 1) {
