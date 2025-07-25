@@ -12,6 +12,7 @@ HEX		0[xX][0-9a-fA-F]+
 ID		[a-zA-Z_][a-zA-Z0-9_]*
 CHAR		\'(\\.|[^\\'])\'
 STRING		\"([^\\\"]|\\.)*\"
+FSTRING		\<([^\\\>]|\\.)*\>
 
 %{
 uint64_t encode_le(const char *str) {
@@ -59,6 +60,7 @@ uint64_t encode_le(const char *str) {
 "-"		return MINUS;
 "\n"		{ yylineno++; return NEWLINE; }
 "$DEF"		return DEF_DIRECTIVE;
+"$DUMP"		return DUMP_DIRECTIVE;
 "$"		return DIRECTIVE;
 
 .		{ return *asm_text; }

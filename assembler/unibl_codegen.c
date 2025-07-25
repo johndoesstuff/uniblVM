@@ -32,13 +32,13 @@ void emit_byte(uint8_t byte) {
 	}
 }
 
-void delete_byte() {
+/*void delete_byte() {
 	if (current_pass == 2) {
 		program[program_size--] = (uint8_t)0;
 	} else {
 		program_size--;
 	}
-}
+}*/
 
 // WRITES 8 BYTES TO PROGRAM (64 BIT VALUE)
 void emit_u64(uint64_t val) {

@@ -27,8 +27,8 @@ void yyerror(const char *s) {
 	ArgumentList* arg;
 }
 
-%token <str> IDENT PARAM NUM
-%token COLON COMMA NEWLINE PLUS MINUS MACRO ENDMACRO DIRECTIVE DEF_DIRECTIVE
+%token <str> IDENT PARAM NUM FSTRING
+%token COLON COMMA NEWLINE PLUS MINUS MACRO ENDMACRO DIRECTIVE DEF_DIRECTIVE DUMP_DIRECTIVE
 
 %type <str> macro_expression macro_term macro_operands macro_line
 %type <str> term line expression
@@ -72,6 +72,7 @@ macro_body:
 macro_line:
 	IDENT COLON			{ add_label_to_macro($1); char* st; asprintf(&st, "%%%s:", $1); $$ = st; free($1); }
 	| DEF_DIRECTIVE IDENT macro_term NEWLINE	{ char* st; asprintf(&st, "$DEF %s %s", $2, $3); $$ = st; free($2); free($3); }
+	| DUMP_DIRECTIVE FSTRING NEWLINE	{ char* st; asprintf(&st, "$DUMP %s", $2); $$ = st; free($2); }
 	| IDENT macro_operands NEWLINE	{ char* st; asprintf(&st, "%s %s", $1, $2); $$ = st; free($1); free($2); }
 	| DIRECTIVE IDENT macro_operands NEWLINE	{ char* st; asprintf(&st, "$%s %s", $2, $3); $$ = st; free($2); free($3); }
 	| IDENT NEWLINE			{ char* st; asprintf(&st, "%s", $1); $$ = st; free($1); }
@@ -104,6 +105,7 @@ macro_expression:
 line:
 	IDENT COLON			{ char* st; asprintf(&st, "%s:", $1); $$ = st; free($1); }
 	| DEF_DIRECTIVE IDENT term NEWLINE	{ char* st; asprintf(&st, "$DEF %s %s", $2, $3); $$ = st; free($2); free($3); }
+	| DUMP_DIRECTIVE FSTRING NEWLINE	{ char* st; asprintf(&st, "$DUMP %s", $2); $$ = st; free($2); }
 	| IDENT operands NEWLINE	{ $$ = check_macro_expansion($1, $2); }
 	| DIRECTIVE IDENT operands NEWLINE	{ char* st; asprintf(&st, "$%s", $2); $$ = check_macro_expansion(st, $3); free($2); }
 	| IDENT NEWLINE			{ $$ = check_macro_expansion($1, NULL); }

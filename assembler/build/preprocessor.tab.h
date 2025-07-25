@@ -63,15 +63,17 @@ extern int pp_debug;
     IDENT = 258,                   /* IDENT  */
     PARAM = 259,                   /* PARAM  */
     NUM = 260,                     /* NUM  */
-    COLON = 261,                   /* COLON  */
-    COMMA = 262,                   /* COMMA  */
-    NEWLINE = 263,                 /* NEWLINE  */
-    PLUS = 264,                    /* PLUS  */
-    MINUS = 265,                   /* MINUS  */
-    MACRO = 266,                   /* MACRO  */
-    ENDMACRO = 267,                /* ENDMACRO  */
-    DIRECTIVE = 268,               /* DIRECTIVE  */
-    DEF_DIRECTIVE = 269            /* DEF_DIRECTIVE  */
+    FSTRING = 261,                 /* FSTRING  */
+    COLON = 262,                   /* COLON  */
+    COMMA = 263,                   /* COMMA  */
+    NEWLINE = 264,                 /* NEWLINE  */
+    PLUS = 265,                    /* PLUS  */
+    MINUS = 266,                   /* MINUS  */
+    MACRO = 267,                   /* MACRO  */
+    ENDMACRO = 268,                /* ENDMACRO  */
+    DIRECTIVE = 269,               /* DIRECTIVE  */
+    DEF_DIRECTIVE = 270,           /* DEF_DIRECTIVE  */
+    DUMP_DIRECTIVE = 271           /* DUMP_DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -88,7 +90,7 @@ union YYSTYPE
 	MacroParams *par;
 	ArgumentList* arg;
 
-#line 92 "assembler/build/preprocessor.tab.h"
+#line 94 "assembler/build/preprocessor.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

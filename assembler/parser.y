@@ -27,9 +27,9 @@ void asm_error(const char *s) {
 	OperandList *oplist;
 }
 
-%token <str> IDENT
+%token <str> IDENT FSTRING
 %token <u64> NUM
-%token COLON COMMA NEWLINE PLUS MINUS DIRECTIVE DEF_DIRECTIVE
+%token COLON COMMA NEWLINE PLUS MINUS DIRECTIVE DEF_DIRECTIVE DUMP_DIRECTIVE
 
 %type <u64> term expression directive_term directive_expression
 %type <oplist> operands directive_operands
@@ -50,6 +50,7 @@ lines:
 line:
 	IDENT COLON 				{ add_label($1, &PC); }
 	| DEF_DIRECTIVE IDENT directive_term NEWLINE	{ add_label($2, &$3); }
+	| DUMP_DIRECTIVE FSTRING
 	| IDENT operands NEWLINE		{ add_i($1, $2, &PC); }
 	| DIRECTIVE IDENT directive_operands NEWLINE	{ directive_i($2, $3, &PC); }
 	| IDENT NEWLINE				{ add_i($1, NULL, &PC); }

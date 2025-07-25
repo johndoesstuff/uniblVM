@@ -68,7 +68,9 @@ extern int asm_debug;
     PLUS = 263,                    /* PLUS  */
     MINUS = 264,                   /* MINUS  */
     DIRECTIVE = 265,               /* DIRECTIVE  */
-    DEF_DIRECTIVE = 266            /* DEF_DIRECTIVE  */
+    DEF_DIRECTIVE = 266,           /* DEF_DIRECTIVE  */
+    DUMP_DIRECTIVE = 267,          /* DUMP_DIRECTIVE  */
+    FSTRING = 268                  /* FSTRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -83,7 +85,7 @@ union YYSTYPE
 	char *str;
 	OperandList *oplist;
 
-#line 87 "assembler/build/parser.tab.h"
+#line 89 "assembler/build/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

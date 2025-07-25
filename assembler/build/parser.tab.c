@@ -131,16 +131,18 @@ enum yysymbol_kind_t
   YYSYMBOL_MINUS = 9,                      /* MINUS  */
   YYSYMBOL_DIRECTIVE = 10,                 /* DIRECTIVE  */
   YYSYMBOL_DEF_DIRECTIVE = 11,             /* DEF_DIRECTIVE  */
-  YYSYMBOL_YYACCEPT = 12,                  /* $accept  */
-  YYSYMBOL_program = 13,                   /* program  */
-  YYSYMBOL_lines = 14,                     /* lines  */
-  YYSYMBOL_line = 15,                      /* line  */
-  YYSYMBOL_operands = 16,                  /* operands  */
-  YYSYMBOL_directive_operands = 17,        /* directive_operands  */
-  YYSYMBOL_term = 18,                      /* term  */
-  YYSYMBOL_directive_term = 19,            /* directive_term  */
-  YYSYMBOL_expression = 20,                /* expression  */
-  YYSYMBOL_directive_expression = 21       /* directive_expression  */
+  YYSYMBOL_DUMP_DIRECTIVE = 12,            /* DUMP_DIRECTIVE  */
+  YYSYMBOL_FSTRING = 13,                   /* FSTRING  */
+  YYSYMBOL_YYACCEPT = 14,                  /* $accept  */
+  YYSYMBOL_program = 15,                   /* program  */
+  YYSYMBOL_lines = 16,                     /* lines  */
+  YYSYMBOL_line = 17,                      /* line  */
+  YYSYMBOL_operands = 18,                  /* operands  */
+  YYSYMBOL_directive_operands = 19,        /* directive_operands  */
+  YYSYMBOL_term = 20,                      /* term  */
+  YYSYMBOL_directive_term = 21,            /* directive_term  */
+  YYSYMBOL_expression = 22,                /* expression  */
+  YYSYMBOL_directive_expression = 23       /* directive_expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -469,21 +471,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  17
+#define YYFINAL  19
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   38
+#define YYLAST   40
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  12
+#define YYNTOKENS  14
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  25
+#define YYNRULES  26
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  41
+#define YYNSTATES  43
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   266
+#define YYMAXUTOK   268
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -523,7 +525,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11
+       5,     6,     7,     8,     9,    10,    11,    12,    13
 };
 
 #if YYDEBUG
@@ -531,8 +533,8 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int8 yyrline[] =
 {
        0,    42,    42,    46,    47,    51,    52,    53,    54,    55,
-      56,    57,    61,    62,    65,    66,    69,    70,    71,    74,
-      75,    76,    79,    80,    83,    84
+      56,    57,    58,    62,    63,    66,    67,    70,    71,    72,
+      75,    76,    77,    80,    81,    84,    85
 };
 #endif
 
@@ -550,9 +552,9 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "IDENT", "NUM",
   "COLON", "COMMA", "NEWLINE", "PLUS", "MINUS", "DIRECTIVE",
-  "DEF_DIRECTIVE", "$accept", "program", "lines", "line", "operands",
-  "directive_operands", "term", "directive_term", "expression",
-  "directive_expression", YY_NULLPTR
+  "DEF_DIRECTIVE", "DUMP_DIRECTIVE", "FSTRING", "$accept", "program",
+  "lines", "line", "operands", "directive_operands", "term",
+  "directive_term", "expression", "directive_expression", YY_NULLPTR
 };
 
 static const char *
@@ -562,7 +564,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-17)
+#define YYPACT_NINF (-18)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -576,11 +578,11 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -2,    -1,   -17,     4,     9,    35,    -2,   -17,   -17,   -17,
-     -17,   -17,    18,    19,   -17,     7,    26,   -17,   -17,    28,
-     -17,    28,    28,   -17,   -17,   -17,    27,    29,   -17,    14,
-      19,   -17,   -17,    26,   -17,    26,    26,   -17,    29,   -17,
-     -17
+      -2,    -1,   -18,     4,    10,     6,    36,    -2,   -18,   -18,
+     -18,   -18,   -18,    19,    20,   -18,     8,    27,   -18,   -18,
+     -18,    29,   -18,    29,    29,   -18,   -18,   -18,    28,    30,
+     -18,    15,    20,   -18,   -18,    27,   -18,    27,    27,   -18,
+      30,   -18,   -18
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -588,23 +590,23 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,    11,     0,     0,     0,     2,     3,    17,    16,
-       5,     9,     0,    12,    18,     0,     0,     1,     4,     0,
-       7,     0,     0,    20,    19,    10,     0,    14,    21,     0,
-      13,    22,    23,     0,     8,     0,     0,     6,    15,    24,
-      25
+       0,     0,    12,     0,     0,     0,     0,     2,     3,    18,
+      17,     5,    10,     0,    13,    19,     0,     0,     7,     1,
+       4,     0,     8,     0,     0,    21,    20,    11,     0,    15,
+      22,     0,    14,    23,    24,     0,     9,     0,     0,     6,
+      16,    25,    26
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -17,   -17,   -17,    12,   -17,   -17,    -6,   -16,   -17,   -17
+     -18,   -18,   -18,    33,   -18,   -18,    -7,   -17,   -18,   -18
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     5,     6,     7,    12,    26,    13,    27,    14,    28
+       0,     6,     7,     8,    13,    28,    14,    29,    15,    30
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -612,45 +614,47 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      29,     1,     8,     9,    10,     2,    11,    15,     3,     4,
-      23,    24,    16,    30,    25,    31,    32,    38,    18,    39,
-      40,    37,    35,    36,    19,    20,     0,    21,    22,    23,
-      24,     8,     9,    33,    34,    17,     0,    35,    36
+      31,     1,     9,    10,    11,     2,    12,    16,     3,     4,
+       5,    25,    26,    17,    32,    27,    33,    34,    40,    18,
+      41,    42,    39,    37,    38,    21,    22,     0,    23,    24,
+      25,    26,     9,    10,    35,    36,    19,     0,    37,    38,
+      20
 };
 
 static const yytype_int8 yycheck[] =
 {
-      16,     3,     3,     4,     5,     7,     7,     3,    10,    11,
-       3,     4,     3,    19,     7,    21,    22,    33,     6,    35,
-      36,     7,     8,     9,     6,     7,    -1,     8,     9,     3,
-       4,     3,     4,     6,     7,     0,    -1,     8,     9
+      17,     3,     3,     4,     5,     7,     7,     3,    10,    11,
+      12,     3,     4,     3,    21,     7,    23,    24,    35,    13,
+      37,    38,     7,     8,     9,     6,     7,    -1,     8,     9,
+       3,     4,     3,     4,     6,     7,     0,    -1,     8,     9,
+       7
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     7,    10,    11,    13,    14,    15,     3,     4,
-       5,     7,    16,    18,    20,     3,     3,     0,    15,     6,
-       7,     8,     9,     3,     4,     7,    17,    19,    21,    19,
-      18,    18,    18,     6,     7,     8,     9,     7,    19,    19,
-      19
+       0,     3,     7,    10,    11,    12,    15,    16,    17,     3,
+       4,     5,     7,    18,    20,    22,     3,     3,    13,     0,
+      17,     6,     7,     8,     9,     3,     4,     7,    19,    21,
+      23,    21,    20,    20,    20,     6,     7,     8,     9,     7,
+      21,    21,    21
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    12,    13,    14,    14,    15,    15,    15,    15,    15,
-      15,    15,    16,    16,    17,    17,    18,    18,    18,    19,
-      19,    19,    20,    20,    21,    21
+       0,    14,    15,    16,    16,    17,    17,    17,    17,    17,
+      17,    17,    17,    18,    18,    19,    19,    20,    20,    20,
+      21,    21,    21,    22,    22,    23,    23
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     2,     4,     3,     4,     2,
-       3,     1,     1,     3,     1,     3,     1,     1,     1,     1,
-       1,     1,     3,     3,     3,     3
+       0,     2,     1,     1,     2,     2,     4,     2,     3,     4,
+       2,     3,     1,     1,     3,     1,     3,     1,     1,     1,
+       1,     1,     1,     3,     3,     3,     3
 };
 
 
@@ -1500,125 +1504,125 @@ yyreduce:
   case 5: /* line: IDENT COLON  */
 #line 51 "assembler/parser.y"
                                                 { add_label((yyvsp[-1].str), &PC); }
-#line 1504 "assembler/build/parser.tab.c"
+#line 1508 "assembler/build/parser.tab.c"
     break;
 
   case 6: /* line: DEF_DIRECTIVE IDENT directive_term NEWLINE  */
 #line 52 "assembler/parser.y"
                                                         { add_label((yyvsp[-2].str), &(yyvsp[-1].u64)); }
-#line 1510 "assembler/build/parser.tab.c"
+#line 1514 "assembler/build/parser.tab.c"
     break;
 
-  case 7: /* line: IDENT operands NEWLINE  */
-#line 53 "assembler/parser.y"
-                                                { add_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
-#line 1516 "assembler/build/parser.tab.c"
-    break;
-
-  case 8: /* line: DIRECTIVE IDENT directive_operands NEWLINE  */
+  case 8: /* line: IDENT operands NEWLINE  */
 #line 54 "assembler/parser.y"
-                                                        { directive_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
-#line 1522 "assembler/build/parser.tab.c"
+                                                { add_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
+#line 1520 "assembler/build/parser.tab.c"
     break;
 
-  case 9: /* line: IDENT NEWLINE  */
+  case 9: /* line: DIRECTIVE IDENT directive_operands NEWLINE  */
 #line 55 "assembler/parser.y"
-                                                { add_i((yyvsp[-1].str), NULL, &PC); }
-#line 1528 "assembler/build/parser.tab.c"
+                                                        { directive_i((yyvsp[-2].str), (yyvsp[-1].oplist), &PC); }
+#line 1526 "assembler/build/parser.tab.c"
     break;
 
-  case 10: /* line: DIRECTIVE IDENT NEWLINE  */
+  case 10: /* line: IDENT NEWLINE  */
 #line 56 "assembler/parser.y"
+                                                { add_i((yyvsp[-1].str), NULL, &PC); }
+#line 1532 "assembler/build/parser.tab.c"
+    break;
+
+  case 11: /* line: DIRECTIVE IDENT NEWLINE  */
+#line 57 "assembler/parser.y"
                                                 { directive_si((yyvsp[-1].str), &PC); }
-#line 1534 "assembler/build/parser.tab.c"
+#line 1538 "assembler/build/parser.tab.c"
     break;
 
-  case 12: /* operands: term  */
-#line 61 "assembler/parser.y"
-                                { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
-#line 1540 "assembler/build/parser.tab.c"
-    break;
-
-  case 13: /* operands: operands COMMA term  */
+  case 13: /* operands: term  */
 #line 62 "assembler/parser.y"
+                                { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
+#line 1544 "assembler/build/parser.tab.c"
+    break;
+
+  case 14: /* operands: operands COMMA term  */
+#line 63 "assembler/parser.y"
                                 { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
-#line 1546 "assembler/build/parser.tab.c"
+#line 1550 "assembler/build/parser.tab.c"
     break;
 
-  case 14: /* directive_operands: directive_term  */
-#line 65 "assembler/parser.y"
-                                                        { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
-#line 1552 "assembler/build/parser.tab.c"
-    break;
-
-  case 15: /* directive_operands: directive_operands COMMA directive_term  */
+  case 15: /* directive_operands: directive_term  */
 #line 66 "assembler/parser.y"
+                                                        { (yyval.oplist) = make_operand_list((yyvsp[0].u64)); }
+#line 1556 "assembler/build/parser.tab.c"
+    break;
+
+  case 16: /* directive_operands: directive_operands COMMA directive_term  */
+#line 67 "assembler/parser.y"
                                                         { (yyval.oplist) = append_operand((yyvsp[-2].oplist), (yyvsp[0].u64)); }
-#line 1558 "assembler/build/parser.tab.c"
+#line 1562 "assembler/build/parser.tab.c"
     break;
 
-  case 16: /* term: NUM  */
-#line 69 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[0].u64); }
-#line 1564 "assembler/build/parser.tab.c"
-    break;
-
-  case 17: /* term: IDENT  */
+  case 17: /* term: NUM  */
 #line 70 "assembler/parser.y"
-                                { (yyval.u64) = get_label((yyvsp[0].str), 0); }
-#line 1570 "assembler/build/parser.tab.c"
+                                { (yyval.u64) = (yyvsp[0].u64); }
+#line 1568 "assembler/build/parser.tab.c"
     break;
 
-  case 18: /* term: expression  */
+  case 18: /* term: IDENT  */
 #line 71 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[0].u64); }
-#line 1576 "assembler/build/parser.tab.c"
+                                { (yyval.u64) = get_label((yyvsp[0].str), 0); }
+#line 1574 "assembler/build/parser.tab.c"
     break;
 
-  case 19: /* directive_term: NUM  */
-#line 74 "assembler/parser.y"
+  case 19: /* term: expression  */
+#line 72 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[0].u64); }
-#line 1582 "assembler/build/parser.tab.c"
+#line 1580 "assembler/build/parser.tab.c"
     break;
 
-  case 20: /* directive_term: IDENT  */
+  case 20: /* directive_term: NUM  */
 #line 75 "assembler/parser.y"
-                                { (yyval.u64) = get_label((yyvsp[0].str), 1); }
-#line 1588 "assembler/build/parser.tab.c"
+                                { (yyval.u64) = (yyvsp[0].u64); }
+#line 1586 "assembler/build/parser.tab.c"
     break;
 
-  case 21: /* directive_term: directive_expression  */
+  case 21: /* directive_term: IDENT  */
 #line 76 "assembler/parser.y"
+                                { (yyval.u64) = get_label((yyvsp[0].str), 1); }
+#line 1592 "assembler/build/parser.tab.c"
+    break;
+
+  case 22: /* directive_term: directive_expression  */
+#line 77 "assembler/parser.y"
                                         { (yyval.u64) = (yyvsp[0].u64); }
-#line 1594 "assembler/build/parser.tab.c"
+#line 1598 "assembler/build/parser.tab.c"
     break;
 
-  case 22: /* expression: term PLUS term  */
-#line 79 "assembler/parser.y"
-                                { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
-#line 1600 "assembler/build/parser.tab.c"
-    break;
-
-  case 23: /* expression: term MINUS term  */
+  case 23: /* expression: term PLUS term  */
 #line 80 "assembler/parser.y"
+                                { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
+#line 1604 "assembler/build/parser.tab.c"
+    break;
+
+  case 24: /* expression: term MINUS term  */
+#line 81 "assembler/parser.y"
                                 { (yyval.u64) = (yyvsp[-2].u64) - (yyvsp[0].u64); }
-#line 1606 "assembler/build/parser.tab.c"
+#line 1610 "assembler/build/parser.tab.c"
     break;
 
-  case 24: /* directive_expression: directive_term PLUS directive_term  */
-#line 83 "assembler/parser.y"
-                                                { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
-#line 1612 "assembler/build/parser.tab.c"
-    break;
-
-  case 25: /* directive_expression: directive_term MINUS directive_term  */
+  case 25: /* directive_expression: directive_term PLUS directive_term  */
 #line 84 "assembler/parser.y"
+                                                { (yyval.u64) = (yyvsp[-2].u64) + (yyvsp[0].u64); }
+#line 1616 "assembler/build/parser.tab.c"
+    break;
+
+  case 26: /* directive_expression: directive_term MINUS directive_term  */
+#line 85 "assembler/parser.y"
                                                 { (yyval.u64) = (yyvsp[-2].u64) - (yyvsp[0].u64); }
-#line 1618 "assembler/build/parser.tab.c"
+#line 1622 "assembler/build/parser.tab.c"
     break;
 
 
-#line 1622 "assembler/build/parser.tab.c"
+#line 1626 "assembler/build/parser.tab.c"
 
       default: break;
     }
@@ -1847,6 +1851,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 86 "assembler/parser.y"
+#line 87 "assembler/parser.y"
 
 
