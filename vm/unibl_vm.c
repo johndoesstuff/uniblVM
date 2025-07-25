@@ -21,6 +21,7 @@ int EXPAND;
 int STATS;
 int STATS_DET;
 int COMPLEXITY;
+int IGNORE_HALT;
 size_t bytes_loaded = 0;
 size_t bytes_read = 0;
 
@@ -90,6 +91,7 @@ int main(int argc, char** argv) {
 	STATS = 0;
 	STATS_DET = 0;
 	COMPLEXITY = 0;
+	IGNORE_HALT = 0;
 	argv++;
 	for (int i = 1; i < argc; argv++, i++) {
 		if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0) {
@@ -123,6 +125,8 @@ int main(int argc, char** argv) {
 			STATS_DET = 1;
 		} else if (strcmp(*argv, "-c") == 0 || strcmp(*argv, "--complexity") == 0) {
 			COMPLEXITY = 1;
+		} else if (strcmp(*argv, "-b") == 0 || strcmp(*argv, "--break") == 0) {
+			IGNORE_HALT = 1;
 		} else {
 			load_binary(*argv);
 		}
@@ -145,7 +149,13 @@ int main(int argc, char** argv) {
 		uint64_t spc = PC;
 
 		if (op == HALT) {
-			break;
+			if (IGNORE_HALT) {
+				if (DEBUG) {
+					if (DEBUG) printf("%-25s", "HALT");
+				}
+			} else {
+				break;
+			}
 		} else if (op == LDA) {
 			uint8_t offset = 8*read_u8();
 			uint64_t addr = read_u64();
@@ -211,6 +221,7 @@ int main(int argc, char** argv) {
 		if (EXPAND) printf("\tB=0x%-8" PRIX64, ACC_B);
 		if (EXPAND) printf("\tPC=0x%-8" PRIX64, spc);
 		if (DEBUG) printf("\n");
+		if (IGNORE_HALT && op == HALT) getc(stdin);
 		cycles++;
 	}
 
