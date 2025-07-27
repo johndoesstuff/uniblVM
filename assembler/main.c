@@ -107,6 +107,14 @@ void directive_si(const char *instr, uint64_t *pc) {
 	}
 }
 
+// DIRECTIVE TO PUT RAW DATA FROM FSTRINGS
+void directive_dump(const char *data, uint64_t *pc) {
+	size_t data_len = strlen(data);
+	for (int i = 0; i < data_len; i++) {
+		emit_byte(data[i]);
+	}
+}
+
 // ADDS A LABEL TO LABEL TABLE
 // LABELS ARE JUST THE CURRENT VALUE OF THE PROGRAM COUNTER
 void add_label(const char *label, uint64_t *pc) {

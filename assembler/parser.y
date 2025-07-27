@@ -50,7 +50,7 @@ lines:
 line:
 	IDENT COLON 				{ add_label($1, &PC); }
 	| DEF_DIRECTIVE IDENT directive_term NEWLINE	{ add_label($2, &$3); }
-	| DUMP_DIRECTIVE FSTRING
+	| DUMP_DIRECTIVE FSTRING		{ directive_dump($2, &PC); }
 	| IDENT operands NEWLINE		{ add_i($1, $2, &PC); }
 	| DIRECTIVE IDENT directive_operands NEWLINE	{ directive_i($2, $3, &PC); }
 	| IDENT NEWLINE				{ add_i($1, NULL, &PC); }

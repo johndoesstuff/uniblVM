@@ -61,16 +61,16 @@ extern int asm_debug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     IDENT = 258,                   /* IDENT  */
-    NUM = 259,                     /* NUM  */
-    COLON = 260,                   /* COLON  */
-    COMMA = 261,                   /* COMMA  */
-    NEWLINE = 262,                 /* NEWLINE  */
-    PLUS = 263,                    /* PLUS  */
-    MINUS = 264,                   /* MINUS  */
-    DIRECTIVE = 265,               /* DIRECTIVE  */
-    DEF_DIRECTIVE = 266,           /* DEF_DIRECTIVE  */
-    DUMP_DIRECTIVE = 267,          /* DUMP_DIRECTIVE  */
-    FSTRING = 268                  /* FSTRING  */
+    FSTRING = 259,                 /* FSTRING  */
+    NUM = 260,                     /* NUM  */
+    COLON = 261,                   /* COLON  */
+    COMMA = 262,                   /* COMMA  */
+    NEWLINE = 263,                 /* NEWLINE  */
+    PLUS = 264,                    /* PLUS  */
+    MINUS = 265,                   /* MINUS  */
+    DIRECTIVE = 266,               /* DIRECTIVE  */
+    DEF_DIRECTIVE = 267,           /* DEF_DIRECTIVE  */
+    DUMP_DIRECTIVE = 268           /* DUMP_DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

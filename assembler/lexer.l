@@ -43,6 +43,14 @@ uint64_t encode_le(const char *str) {
 
 	return result;
 }
+
+char* strip_angles(char *str) {
+	size_t len = strlen(str);
+	if (len < 2) return str;
+	str[len - 2] = '\0';
+	return str + 1;
+}
+
 %}
 
 %%
@@ -53,6 +61,7 @@ uint64_t encode_le(const char *str) {
 {CHAR}		{ asm_lval.u64 = asm_text[1]; return NUM; }
 {ID}		{ asm_lval.str = strdup(asm_text); return IDENT; }
 {STRING}	{ asm_lval.u64 = encode_le(asm_text); return NUM; }
+{FSTRING}	{ asm_lval.str = strip_angles(asm_text); return FSTRING; }
 
 ":"		return COLON;
 ","		return COMMA;

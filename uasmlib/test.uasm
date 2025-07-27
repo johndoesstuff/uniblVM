@@ -1,15 +1,5 @@
-$INCLUDE <uasmlib/stdlib.uasm>
-$INCLUDE <uasmlib/math.uasm>
-$INCLUDE <uasmlib/print.uasm>
-
-val:
-VOID 723
-val_2:
-VOID 412
-LDA64 val + 1
-LDB64 val_2 + 1
-
-MULAB
-PRINTA
-
+$DUMP <hello this is a test of the dump directive\n>
+VOID "what the"
+MEOW:
+$DEBUG MEOW
 HALT
