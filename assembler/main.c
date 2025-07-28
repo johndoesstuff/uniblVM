@@ -113,6 +113,7 @@ void directive_dump(const char *data, uint64_t *pc) {
 	for (int i = 0; i < data_len; i++) {
 		emit_byte(data[i]);
 	}
+	*pc = ENTRY_POINT + program_size;
 }
 
 // ADDS A LABEL TO LABEL TABLE

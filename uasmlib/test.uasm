@@ -1,5 +1,13 @@
-$DUMP <hello this is a test of the dump directive\n>
-VOID "what the"
-MEOW:
-$DEBUG MEOW
+$INCLUDE <uasmlib/stdlib.uasm>
+$INCLUDE <uasmlib/print.uasm>
+$INCLUDE <uasmlib/math.uasm>
+
+set_a:
+VOID 0xd
+;set_b:
+;VOID 13
+
+LDA64 set_a + 1
 HALT
+;LDB64 set_b + 1
+PRINTA
