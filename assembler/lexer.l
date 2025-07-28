@@ -47,7 +47,7 @@ uint64_t encode_le(const char *str) {
 char* strip_angles(char *str) {
 	size_t len = strlen(str);
 	if (len < 2) return str;
-	str[len - 2] = '\0';
+	str[len - 1] = '\0';
 	return str + 1;
 }
 
