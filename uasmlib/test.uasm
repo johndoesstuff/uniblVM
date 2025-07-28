@@ -3,11 +3,27 @@ $INCLUDE <uasmlib/print.uasm>
 $INCLUDE <uasmlib/math.uasm>
 
 set_a:
-VOID 0xd
+VOID 48
 ;set_b:
 ;VOID 13
 
 LDA64 set_a + 1
-HALT
 ;LDB64 set_b + 1
-PRINTA
+CALL CALL_1
+HALT
+
+CALL_1:
+FPRINT "1s\n"
+CALL CALL_2
+FPRINT "1e\n"
+RET
+
+CALL_2:
+FPRINT "2s\n"
+CALL CALL_3
+FPRINT "2e\n"
+RET
+
+CALL_3:
+FPRINT "please\n"
+RET

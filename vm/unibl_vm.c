@@ -160,6 +160,10 @@ int main(int argc, char** argv) {
 		} else if (op == LDA) {
 			uint8_t offset = 8*read_u8();
 			uint64_t addr = read_u64();
+			if (addr >= MEM_SIZE) {
+				fprintf(stderr, "Error: Trying to LDA %" PRIX64 " when only %" PRIX64 " addresses allocated\n", addr, MEM_SIZE);
+				exit(1);
+			}
 			uint8_t width = read_u8();
 			if (offset + (width - 1) * 8 >= 64) continue;
 			for (int i = 0; i < width; i++) {
@@ -169,6 +173,10 @@ int main(int argc, char** argv) {
 			if (DEBUG) printf("%-10s %-5u %-5" PRIX64 " %-5u", "LDA", offset, addr, width);
 		} else if (op == STA) {
 			uint64_t addr = read_u64();
+			if (addr >= MEM_SIZE) {
+				fprintf(stderr, "Error: Trying to STA %" PRIX64 " when only %" PRIX64 " addresses allocated\n", addr, MEM_SIZE);
+				exit(1);
+			}
 			uint8_t offset = 8*read_u8();
 			uint8_t width = read_u8();
 			if (offset + (width - 1) * 8 >= 64) continue;
@@ -183,10 +191,18 @@ int main(int argc, char** argv) {
 			if (DEBUG) printf("%-25s", "SWP");
 		} else if (op == JMP) {
 			uint64_t addr = read_u64();
+			if (addr >= MEM_SIZE) {
+				fprintf(stderr, "Error: Trying to JMP %" PRIX64 " when only %" PRIX64 " addresses allocated\n", addr, MEM_SIZE);
+				exit(1);
+			}
 			PC = addr;
 			if (DEBUG) printf("%-10s %-15" PRIX64, "JMP", addr);
 		} else if (op == JMPBZ) {
 			uint64_t addr = read_u64();
+			if (addr >= MEM_SIZE) {
+				fprintf(stderr, "Error: Trying to JMPBZ %" PRIX64 " when only %" PRIX64 " addresses allocated\n", addr, MEM_SIZE);
+				exit(1);
+			}
 			if (ACC_B == 0) {
 				PC = addr;
 			}

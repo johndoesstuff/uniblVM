@@ -13,5 +13,5 @@
 #define SHRA 11
 
 #define ENTRY_POINT 0x0800
-#define MEM_SIZE 0xFFFF
+#define MEM_SIZE (uint64_t)0xFFFF
 #endif
