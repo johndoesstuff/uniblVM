@@ -85,35 +85,29 @@ Subtract B from A and store the result in A
 
 *Could subtraction be implemented using the already defined instructions? Yes, but very VERY laboriously; to the point where the compute time would make it not worth it.*
 
-**8 = LDAB [u8: offset] [u8: width]**
-
-Same as `LDA` but using B + offset as the address
-
-*Could theoretically be implemented as a reference to* `LDA` *that uses* `SWP` *and* `STA` *to store B in the parameter address of* `LDA` *however this is extremely memory inefficient for such a fundemental dereference operation. Used to use only B as offset but later changed to use B + offset for 64bit compatibility.*
-
-**9 = STAB [u8: offset] [u8: width]**
-
-Same as `STA` but using B + offset as the address
-
-*The same argument could be made here as* `LDAB` *for its redundancy but everything is a tradeoff and if we were to boil everything down only to completely fundemental operators we would end up with a bytecode that is so memory inefficient and computationally intensive it is virtually useless.*
-
-**10 = CMPAB**
+**8 = CMPAB**
 
 Set B to 0 if A and B are equal, otherwise set B to 1
 
 *Comparison is required for conditional jumps, absolutely necessary.*
 
-**11 = VOID [u64: data]**
+**9 = VOID [u64: data]**
 
 Do nothing
 
 *Why is it necessary to have an instruction that takes an argument and literally does nothing? Unexpectedly the* `VOID` *command is one of the most useful commands. Voiding a* `u64` *means that argument will be stored in memory so it is pure data that can be referenced later. For example, if a program needs a constant that constant can be passed into* `VOID` *and will appear in program memory at the address of* `VOID + 1`*, this constant can then be referenced and stored as desired using other instructions. Trying to store memory in program space can only be done as an argument to an instruction and trying to use any instruction that does something with its arguments will cause unexpected behaviour.*
 
-**12 = NANDAB**
+**10 = NANDAB**
 
 Take the logical NAND of A and B and store it in A
 
 *NAND is a fundemental building block for all logical operations, anything that can't be implemented using addition or subtraction can be implemented using NAND.*
+
+**11 = SHRA [u8: offset]
+
+Shift right A by offset and store result in A
+
+*SHRA could be implemented using NAND however unlike SHLA which is A+A there is no simple trick to shift right without iterating over every bit in A which ends up being quite expensive especially when multiple SHRA calls are required.*
 
 ### What are offsets?
 

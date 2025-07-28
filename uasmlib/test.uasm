@@ -1,13 +1,25 @@
+SIZEOF:
 $INCLUDE <uasmlib/stdlib.uasm>
 $INCLUDE <uasmlib/print.uasm>
 $INCLUDE <uasmlib/math.uasm>
+ESIZEOF:
 
 set_a:
-VOID 0xbeefface137
-;set_b:
-;VOID 13
+VOID 571892389
+set_b:
+VOID 622017
 
 LDA64 set_a + 1
-;LDB64 set_b + 1
+LDB64 set_b + 1
+PRINT "A = "
 PRINTA
-HALT
+PRINTN
+PRINT "B = "
+PRINTB
+PRINTN
+MULAB
+PRINT "A * B = "
+PRINTA
+PRINTN
+
+$DEBUG ESIZEOF - SIZEOF
