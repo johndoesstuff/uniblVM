@@ -111,6 +111,7 @@ RET
 v:
 VOID 10
 a:
+VOID 0
 STA64 a + 1
 LDA64 v + 1
 PUTA8

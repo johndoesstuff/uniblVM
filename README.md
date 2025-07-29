@@ -1,3 +1,4 @@
+
 # UNIBL
 (Universal Bootstrappable Language)
 
@@ -403,22 +404,107 @@ The DEBUG directive is very simple, it will print the values passed into it upon
 
 ## The UNIBL Standard Library
 
-### Memory Mapping
+### stdlib.uasm
 
-Despite the UNIBL virtual machine only needing to manage memory for input and output the UNIBL standard library `stdlib.uasm` defines necessary blocks of memory to implement additional functionality into the UASM lanuage. Including the standard library implements the ability to call and return from subroutines and many macros for essential features.
+Despite the UNIBL virtual machine only needing to manage memory for input and output, the UNIBL standard library `stdlib.uasm` defines necessary blocks of memory to implement additional functionality into the UASM lanuage. Including the standard library implements the ability to call and return from subroutines, adds variables for standard locations, and adds many macros for essential features.
 
-```
-0x0000 - 0x03FF STDIN
-0x0400 - 0x07FF STDOUT
-0x0800 - 0x0BFF CALLSTACK
-0x0C00 - 0x17FF STACK
+**CALL [address]**
 
-0x1800 - 0x1801 STDIN POINTER
-0x1802 - 0x1803 STDOUT POINTER
-0x1804 - 0x1805 CALLSTACK POINTER
-0x1806 - 0x1807 STACK POINTER
+Add current position to callstack and go into subroutine. When subroutine is finished return to previous execution point.
 
-0x1808 - 0x18FF (RESERVED FOR FUTURE)
+**RET**
 
-0x1900 - 0x19FF TEMP MEMORY
-```
+Return from current subroutine to previous position in execution.
+
+**LDB [u8: offset] [u64: address] [u8: width]**
+
+Functions identical to LDA but uses B register.
+
+**STB [u64: address] [u8: offset] [u8: width]**
+
+Functions identical to STA but uses B register.
+
+**LDAB [u8: offset] [u8: width]**
+
+Same as `LDA` but using B + offset as the address.
+
+**STAB [u8: offset] [u8: width]**
+
+Same as `STA` but using B + offset as the address.
+
+**JMPA**
+
+Jump to position in execution at register A.
+
+**LDPCA**
+
+Load the current program counter value into register A.
+
+**LDA64 [u64: address]**
+
+Shorthand for LDA into all of A.
+
+**STA64 [u64: address]**
+
+Shorthand for STA into all of A.
+
+**LDB64 [u64: address]**
+
+Shorthand for LDB into all of B.
+
+**STB64 [u64: address]**
+
+Shorthand for STB into all of B.
+
+### math.uasm
+
+The `math.uasm` library includes functions for doing more complex math operations including additional logical operators and arithmetic operators.
+
+**NOTA**
+
+Logical NOT of A.
+
+**SHL1A**
+
+Left shift A by 1.
+
+**ACCA [u64: address]**
+
+Accumulate the value of A to a position in memory.
+
+**ANDAB**
+
+Logical AND of A and B stored into A.
+
+**SHRB [u8: offset]**
+
+Identical to SHRA but using B register.
+
+**MULAB**
+
+Multiply A and B, store result in A.
+
+**DIVAB**
+
+Divide A and B, store result in B.
+
+### print.uasm
+
+The `print.uasm` library allows for printing to STDOUT of strings and values.
+
+**PRINTA**
+
+Print the hex value of A to STDOUT.
+
+**PRINTB**
+
+Print the hex value of B to STDOUT.
+
+**PRINTN**
+
+Print a newline character to STDOUT.
+
+**PRINT [u64: string]**
+
+Print string to STDOUT.
+

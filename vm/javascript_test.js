@@ -26,8 +26,8 @@ let ACC_A = 0n;
 let ACC_B = 0n;
 let PC = BigInt(ENTRY_POINT);
 
-let DEBUG = true;
-let EXPAND = true;
+let DEBUG = false;
+let EXPAND = false;
 
 // Helpers
 function read_u8() {

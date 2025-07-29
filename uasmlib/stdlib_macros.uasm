@@ -141,7 +141,7 @@ LDA 0, v + 1, 1
 .MACRO SETB1
 v:
 VOID 1
-LDB 0, v + 1, 8
+LDB 0, v + 8, 8
 .ENMAC
 
 .MACRO SETB8
@@ -362,6 +362,7 @@ STB64 TEMP_PUT
 ; load stack pointer to B
 SETBZ
 LDB16 P_STDOUT
+HALT
 ; set *sp to A
 STB64 put_sta + 1
 put_sta:
@@ -370,6 +371,7 @@ STA 0, 0, 1
 SWP
 INCA16
 SWP
+HALT
 ; restore incremented stack pointer
 STB16 P_STDOUT
 ; restore state of B
