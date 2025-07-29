@@ -26,6 +26,19 @@ Because all memory is stored in a single tape, it's important to specify which a
 ```
 Why separate memory into these chunks instead of storing input, output, etc. in separate variables? Having Standard Input and Output along with other things be assigned to specific places in memory both reduces instruction complexity (less opcodes to implement in a virtual machine) and allows greater freedom of what parts of UNIBL you deem necessary in your implementation. Perhaps you aren't running any programs that need input; instead of having to still implement input features to run your code you can choose to simply not implement it with all code still running as you would expect. This modular system allows you to decide what specifications you deem necessary to add. This also allows you flexibility in extending the functionality of the virtual machine, making it easy to implement new features down the line.
 
+### Special Addresses
+
+Unfortunately just having a chunk of memory partitioned for input and output doesn't quite suffice. To overcome only having 1024 input addresses and 1024 output addresses specific input and output addresses can be mapped in certain vm implementations to extend the capabilities of I/O. Currently the most relevant special addresses are
+
+```nasm
+STDIN_FLUSH  0x3FE
+STDIN_MODE   0x3FF
+STDOUT_FLUSH 0x7FE
+STDOUT_MODE  0x7FF
+```
+
+By default all of these addresses are set to 0. Flush addresses are used to indicate when the end of I/O space has been reached in program space and reload for next input/output chunk to be processed. Setting `STDIN_FLUSH` to a nonzero number signals that the input chunk has been fully read and the program is ready to receive the next chunk of input from the virtual machine. Conversely setting `STDOUT_FLUSH` to a nonzero number signals the virtual machine to output the contents of `STDOUT: 0x400-0x7FE` (note that `STDOUT_MODE` is not zeroed and neither `STDOUT_FLUSH` nor `STDOUT_MODE` are outputted).
+
 ### Reading From MEM
 
 Memory is read 1 `u8` (8 bit chunk) at a time. Each UNIBL instruction is stored as a `u8` and their arguments are stored in the appropriate size. Some arguments are only `u8`, (for example determining what section of an accumulator to store 8bits, there are only 8 options) whereas some are `u64` (determining the address of the memory to load).
@@ -104,7 +117,7 @@ Take the logical NAND of A and B and store it in A
 
 *NAND is a fundemental building block for all logical operations, anything that can't be implemented using addition or subtraction can be implemented using NAND.*
 
-**11 = SHRA [u8: offset]
+**11 = SHRA [u8: offset]**
 
 Shift right A by offset and store result in A
 
