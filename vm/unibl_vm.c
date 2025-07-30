@@ -72,6 +72,17 @@ void dump_memory(uint64_t start, uint64_t end) {
 	}
 }
 
+void flush_stdout() {
+	if (DEBUG) {
+		printf("Dumping Standard Output...\n");
+	}
+	for (uint64_t addr = 0x400; addr < 0x7FE; addr++) {
+		printf("%c", MEM[addr]);
+		MEM[addr] = 0;
+	}
+	MEM[0x7FE] = 0;
+}
+
 int main(int argc, char** argv) {
 	// VM MUST BE USED WITH A PROGRAM BINARY
 	if (argc < 2) {
@@ -149,6 +160,8 @@ int main(int argc, char** argv) {
 		//if (DEBUG) printf("Loaded op %u\n", op);
 		uint64_t spc = PC;
 
+
+		// OP CODE LOOP
 		if (op == HALT) {
 			if (IGNORE_HALT && last_op != op) {
 				if (DEBUG) {
@@ -234,12 +247,25 @@ int main(int argc, char** argv) {
 			fprintf(stderr, "Invalid opcode: %u at PC=%" PRIX64 "\n", op, PC - 1);
 			break;
 		}
-		if (EXPAND) printf("\t\t\tA=0x%-8" PRIX64, ACC_A);
-		if (EXPAND) printf("\tB=0x%-8" PRIX64, ACC_B);
-		if (EXPAND) printf("\tPC=0x%-8" PRIX64, spc);
-		if (DEBUG) printf("\n");
-		if (IGNORE_HALT && op == HALT) getc(stdin);
-		last_op = op;
+
+		// CHECK FLUSH AND MODE
+		if (MEM[0x7FE]) {
+			flush_stdout();
+		}
+
+
+		if (EXPAND) {
+			printf("\t\t\tA=0x%-8" PRIX64, ACC_A);
+			printf("\tB=0x%-8" PRIX64, ACC_B);
+			printf("\tPC=0x%-8" PRIX64, spc);
+		}
+		if (DEBUG) {
+			printf("\n");
+		}
+		if (IGNORE_HALT && op == HALT) {
+			getc(stdin);
+		}
+		//last_op = op;
 		cycles++;
 	}
 
@@ -276,11 +302,6 @@ int main(int argc, char** argv) {
 		dump_memory(DUMP_START, DUMP_END);
 	}
 
-	// OUTPUT STANDARD OUTPUT (0x0400-0x07FF)
-	if (DEBUG) {
-		printf("Dumping Standard Output...\n");
-	}
-	for (uint64_t addr = 0x0400; addr < 0x07FF; addr++) {
-		printf("%c", MEM[addr]);
-	}
+	// OUTPUT STANDARD OUTPUT (0x0400-0x07FE)
+	flush_stdout();
 }

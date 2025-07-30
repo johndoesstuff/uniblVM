@@ -1,8 +1,7 @@
-
 # UNIBL
 (Universal Bootstrappable Language)
 
-Writing programs in certain languages comes with portability issues, to run a C program you need a C compiler that targets your specific architecture. Some languages like Java try to solve this by implementing a virtual machine that custom bytecode can compile to. While well defined these virtual machines are still complex, the JVM spec is currently sitting at around 160 pages which is far from something trivial to implement in any system. Other esoteric programming languages like BrainF* take this in the opposite direction- trivial to implement but barely useful. My goal with this project is to write a programming language that is complex enough to define itself and implement it's own behaviour using itself, I.E "bootstrapping", but also that is simple enough it could reasonably be implemented on any system as an afternoon project rather than a month long undertaking.
+Writing programs in certain languages comes with portability issues, to run a C program you need a C compiler that targets your specific architecture. Some languages like Java try to solve this by implementing a virtual machine that custom bytecode can compile to. While well defined these virtual machines are still complex, the JVM spec is currently sitting at around 160 pages which is far from something trivial to implement in any system. Other esoteric programming languages like BrainF* take this in the opposite direction- trivial to implement but barely useful. My goal with this project is to write a programming language that is complex enough to define itself and implement it's own behavior using itself, I.E "bootstrapping", but also that is simple enough it could reasonably be implemented on any system as an afternoon project rather than a month long undertaking.
 
 ## The UNIBL Virtual Machine
 
@@ -176,7 +175,7 @@ Prints debug instructions and includes the values of `PC` `ACC_A` and `ACC_B` at
 
 Dumps hex of the state of the virtual machine at the end of execution for a given range in memory. For example
 ```
-user@root:~/unibl$ ./unibl_asm test.uasm && ./unibl_vm test.bin -i 0x400:0x41F
+user@root:~/unibl$ ./unibl_asm test.uasm && ./unibl_vm test.ubc -i 0x400:0x41F
 Dumping Memory 0x400-0x41F
 0400: 54 45 53 54 0A 00 00 00
 0408: 48 65 6C 6C 6F 20 57 6F
@@ -194,6 +193,10 @@ Displays execution stats on most commonly used instructions including number of 
 **-c --complexity**
 
 Displays stats on the complexity of the program executed, including program size, how many bytes loads were called, vm cycles, and execution time.
+
+**-b --break**
+
+Instead of ending execution on a `HALT` op wait for character input then continue execution. Receiving 2 `HALT`s in a row will terminate program execution.
 
 ## The UNIBL Assembler
 
@@ -520,4 +523,3 @@ Print a newline character to STDOUT.
 **PRINT [u64: string]**
 
 Print string to STDOUT.
-
