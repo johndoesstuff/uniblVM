@@ -11,16 +11,18 @@ VOID 17
 
 $DEBUG P_STDOUT
 
+;PRINT "Test str"
+
 LDA64 set_a + 1
 LDB64 set_b + 1
-;PRINT "A = "
+PRINT "A = "
 PRINTA
 PRINTN
-;PRINT "B = "
+PRINT "B = "
 PRINTB
 PRINTN
 DIVAB
-;PRINT "A/B = "
+PRINT "A/B = "
 PRINTA
 PRINTN
-
+PRINTN
