@@ -1,0 +1,59 @@
+$INCLUDE <uasmlib/stdlib.uasm>
+$INCLUDE <uasmlib/print.uasm>
+$INCLUDE <uasmlib/math.uasm>
+
+MAX_TARGET:
+VOID 100
+I:
+VOID 2
+J:
+VOID 0
+VAL_1:
+VOID 1
+
+PRIME_MAIN_LOOP:
+; check if I is prime
+; set J to I - 1
+LDA64 I + 1
+LDB64 VAL_1 + 1
+SUBAB
+STA64 J + 1
+PRIME_SUB_LOOP:
+; if j - 1 == 0 prime
+LDA64 J + 1
+LDA64 VAL_1 + 1
+SUBAB
+JMPBZ IS_PRIME
+; check if I is divisible by J
+LDA64 I + 1
+LDB64 J + 1
+DIVAB
+; if remainder is 0 not prime
+JMPBZ NOT_PRIME
+; dec J
+LDA64 J + 1
+LDB64 VAL_1 + 1
+SUBAB
+STA64 J + 1
+JMP PRIME_SUB_LOOP
+; if prime break print I
+IS_PRIME:
+LDA64 I + 1
+PRINTA
+PRINTN
+NOT_PRIME:
+; inc i
+LDA64 I + 1
+LDB64 VAL_1 + 1
+ADDAB
+STA64 I + 1
+; if i > max halt
+LDA64 MAX_TARGET + 1
+LDB64 I + 1
+SUBAB
+SWP
+JMPBZ DONE
+JMP PRIME_MAIN_LOOP
+
+DONE:
+HALT

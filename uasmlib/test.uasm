@@ -5,9 +5,9 @@ $INCLUDE <uasmlib/math.uasm>
 ESIZEOF:
 
 set_a:
-VOID 731
+VOID 0x75f821
 set_b:
-VOID 17
+VOID 0x1482b
 
 $DEBUG P_STDOUT
 
@@ -25,4 +25,6 @@ DIVAB
 PRINT "A/B = "
 PRINTA
 PRINTN
+PRINT "A%B = "
+PRINTB
 PRINTN

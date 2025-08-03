@@ -502,7 +502,7 @@ Multiply A and B, store result in A.
 
 **DIVAB**
 
-Divide A and B, store result in B.
+Divide A by B and store result in A. Also store remainder in B.
 
 ### print.uasm
 

@@ -1,0 +1,12 @@
+JMP _STRING_ENDLIB
+
+; string syntax:
+; JMP _STR_END
+; _STR_START:
+; $DUMP <string contents>
+; _STR_END:
+; LDA64 _STR_START ; string
+
+; a string is a pointer to a $DUMP of a string that ends in a null terminator
+
+_STRING_ENDLIB:
