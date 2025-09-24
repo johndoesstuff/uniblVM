@@ -11,6 +11,19 @@ VOID 0
 VAL_1:
 VOID 1
 
+PRINT "Search f"
+PRINT "or prime"
+PRINT "s up to "
+PRINT "100\n"
+
+PRINT "To searc"
+PRINT "h for hi"
+PRINT "gher mod"
+PRINT "ify MAX_"
+PRINT "TARGET i"
+PRINT "n primes"
+PRINT ".uasm\n"
+
 PRIME_MAIN_LOOP:
 ; check if I is prime
 ; set J to I - 1
@@ -19,15 +32,36 @@ LDB64 VAL_1 + 1
 SUBAB
 STA64 J + 1
 PRIME_SUB_LOOP:
-; if j - 1 == 0 prime
+; if J - 2 == 0 prime
 LDA64 J + 1
-LDA64 VAL_1 + 1
+LDB64 VAL_1 + 1
 SUBAB
+SUBAB
+; PRINT "J - 1: "
+; PRINTA
+; PRINTN
+SWP
 JMPBZ IS_PRIME
 ; check if I is divisible by J
 LDA64 I + 1
+; PRINT "I: "
+; PRINTA
+; PRINTN
 LDB64 J + 1
+; PRINT "J: "
+; PRINTB
+; PRINTN
+; PRINT "Dividing"
+; PRINT " "
+; PRINTA
+; PRINT " by "
+; PRINTB
+; PRINTN
 DIVAB
+; PRINT "Remainde"
+; PRINT "r: "
+; PRINTB
+; PRINTN
 ; if remainder is 0 not prime
 JMPBZ NOT_PRIME
 ; dec J
@@ -42,12 +76,12 @@ LDA64 I + 1
 PRINTA
 PRINTN
 NOT_PRIME:
-; inc i
+; inc I
 LDA64 I + 1
 LDB64 VAL_1 + 1
 ADDAB
 STA64 I + 1
-; if i > max halt
+; if I > max halt
 LDA64 MAX_TARGET + 1
 LDB64 I + 1
 SUBAB

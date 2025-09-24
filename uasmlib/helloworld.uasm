@@ -11,8 +11,8 @@ NOTA
 HALT
 
 print_hello_world:
-FPRINT "Poopy he"
-FPRINT "ad\n"
+FPRINT "Hello wo"
+FPRINT "rld\n"
 RET
 
 print_welcome:

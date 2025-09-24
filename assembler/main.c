@@ -153,11 +153,17 @@ int main(int argc, char *argv[]) {
 	char* expanded_input;
 	char* output_file;
 
-	for (int i = 1; i < argc; argv++, i++) {
-		if (strcmp(*argv, "-o") == 0 || strcmp(*argv, "--output") == 0) {
-			output_file = strdup(*(++argv));
+	// CHECK FOR OUTPUT FILE
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) {
+			if (i + 1 < argc) {
+				output_file = strdup(argv[++i]);
+			} else {
+				fprintf(stderr, "Error: -o requires a filename\n");
+				exit(1);
+			}
 		} else {
-			expanded_input = expand_includes(*argv);
+			expanded_input = expand_includes(argv[i]);
 		}
 	}
 
@@ -167,7 +173,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	size_t input_length = strlen(expanded_input);
-	//printf("%s", expanded_input);
 	FILE* mem_fp = fmemopen(expanded_input, input_length, "r");
 	pp_in = mem_fp;
 

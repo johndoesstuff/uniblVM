@@ -15,6 +15,8 @@ TARGET:
 		assembler/build/preprocessor.tab.c \
 		assembler/build/lex.asm.c \
 		assembler/build/lex.pp.c
+
+vim:
 	mkdir -p ~/.vim/syntax
 	sudo cp uasm.vim ~/.vim/syntax/uasm.vim
 	mkdir -p ~/.vim/ftdetect
