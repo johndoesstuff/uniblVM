@@ -33,22 +33,22 @@ make vim
 
 ## Demo
 
-Assemble example primes program top UNIBL bytecode
+Assemble example primes program to UNIBL bytecode
 
-```bash
+```
 ./unibl_asm examples/primes.uasm -o examples/primes.ubc
 ```
 
 Run UNIBL bytecode
 
 
-```bash
+```
 ./unibl_vm examples/primes.ubc
 ```
 
 Output:
 
-```bash
+```
 $ ./unibl_asm examples/primes.uasm -o examples/primes.ubc
 $ ./unibl_vm examples/primes.ubc
 Search for primes up to 100
