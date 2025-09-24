@@ -1,4 +1,88 @@
+
 # UNIBL
+
+Programming language that balances simple implementation with realistic performance.
+
+
+## Run Locally
+
+Clone the project
+
+```bash
+git clone https://github.com/johndoesstuff/uniblVM
+```
+
+Go to the project directory
+
+```bash
+cd uniblVM
+```
+
+Make the project
+
+```bash
+make
+```
+
+(Optional) Set up UASM vim syntax highlighting
+
+```bash
+make vim
+```
+
+
+## Demo
+
+Assemble example primes program top UNIBL bytecode
+
+```bash
+./unibl_asm examples/primes.uasm -o examples/primes.ubc
+```
+
+Run UNIBL bytecode
+
+
+```bash
+./unibl_vm examples/primes.ubc
+```
+
+Output:
+
+```bash
+$ ./unibl_asm examples/primes.uasm -o examples/primes.ubc
+$ ./unibl_vm examples/primes.ubc
+Search for primes up to 100
+To search for higher modify MAX_TARGET in primes.uasm
+0x0000000000000002
+0x0000000000000003
+0x0000000000000004
+0x0000000000000005
+0x0000000000000007
+0x000000000000000B
+0x000000000000000D
+0x0000000000000011
+0x0000000000000013
+0x0000000000000017
+0x000000000000001D
+0x000000000000001F
+0x0000000000000025
+0x0000000000000029
+0x000000000000002B
+0x000000000000002F
+0x0000000000000035
+0x000000000000003B
+0x000000000000003D
+0x0000000000000043
+0x0000000000000047
+0x0000000000000049
+0x000000000000004F
+0x0000000000000053
+0x0000000000000059
+0x0000000000000061
+```
+
+
+# UNIBL Tutorial
 (Universal Bootstrappable Language)
 
 Writing programs in certain languages comes with portability issues, to run a C program you need a C compiler that targets your specific architecture. Some languages like Java try to solve this by implementing a virtual machine that custom bytecode can compile to. While well defined these virtual machines are still complex, the JVM spec is currently sitting at around 160 pages which is far from something trivial to implement in any system. Other esoteric programming languages like BrainF* take this in the opposite direction- trivial to implement but barely useful. My goal with this project is to write a programming language that is complex enough to define itself and implement it's own behavior using itself, I.E "bootstrapping", but also that is simple enough it could reasonably be implemented on any system as an afternoon project rather than a month long undertaking.
